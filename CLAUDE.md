@@ -147,6 +147,38 @@ Coverage: 85% (+5%)
 Tests: 47 passing
 ```
 
+#### Git Repository Setup
+
+**Repository**: https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp.git
+
+**Initial Setup** (if not already done):
+```bash
+git init
+git branch -m main
+git remote add origin https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp.git
+```
+
+**Configure User** (repository-specific):
+```bash
+git config user.email "wade.woolwine@gmail.com"
+git config user.name "wadew"
+```
+
+**Pushing to GitLab**:
+
+The repository uses Personal Access Token (PAT) authentication. The PAT is stored in `.env` file (which is gitignored).
+
+To push to GitLab:
+```bash
+# Configure remote URL with PAT from .env
+source .env && git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@gitlab.prod.thezephyrco.com/mcps/gitlab_mcp.git"
+
+# Push to remote
+git push -u origin main
+```
+
+**Note**: The `.env` file must contain `GITLAB_TOKEN=<your-token>` for this to work.
+
 ### Project Structure Reference
 ```
 gitlab_mcp/
