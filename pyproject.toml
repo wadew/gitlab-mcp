@@ -1,0 +1,183 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gitlab-mcp-server"
+version = "0.1.0"
+description = "Model Context Protocol server for GitLab integration"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+keywords = ["gitlab", "mcp", "model-context-protocol", "ai", "llm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "mcp>=1.18.0",           # Official MCP SDK (latest: 1.18.0, Oct 2025)
+    "python-gitlab>=6.5.0",  # GitLab API client (latest: 6.5.0, Oct 2025)
+    "pydantic>=2.12.3",      # Data validation (latest: 2.12.3, Oct 2025)
+    "python-dotenv>=1.1.1",  # Environment variables (latest: 1.1.1, Jun 2025)
+    "httpx>=0.28.1",         # HTTP client for async (latest: 0.28.1, 2025)
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.4.2",         # Testing framework (latest: 8.4.2, Sep 2025)
+    "pytest-cov>=6.0.0",     # Code coverage (latest: 6.0.0, 2025)
+    "pytest-asyncio>=0.25.0", # Async testing (latest: 0.25.0, 2025)
+    "pytest-mock>=3.14.0",   # Mocking (latest: 3.14.0, 2025)
+    "black>=25.1.0",         # Code formatter (latest: 25.1.0, Jan 2025)
+    "ruff>=0.14.1",          # Linter (latest: 0.14.1, Oct 2025)
+    "mypy>=1.18.2",          # Type checker (latest: 1.18.2, Sep 2025)
+    "types-requests",        # Type stubs for requests
+]
+
+[project.scripts]
+gitlab-mcp-server = "gitlab_mcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/gitlab-mcp-server"
+Documentation = "https://github.com/yourusername/gitlab-mcp-server/tree/main/docs"
+Repository = "https://github.com/yourusername/gitlab-mcp-server"
+Issues = "https://github.com/yourusername/gitlab-mcp-server/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["gitlab_mcp*"]
+
+# Black configuration
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+# Ruff configuration
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # Allow unused imports in __init__.py
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+strict_equality = true
+strict_concatenate = true
+
+[[tool.mypy.overrides]]
+module = "gitlab.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "mcp.*"
+ignore_missing_imports = true
+
+# Pytest configuration
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "-q",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src/gitlab_mcp",
+    "--cov-branch",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "unit: Unit tests (fast, isolated, mocked dependencies)",
+    "integration: Integration tests (may call real GitLab API)",
+    "e2e: End-to-end tests (full MCP protocol)",
+    "slow: Slow-running tests",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/site-packages/*",
+]
+branch = true
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
