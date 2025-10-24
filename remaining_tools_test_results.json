@@ -1,0 +1,100 @@
+[
+  {
+    "tool_name": "create_tag",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "fail",
+    "error": "GitLab API error: 400: Tag v0.0.1-test already exists",
+    "error_type": "GitLabAPIError"
+  },
+  {
+    "tool_name": "create_merge_request",
+    "module": "gitlab_mcp.tools.merge_requests",
+    "status": "fail",
+    "error": "GitLab API error: 409: ['Another open merge request already exists for this source branch: !1']",
+    "error_type": "GitLabAPIError"
+  },
+  {
+    "tool_name": "create_pipeline",
+    "module": "gitlab_mcp.tools.pipelines",
+    "status": "fail",
+    "error": "GitLab API error: 400: {'base': ['The pipeline did not run. Review the workflow:rules configuration for the pipeline.']}",
+    "error_type": "GitLabAPIError"
+  },
+  {
+    "tool_name": "create_wiki_page",
+    "module": "gitlab_mcp.tools.wikis",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "get_wiki_page",
+    "module": "gitlab_mcp.tools.wikis",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "update_wiki_page",
+    "module": "gitlab_mcp.tools.wikis",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "delete_wiki_page",
+    "module": "gitlab_mcp.tools.wikis",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "create_snippet",
+    "module": "gitlab_mcp.tools.snippets",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "get_snippet",
+    "module": "gitlab_mcp.tools.snippets",
+    "status": "fail",
+    "error": "Not JSON serializable: Object of type method is not JSON serializable",
+    "error_type": "SerializationError"
+  },
+  {
+    "tool_name": "update_snippet",
+    "module": "gitlab_mcp.tools.snippets",
+    "status": "fail",
+    "error": "Not JSON serializable: Object of type method is not JSON serializable",
+    "error_type": "SerializationError"
+  },
+  {
+    "tool_name": "delete_snippet",
+    "module": "gitlab_mcp.tools.snippets",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "create_milestone",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "get_group",
+    "module": "gitlab_mcp.tools.groups",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_group_members",
+    "module": "gitlab_mcp.tools.groups",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  }
+]

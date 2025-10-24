@@ -1,0 +1,58 @@
+[
+  {
+    "tool_name": "create_issue",
+    "module": "gitlab_mcp.tools.issues",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "create_label",
+    "module": "gitlab_mcp.tools.labels",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "update_label",
+    "module": "gitlab_mcp.tools.labels",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "create_milestone",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "fail",
+    "error": "GitLab API error: 400: Failed to create milestone {:title=>[\"already being used for another group or project milestone.\"]}",
+    "error_type": "GitLabAPIError"
+  },
+  {
+    "tool_name": "update_milestone",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "create_branch",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "delete_branch",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "delete_label",
+    "module": "gitlab_mcp.tools.labels",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  }
+]

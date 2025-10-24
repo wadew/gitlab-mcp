@@ -1,0 +1,154 @@
+[
+  {
+    "tool_name": "get_current_context",
+    "module": "gitlab_mcp.tools.context",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.03224015235900879
+  },
+  {
+    "tool_name": "list_projects",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.16658401489257812
+  },
+  {
+    "tool_name": "get_project",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "fail",
+    "error": "Result not JSON serializable: Object of type Project is not JSON serializable",
+    "error_type": "SerializationError",
+    "execution_time": 0.06256580352783203
+  },
+  {
+    "tool_name": "search_projects",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "fail",
+    "error": "search_projects() got an unexpected keyword argument 'query'",
+    "error_type": "TypeError",
+    "execution_time": 7.867813110351562e-06
+  },
+  {
+    "tool_name": "list_project_members",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.11063218116760254
+  },
+  {
+    "tool_name": "get_project_statistics",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.0772092342376709
+  },
+  {
+    "tool_name": "list_repository_tree",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.12461495399475098
+  },
+  {
+    "tool_name": "get_file_contents",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.11398720741271973
+  },
+  {
+    "tool_name": "search_code",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "fail",
+    "error": "search_code() got an unexpected keyword argument 'query'",
+    "error_type": "TypeError",
+    "execution_time": 7.867813110351562e-06
+  },
+  {
+    "tool_name": "list_issues",
+    "module": "gitlab_mcp.tools.issues",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.15217995643615723
+  },
+  {
+    "tool_name": "get_issue",
+    "module": "gitlab_mcp.tools.issues",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.15314698219299316
+  },
+  {
+    "tool_name": "list_merge_requests",
+    "module": "gitlab_mcp.tools.merge_requests",
+    "status": "fail",
+    "error": "Result not JSON serializable: Object of type ProjectMergeRequest is not JSON serializable",
+    "error_type": "SerializationError",
+    "execution_time": 0.13635039329528809
+  },
+  {
+    "tool_name": "list_pipelines",
+    "module": "gitlab_mcp.tools.pipelines",
+    "status": "fail",
+    "error": "string indices must be integers, not 'str'",
+    "error_type": "TypeError",
+    "execution_time": 0.12341690063476562
+  },
+  {
+    "tool_name": "list_labels",
+    "module": "gitlab_mcp.tools.labels",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.1330108642578125
+  },
+  {
+    "tool_name": "list_wiki_pages",
+    "module": "gitlab_mcp.tools.wikis",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.13091111183166504
+  },
+  {
+    "tool_name": "list_snippets",
+    "module": "gitlab_mcp.tools.snippets",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.15397024154663086
+  },
+  {
+    "tool_name": "list_releases",
+    "module": "gitlab_mcp.tools.releases",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.12405800819396973
+  },
+  {
+    "tool_name": "search_users",
+    "module": "gitlab_mcp.tools.users",
+    "status": "fail",
+    "error": "search_users() got an unexpected keyword argument 'query'",
+    "error_type": "TypeError",
+    "execution_time": 5.0067901611328125e-06
+  },
+  {
+    "tool_name": "list_groups",
+    "module": "gitlab_mcp.tools.groups",
+    "status": "pass",
+    "error": "",
+    "error_type": "",
+    "execution_time": 0.06616711616516113
+  }
+]

@@ -235,6 +235,9 @@ LOG_LEVEL=INFO (optional, default: INFO)
 - **REPO-012**: `create_tag` - Create a new tag
 - **REPO-013**: `compare_branches` - Compare two branches or commits
 - **REPO-014**: `get_repository` - Get repository details and metadata
+- **REPO-015**: `create_file` - Create a new file in repository with commit
+- **REPO-016**: `update_file` - Update existing file content with commit
+- **REPO-017**: `delete_file` - Delete a file from repository with commit
 
 #### 6.1.4 Issues
 - **ISSUE-001**: `create_issue` - Create a new issue
@@ -436,6 +439,9 @@ Error responses:
 #### Repository Operations
 - `GET /projects/:id/repository/tree` - List repository tree
 - `GET /projects/:id/repository/files/:file_path` - Get file contents
+- `POST /projects/:id/repository/files/:file_path` - Create file
+- `PUT /projects/:id/repository/files/:file_path` - Update file
+- `DELETE /projects/:id/repository/files/:file_path` - Delete file
 - `GET /projects/:id/repository/commits` - List commits
 - `GET /projects/:id/repository/commits/:sha` - Get commit details
 - `GET /projects/:id/repository/branches` - List branches
@@ -705,28 +711,250 @@ GitLab MCP Server v1.0.0
 
 ---
 
-## 13. Future Enhancements
+## 13. Detailed Feature Specifications
 
-### 13.1 Phase 3: OAuth 2.0 Support
+### 13.1 File Editing Operations (REPO-015, REPO-016, REPO-017)
+
+**Priority**: HIGH - Enables AI-assisted code editing workflows
+**Phase**: Phase 2 (after Issues tools completion) or early Phase 3
+**Implementation Session**: Estimated Session 018-019
+
+#### 13.1.1 REPO-015: create_file
+
+**Purpose**: Create a new file in a repository with a commit message, enabling AI to generate and save new files directly.
+
+**API Endpoint**: `POST /api/v4/projects/:id/repository/files/:file_path`
+
+**Parameters**:
+- `project_id` (required): Project ID or path
+- `file_path` (required): Full path to new file (URL-encoded)
+- `branch` (required): Target branch name
+- `content` (required): File content
+- `commit_message` (required): Commit message
+- `start_branch` (optional): Create new branch from this branch
+- `author_email` (optional): Override commit author email
+- `author_name` (optional): Override commit author name
+- `encoding` (optional): 'text' or 'base64' (default: 'text')
+- `execute_filemode` (optional): Make file executable (boolean)
+
+**Response Format**:
+```python
+{
+    "file_path": str,
+    "branch": str,
+    "commit_id": str,
+    "web_url": str,
+    "message": str  # Success message
+}
+```
+
+**Use Cases**:
+- Generate new source files based on specifications
+- Create configuration files
+- Add documentation files
+- Generate test files
+
+**Error Handling**:
+- 400: File already exists
+- 400: Invalid file path (directory traversal attempt)
+- 404: Project or branch not found
+- 403: Insufficient permissions
+
+#### 13.1.2 REPO-016: update_file
+
+**Purpose**: Update existing file content with a commit, enabling AI to make edits, fixes, and refactorings.
+
+**API Endpoint**: `PUT /api/v4/projects/:id/repository/files/:file_path`
+
+**Parameters**:
+- `project_id` (required): Project ID or path
+- `file_path` (required): Full path to file (URL-encoded)
+- `branch` (required): Target branch name
+- `content` (required): New file content
+- `commit_message` (required): Commit message
+- `start_branch` (optional): Create new branch from this branch
+- `last_commit_id` (optional): Last known commit ID for conflict detection
+- `author_email` (optional): Override commit author email
+- `author_name` (optional): Override commit author name
+- `encoding` (optional): 'text' or 'base64' (default: 'text')
+- `execute_filemode` (optional): Make file executable (boolean)
+
+**Response Format**:
+```python
+{
+    "file_path": str,
+    "branch": str,
+    "commit_id": str,
+    "web_url": str,
+    "message": str  # Success message
+}
+```
+
+**Use Cases**:
+- Apply bug fixes suggested by AI
+- Refactor code based on analysis
+- Update configuration values
+- Fix linting or formatting issues
+- Apply security patches
+
+**Conflict Detection**:
+- If `last_commit_id` provided and doesn't match current, return 400 error
+- Prevents overwriting changes made by others
+- Client should re-fetch file before retry
+
+**Error Handling**:
+- 400: File doesn't exist
+- 400: Conflict detected (last_commit_id mismatch)
+- 400: Content identical to existing version
+- 404: Project or branch not found
+- 403: Insufficient permissions
+
+#### 13.1.3 REPO-017: delete_file
+
+**Purpose**: Delete a file from repository with commit message.
+
+**API Endpoint**: `DELETE /api/v4/projects/:id/repository/files/:file_path`
+
+**Parameters**:
+- `project_id` (required): Project ID or path
+- `file_path` (required): Full path to file (URL-encoded)
+- `branch` (required): Target branch name
+- `commit_message` (required): Commit message
+- `start_branch` (optional): Create new branch from this branch
+- `last_commit_id` (optional): Last known commit ID for conflict detection
+- `author_email` (optional): Override commit author email
+- `author_name` (optional): Override commit author name
+
+**Response Format**:
+```python
+{
+    "file_path": str,
+    "branch": str,
+    "commit_id": str,
+    "message": str  # Success message
+}
+```
+
+**Use Cases**:
+- Remove deprecated files
+- Clean up temporary files
+- Remove unused code
+- Delete obsolete configurations
+
+**Error Handling**:
+- 400: File doesn't exist
+- 400: Conflict detected
+- 404: Project or branch not found
+- 403: Insufficient permissions
+
+#### 13.1.4 Implementation Notes
+
+**File Path Encoding**:
+- All file paths must be URL-encoded (e.g., `lib/class.rb` → `lib%2Fclass.rb`)
+- Handle special characters properly
+- Prevent directory traversal attacks
+
+**Content Encoding**:
+- Support both 'text' and 'base64' encoding
+- Use base64 for binary files
+- Default to text for code files
+
+**Branch Strategy**:
+- If `start_branch` provided, creates new branch from it
+- Enables "edit on new branch" workflow
+- Useful for AI-suggested changes that need review
+
+**Commit Attribution**:
+- Default: Use authenticated user
+- Optional: Override with `author_name` and `author_email`
+- Useful for attributing AI-assisted changes appropriately
+
+**Testing Strategy**:
+- Unit tests with mocked GitLab API
+- Integration tests with real GitLab instance
+- Test conflict detection scenarios
+- Test various encodings (text, base64)
+- Test special characters in paths
+- Test error conditions
+
+**Security Considerations**:
+- Validate file paths to prevent directory traversal
+- Sanitize file content
+- Respect GitLab permissions (protected branches)
+- Audit file modifications
+- Consider protected file patterns
+
+**MCP Tool Design**:
+```python
+async def create_file(
+    client: GitLabClient,
+    project_id: Union[str, int],
+    file_path: str,
+    branch: str,
+    content: str,
+    commit_message: str,
+    start_branch: Optional[str] = None,
+    encoding: str = "text",
+) -> dict[str, Any]:
+    """Create a new file in repository."""
+    pass
+
+async def update_file(
+    client: GitLabClient,
+    project_id: Union[str, int],
+    file_path: str,
+    branch: str,
+    content: str,
+    commit_message: str,
+    last_commit_id: Optional[str] = None,
+    start_branch: Optional[str] = None,
+    encoding: str = "text",
+) -> dict[str, Any]:
+    """Update existing file in repository."""
+    pass
+
+async def delete_file(
+    client: GitLabClient,
+    project_id: Union[str, int],
+    file_path: str,
+    branch: str,
+    commit_message: str,
+    last_commit_id: Optional[str] = None,
+    start_branch: Optional[str] = None,
+) -> dict[str, Any]:
+    """Delete a file from repository."""
+    pass
+```
+
+**Recommended Implementation Timeline**:
+- **Session 018-019**: After Issues tools complete, before Merge Requests
+- **Alternative**: Early Phase 3 alongside Merge Request operations
+- **Rationale**: High value for AI workflows, builds on repository tool patterns
+
+---
+
+## 14. Future Enhancements
+
+### 14.1 Phase 3: OAuth 2.0 Support
 - Implement OAuth 2.0 authentication flow
 - Support dynamic client registration
 - Handle token refresh automatically
 - Provide OAuth setup documentation
 
-### 13.2 Phase 4: Remote Hosting
+### 14.2 Phase 4: Remote Hosting
 - Design remote server architecture
 - Implement authentication middleware
 - Add multi-user support
 - Deploy to cloud platform (AWS, GCP, Azure)
 - Provide hosted service option
 
-### 13.3 Phase 5: Multi-Instance Support
+### 14.3 Phase 5: Multi-Instance Support
 - Support multiple GitLab instances in single server
 - Instance selection via tool parameters
 - Separate credential management per instance
 - Instance discovery and listing
 
-### 13.4 Phase 6: Advanced Features
+### 14.4 Phase 6: Advanced Features
 - **Semantic Code Search**: Integrate GitLab Duo semantic search
 - **Real-time Updates**: WebSocket support for live notifications
 - **GraphQL API**: Use GitLab GraphQL API for complex queries
@@ -736,7 +964,7 @@ GitLab MCP Server v1.0.0
 - **Templates**: MCP prompts for common workflows
 - **Analytics**: Usage analytics and insights dashboard
 
-### 13.5 Phase 7: Integration Enhancements
+### 14.5 Phase 7: Integration Enhancements
 - **Jira Integration**: Link GitLab issues with Jira
 - **Slack/Teams**: Post updates to communication platforms
 - **Custom Webhooks**: User-configurable webhook triggers

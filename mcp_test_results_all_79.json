@@ -1,0 +1,184 @@
+[
+  {
+    "tool_name": "get_current_context",
+    "module": "gitlab_mcp.tools.context",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_projects",
+    "module": "gitlab_mcp.tools.context",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_projects",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "get_project",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "fail",
+    "error": "Not JSON serializable: Object of type Project is not JSON serializable",
+    "error_type": "SerializationError"
+  },
+  {
+    "tool_name": "search_projects",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "fail",
+    "error": "search_projects() got an unexpected keyword argument 'search'",
+    "error_type": "TypeError"
+  },
+  {
+    "tool_name": "list_project_members",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "get_project_statistics",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_milestones",
+    "module": "gitlab_mcp.tools.projects",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "get_repository",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_branches",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "get_branch",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "get_file_contents",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_repository_tree",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_commits",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_tags",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "search_code",
+    "module": "gitlab_mcp.tools.repositories",
+    "status": "fail",
+    "error": "search_code() got an unexpected keyword argument 'search'",
+    "error_type": "TypeError"
+  },
+  {
+    "tool_name": "list_issues",
+    "module": "gitlab_mcp.tools.issues",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "get_issue",
+    "module": "gitlab_mcp.tools.issues",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_merge_requests",
+    "module": "gitlab_mcp.tools.merge_requests",
+    "status": "fail",
+    "error": "Not JSON serializable: Object of type ProjectMergeRequest is not JSON serializable",
+    "error_type": "SerializationError"
+  },
+  {
+    "tool_name": "list_pipelines",
+    "module": "gitlab_mcp.tools.pipelines",
+    "status": "fail",
+    "error": "string indices must be integers, not 'str'",
+    "error_type": "TypeError"
+  },
+  {
+    "tool_name": "list_labels",
+    "module": "gitlab_mcp.tools.labels",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_wiki_pages",
+    "module": "gitlab_mcp.tools.wikis",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_snippets",
+    "module": "gitlab_mcp.tools.snippets",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_releases",
+    "module": "gitlab_mcp.tools.releases",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "search_users",
+    "module": "gitlab_mcp.tools.users",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  },
+  {
+    "tool_name": "list_groups",
+    "module": "gitlab_mcp.tools.groups",
+    "status": "pass",
+    "error": "",
+    "error_type": ""
+  }
+]

@@ -59,7 +59,7 @@ stages:
   before_script:
     # Install uv for fast dependency management
     - curl -LsSf https://astral.sh/uv/install.sh | sh
-    - export PATH="$HOME/.cargo/bin:$PATH"
+    - export PATH="$HOME/.local/bin:$PATH"
     - uv --version
   cache:
     # Cache Python dependencies for faster builds
@@ -83,7 +83,7 @@ stages:
   extends: .python-base
   before_script:
     - curl -LsSf https://astral.sh/uv/install.sh | sh
-    - export PATH="$HOME/.cargo/bin:$PATH"
+    - export PATH="$HOME/.local/bin:$PATH"
     - uv venv
     - source .venv/bin/activate
     - uv pip install -e ".[dev]"

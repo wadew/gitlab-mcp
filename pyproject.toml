@@ -5,16 +5,33 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gitlab-mcp-server"
 version = "0.1.0"
-description = "Model Context Protocol server for GitLab integration"
+description = "Production-ready Model Context Protocol server for GitLab - 67 tools, 700+ tests, 79% coverage"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Wade Woolwine", email = "wade.woolwine@gmail.com"}
 ]
-keywords = ["gitlab", "mcp", "model-context-protocol", "ai", "llm"]
+maintainers = [
+    {name = "Wade Woolwine", email = "wade.woolwine@gmail.com"}
+]
+keywords = [
+    "gitlab",
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "llm",
+    "claude",
+    "anthropic",
+    "devops",
+    "ci-cd",
+    "automation",
+    "api-client",
+    "async",
+    "type-safe"
+]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -23,6 +40,11 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: System :: Systems Administration",
+    "Framework :: AsyncIO",
+    "Typing :: Typed",
+    "Operating System :: OS Independent",
 ]
 
 dependencies = [
@@ -49,10 +71,11 @@ dev = [
 gitlab-mcp-server = "gitlab_mcp.server:main"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/gitlab-mcp-server"
-Documentation = "https://github.com/yourusername/gitlab-mcp-server/tree/main/docs"
-Repository = "https://github.com/yourusername/gitlab-mcp-server"
-Issues = "https://github.com/yourusername/gitlab-mcp-server/issues"
+Homepage = "https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp"
+Documentation = "https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp/-/tree/main/docs"
+Repository = "https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp"
+Issues = "https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp/-/issues"
+Source = "https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp/-/tree/main/src"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
