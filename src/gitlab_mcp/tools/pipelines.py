@@ -415,10 +415,11 @@ async def download_job_artifacts(
     """
     result = client.download_job_artifacts(project_id=project_id, job_id=job_id)
 
+    size_bytes = int(result["size_bytes"])  # Ensure it's an int for mypy
     return {
         "job_id": result["job_id"],
-        "size_bytes": result["size_bytes"],
-        "message": f"Downloaded {result['size_bytes']} bytes of artifacts for job {job_id}",
+        "size_bytes": size_bytes,
+        "message": f"Downloaded {size_bytes} bytes of artifacts for job {job_id}",
     }
 
 

@@ -16,7 +16,6 @@ GitLabMCPError (base)
 """
 
 
-
 class GitLabMCPError(Exception):
     """Base exception for all GitLab MCP errors.
 

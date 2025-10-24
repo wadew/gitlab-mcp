@@ -4420,9 +4420,7 @@ class GitLabClient:
         except Exception as e:
             raise self._convert_exception(e) from e
 
-    def download_job_artifacts(
-        self, project_id: str | int, job_id: int
-    ) -> dict[str, int | bytes]:
+    def download_job_artifacts(self, project_id: str | int, job_id: int) -> dict[str, int | bytes]:
         """
         Download job artifacts.
 
