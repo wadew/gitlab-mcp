@@ -11,14 +11,14 @@ This module provides MCP tools for GitLab snippet operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
 
 async def list_snippets(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
 ) -> list[dict[str, Any]]:
     """
     List project snippets.
@@ -35,7 +35,7 @@ async def list_snippets(
 
 async def get_snippet(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     snippet_id: int,
 ) -> dict[str, Any]:
     """
@@ -54,11 +54,11 @@ async def get_snippet(
 
 async def create_snippet(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     title: str,
     file_name: str,
     content: str,
-    description: Optional[str] = None,
+    description: str | None = None,
     visibility: str = "private",
 ) -> dict[str, Any]:
     """
@@ -88,13 +88,13 @@ async def create_snippet(
 
 async def update_snippet(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     snippet_id: int,
-    title: Optional[str] = None,
-    file_name: Optional[str] = None,
-    content: Optional[str] = None,
-    description: Optional[str] = None,
-    visibility: Optional[str] = None,
+    title: str | None = None,
+    file_name: str | None = None,
+    content: str | None = None,
+    description: str | None = None,
+    visibility: str | None = None,
 ) -> dict[str, Any]:
     """
     Update an existing snippet.
@@ -125,7 +125,7 @@ async def update_snippet(
 
 async def delete_snippet(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     snippet_id: int,
 ) -> None:
     """

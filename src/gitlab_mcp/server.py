@@ -6,7 +6,8 @@ It provides tools for interacting with GitLab repositories, issues, merge reques
 """
 
 import asyncio
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
@@ -1027,13 +1028,17 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
         ),
         (
             "get_job_trace",
-            "Get the trace log of a job",
+            "Get the trace log of a job. Use tail_lines parameter to limit output for large logs.",
             {
                 "project_id": {
                     "type": "string",
                     "description": "Project ID or path (e.g., 'group/project')",
                 },
                 "job_id": {"type": "integer", "description": "Job ID"},
+                "tail_lines": {
+                    "type": "integer",
+                    "description": "Optional: Number of lines to return from end of log (e.g., 500-1000 for error analysis). Prevents exceeding token limits on large logs.",
+                },
             },
         ),
         (

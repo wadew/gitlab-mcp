@@ -15,7 +15,6 @@ GitLabMCPError (base)
     └── TimeoutError
 """
 
-from typing import Optional
 
 
 class GitLabMCPError(Exception):
@@ -60,7 +59,7 @@ class ValidationError(ConfigurationError):
     and can optionally include the field name that failed validation.
     """
 
-    def __init__(self, message: str, field_name: Optional[str] = None) -> None:
+    def __init__(self, message: str, field_name: str | None = None) -> None:
         """Initialize ValidationError with message and optional field name.
 
         Args:
@@ -133,7 +132,7 @@ class RateLimitError(GitLabMCPError):
     includes retry_after information when available.
     """
 
-    def __init__(self, message: str, retry_after: Optional[int] = None) -> None:
+    def __init__(self, message: str, retry_after: int | None = None) -> None:
         """Initialize RateLimitError with message and optional retry info.
 
         Args:

@@ -10,7 +10,7 @@ This module provides:
 import json
 import os
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import (
     Field,
@@ -127,7 +127,7 @@ class GitLabConfig(BaseSettings):
         return self.__repr__()
 
 
-def load_config(config_file: Optional[Path] = None) -> GitLabConfig:
+def load_config(config_file: Path | None = None) -> GitLabConfig:
     """Load configuration from environment variables and/or file.
 
     Configuration sources (in order of precedence):

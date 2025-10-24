@@ -10,15 +10,15 @@ This module provides MCP tools for GitLab label operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
 
 async def list_labels(
     client: GitLabClient,
-    project_id: Union[str, int],
-    search: Optional[str] = None,
+    project_id: str | int,
+    search: str | None = None,
 ) -> list[dict[str, Any]]:
     """
     List project labels.
@@ -36,11 +36,11 @@ async def list_labels(
 
 async def create_label(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     name: str,
     color: str,
-    description: Optional[str] = None,
-    priority: Optional[int] = None,
+    description: str | None = None,
+    priority: int | None = None,
 ) -> dict[str, Any]:
     """
     Create a new label.
@@ -67,12 +67,12 @@ async def create_label(
 
 async def update_label(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     label_id: int,
-    new_name: Optional[str] = None,
-    color: Optional[str] = None,
-    description: Optional[str] = None,
-    priority: Optional[int] = None,
+    new_name: str | None = None,
+    color: str | None = None,
+    description: str | None = None,
+    priority: int | None = None,
 ) -> dict[str, Any]:
     """
     Update an existing label.
@@ -101,7 +101,7 @@ async def update_label(
 
 async def delete_label(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     label_id: int,
 ) -> None:
     """

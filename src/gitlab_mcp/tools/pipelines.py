@@ -14,16 +14,16 @@ This module provides MCP tools for GitLab CI/CD pipeline and job operations incl
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
 
 async def list_pipelines(
     client: GitLabClient,
-    project_id: Union[str, int],
-    ref: Optional[str] = None,
-    status: Optional[str] = None,
+    project_id: str | int,
+    ref: str | None = None,
+    status: str | None = None,
     page: int = 1,
     per_page: int = 20,
 ) -> dict[str, Any]:
@@ -78,7 +78,7 @@ async def list_pipelines(
 
 async def get_pipeline(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     pipeline_id: int,
 ) -> dict[str, Any]:
     """
@@ -110,9 +110,9 @@ async def get_pipeline(
 
 async def create_pipeline(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     ref: str,
-    variables: Optional[dict[str, str]] = None,
+    variables: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """
     Create (trigger) a new pipeline.
@@ -144,7 +144,7 @@ async def create_pipeline(
 
 async def retry_pipeline(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     pipeline_id: int,
 ) -> dict[str, Any]:
     """
@@ -169,7 +169,7 @@ async def retry_pipeline(
 
 async def cancel_pipeline(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     pipeline_id: int,
 ) -> dict[str, Any]:
     """
@@ -194,7 +194,7 @@ async def cancel_pipeline(
 
 async def delete_pipeline(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     pipeline_id: int,
 ) -> dict[str, Any]:
     """
@@ -218,7 +218,7 @@ async def delete_pipeline(
 
 async def list_pipeline_jobs(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     pipeline_id: int,
     page: int = 1,
     per_page: int = 20,
@@ -246,7 +246,7 @@ async def list_pipeline_jobs(
 
 async def get_job(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     job_id: int,
 ) -> dict[str, Any]:
     """
@@ -279,31 +279,52 @@ async def get_job(
 
 async def get_job_trace(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     job_id: int,
+    tail_lines: int | None = None,
 ) -> dict[str, Any]:
     """
     Get execution log (trace) for a job.
+
+    IMPORTANT: Job traces can be very large (10,000+ lines). Use tail_lines to limit output.
 
     Args:
         client: Authenticated GitLabClient instance
         project_id: Project ID (int) or path (str)
         job_id: Job ID
+        tail_lines: Number of lines to return from the end of the log (optional).
+                   Recommended: 500-1000 for error analysis. If not specified,
+                   returns the full log which may exceed token limits for large jobs.
 
     Returns:
-        Dictionary with job trace/log
+        Dictionary with job trace/log including:
+        - job_id: The job ID
+        - trace: The log content (last N lines if tail_lines specified)
+        - truncated: Boolean indicating if output was truncated
+        - total_lines: Total number of lines in the full log
+        - returned_lines: Number of lines actually returned
+
+    Example:
+        # Get last 500 lines (recommended for error analysis)
+        trace = await get_job_trace(client, "my-project", 12345, tail_lines=500)
+
+        # Get full log (may be very large)
+        trace = await get_job_trace(client, "my-project", 12345)
     """
-    trace = client.get_job_trace(project_id=project_id, job_id=job_id)
+    trace = client.get_job_trace(project_id=project_id, job_id=job_id, tail_lines=tail_lines)
 
     return {
         "job_id": trace["job_id"],
         "trace": trace["trace"],
+        "truncated": trace.get("truncated", False),
+        "total_lines": trace.get("total_lines", 0),
+        "returned_lines": trace.get("returned_lines", 0),
     }
 
 
 async def retry_job(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     job_id: int,
 ) -> dict[str, Any]:
     """
@@ -328,7 +349,7 @@ async def retry_job(
 
 async def cancel_job(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     job_id: int,
 ) -> dict[str, Any]:
     """
@@ -353,7 +374,7 @@ async def cancel_job(
 
 async def play_job(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     job_id: int,
 ) -> dict[str, Any]:
     """
@@ -378,7 +399,7 @@ async def play_job(
 
 async def download_job_artifacts(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     job_id: int,
 ) -> dict[str, Any]:
     """
@@ -403,7 +424,7 @@ async def download_job_artifacts(
 
 async def list_pipeline_variables(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     pipeline_id: int,
 ) -> list[dict[str, str]]:
     """

@@ -14,12 +14,12 @@ All tools are async functions that accept a GitLabClient and return formatted da
 """
 
 import base64
-from typing import Any, Optional, Union
+from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
 
-async def get_repository(client: GitLabClient, project_id: Union[str, int]) -> dict[str, Any]:
+async def get_repository(client: GitLabClient, project_id: str | int) -> dict[str, Any]:
     """
     Get repository/project details and metadata.
 
@@ -83,8 +83,8 @@ async def get_repository(client: GitLabClient, project_id: Union[str, int]) -> d
 
 async def list_branches(
     client: GitLabClient,
-    project_id: Union[str, int],
-    search: Optional[str] = None,
+    project_id: str | int,
+    search: str | None = None,
     page: int = 1,
     per_page: int = 20,
 ) -> dict[str, Any]:
@@ -156,7 +156,7 @@ async def list_branches(
 
 
 async def get_branch(
-    client: GitLabClient, project_id: Union[str, int], branch_name: str
+    client: GitLabClient, project_id: str | int, branch_name: str
 ) -> dict[str, Any]:
     """
     Get detailed information about a specific branch.
@@ -231,9 +231,9 @@ async def get_branch(
 
 async def get_file_contents(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     file_path: str,
-    ref: Optional[str] = None,
+    ref: str | None = None,
 ) -> dict[str, Any]:
     """
     Get the contents of a file from a repository.
@@ -299,9 +299,9 @@ async def get_file_contents(
 
 async def list_repository_tree(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     path: str = "",
-    ref: Optional[str] = None,
+    ref: str | None = None,
     recursive: bool = False,
     page: int = 1,
     per_page: int = 20,
@@ -362,7 +362,7 @@ async def list_repository_tree(
 
 
 async def get_commit(
-    client: GitLabClient, project_id: Union[str, int], commit_sha: str
+    client: GitLabClient, project_id: str | int, commit_sha: str
 ) -> dict[str, Any]:
     """
     Get details of a specific commit.
@@ -412,11 +412,11 @@ async def get_commit(
 
 async def list_commits(
     client: GitLabClient,
-    project_id: Union[str, int],
-    ref: Optional[str] = None,
-    since: Optional[str] = None,
-    until: Optional[str] = None,
-    path: Optional[str] = None,
+    project_id: str | int,
+    ref: str | None = None,
+    since: str | None = None,
+    until: str | None = None,
+    path: str | None = None,
     page: int = 1,
     per_page: int = 20,
 ) -> dict[str, Any]:
@@ -478,7 +478,7 @@ async def list_commits(
 
 async def compare_branches(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     from_ref: str,
     to_ref: str,
     straight: bool = False,
@@ -536,7 +536,7 @@ async def compare_branches(
 
 async def create_branch(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     branch_name: str,
     ref: str,
 ) -> dict[str, Any]:
@@ -582,7 +582,7 @@ async def create_branch(
 
 async def delete_branch(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     branch_name: str,
 ) -> dict[str, Any]:
     """
@@ -612,8 +612,8 @@ async def delete_branch(
 
 async def list_tags(
     client: GitLabClient,
-    project_id: Union[str, int],
-    search: Optional[str] = None,
+    project_id: str | int,
+    search: str | None = None,
     page: int = 1,
     per_page: int = 20,
 ) -> dict[str, Any]:
@@ -662,7 +662,7 @@ async def list_tags(
 
 async def get_tag(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     tag_name: str,
 ) -> dict[str, Any]:
     """
@@ -701,10 +701,10 @@ async def get_tag(
 
 async def create_tag(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     tag_name: str,
     ref: str,
-    message: Optional[str] = None,
+    message: str | None = None,
 ) -> dict[str, Any]:
     """
     Create a new tag.
@@ -746,7 +746,7 @@ async def create_tag(
 async def search_code(
     client: GitLabClient,
     search_term: str,
-    project_id: Optional[Union[str, int]] = None,
+    project_id: str | int | None = None,
     page: int = 1,
     per_page: int = 20,
 ) -> dict[str, Any]:
@@ -830,13 +830,13 @@ async def search_code(
 
 async def create_file(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     file_path: str,
     branch: str,
     content: str,
     commit_message: str,
-    author_email: Optional[str] = None,
-    author_name: Optional[str] = None,
+    author_email: str | None = None,
+    author_name: str | None = None,
     encoding: str = "text",
 ) -> dict[str, Any]:
     """
@@ -904,13 +904,13 @@ async def create_file(
 
 async def update_file(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     file_path: str,
     branch: str,
     content: str,
     commit_message: str,
-    author_email: Optional[str] = None,
-    author_name: Optional[str] = None,
+    author_email: str | None = None,
+    author_name: str | None = None,
     encoding: str = "text",
 ) -> dict[str, Any]:
     """
@@ -977,12 +977,12 @@ async def update_file(
 
 async def delete_file(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     file_path: str,
     branch: str,
     commit_message: str,
-    author_email: Optional[str] = None,
-    author_name: Optional[str] = None,
+    author_email: str | None = None,
+    author_name: str | None = None,
 ) -> dict[str, Any]:
     """
     Delete a file from a repository.

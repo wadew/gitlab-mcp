@@ -9,7 +9,7 @@ This module provides MCP tools for GitLab group operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
-from typing import Any, Union
+from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
@@ -38,7 +38,7 @@ async def list_groups(
 
 async def get_group(
     client: GitLabClient,
-    group_id: Union[str, int],
+    group_id: str | int,
 ) -> dict[str, Any]:
     """
     Get group details.
@@ -55,7 +55,7 @@ async def get_group(
 
 async def list_group_members(
     client: GitLabClient,
-    group_id: Union[str, int],
+    group_id: str | int,
     page: int = 1,
     per_page: int = 20,
 ) -> list[dict[str, Any]]:

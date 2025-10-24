@@ -8,7 +8,7 @@ This module provides a wrapper around the python-gitlab library, handling:
 - Basic GitLab API operations
 """
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from gitlab import Gitlab
 from gitlab import const as gitlab_const
@@ -56,7 +56,7 @@ class GitLabClient:
             Call authenticate() or use any method that calls _ensure_authenticated().
         """
         self.config = config
-        self._gitlab: Optional[Gitlab] = None
+        self._gitlab: Gitlab | None = None
 
     def authenticate(self) -> None:
         """
@@ -182,7 +182,7 @@ class GitLabClient:
         except Exception as e:
             raise self._convert_exception(e) from e
 
-    def get_project(self, project_id: Union[str, int]) -> dict[str, Any]:
+    def get_project(self, project_id: str | int) -> dict[str, Any]:
         """
         Get a single GitLab project by ID or path.
 
@@ -210,8 +210,8 @@ class GitLabClient:
 
     def list_branches(
         self,
-        project_id: Union[str, int],
-        search: Optional[str] = None,
+        project_id: str | int,
+        search: str | None = None,
         page: int = 1,
         per_page: int = 20,
     ) -> list[Any]:
@@ -244,7 +244,7 @@ class GitLabClient:
         except Exception as e:
             raise self._convert_exception(e) from e
 
-    def get_branch(self, project_id: Union[str, int], branch_name: str) -> Any:
+    def get_branch(self, project_id: str | int, branch_name: str) -> Any:
         """
         Get a specific branch from a repository.
 
@@ -273,7 +273,7 @@ class GitLabClient:
             raise self._convert_exception(e) from e
 
     def get_file_content(
-        self, project_id: Union[str, int], file_path: str, ref: Optional[str] = None
+        self, project_id: str | int, file_path: str, ref: str | None = None
     ) -> Any:
         """
         Get the contents of a file from a repository.
@@ -308,9 +308,9 @@ class GitLabClient:
 
     def get_repository_tree(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         path: str = "",
-        ref: Optional[str] = None,
+        ref: str | None = None,
         recursive: bool = False,
         page: int = 1,
         per_page: int = 20,
@@ -350,7 +350,7 @@ class GitLabClient:
         except Exception as e:
             raise self._convert_exception(e) from e
 
-    def get_commit(self, project_id: Union[str, int], commit_sha: str) -> Any:
+    def get_commit(self, project_id: str | int, commit_sha: str) -> Any:
         """
         Get details of a specific commit.
 
@@ -379,11 +379,11 @@ class GitLabClient:
 
     def list_commits(
         self,
-        project_id: Union[str, int],
-        ref: Optional[str] = None,
-        since: Optional[str] = None,
-        until: Optional[str] = None,
-        path: Optional[str] = None,
+        project_id: str | int,
+        ref: str | None = None,
+        since: str | None = None,
+        until: str | None = None,
+        path: str | None = None,
         page: int = 1,
         per_page: int = 20,
     ) -> list[Any]:
@@ -437,7 +437,7 @@ class GitLabClient:
 
     def compare_branches(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         from_ref: str,
         to_ref: str,
         straight: bool = False,
@@ -471,7 +471,7 @@ class GitLabClient:
 
     def create_branch(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         branch_name: str,
         ref: str,
     ) -> Any:
@@ -504,7 +504,7 @@ class GitLabClient:
 
     def delete_branch(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         branch_name: str,
     ) -> None:
         """
@@ -531,8 +531,8 @@ class GitLabClient:
 
     def list_tags(
         self,
-        project_id: Union[str, int],
-        search: Optional[str] = None,
+        project_id: str | int,
+        search: str | None = None,
         page: int = 1,
         per_page: int = 20,
     ) -> list[Any]:
@@ -568,7 +568,7 @@ class GitLabClient:
 
     def get_tag(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         tag_name: str,
     ) -> Any:
         """
@@ -598,10 +598,10 @@ class GitLabClient:
 
     def create_tag(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         tag_name: str,
         ref: str,
-        message: Optional[str] = None,
+        message: str | None = None,
     ) -> Any:
         """
         Create a new tag.
@@ -636,7 +636,7 @@ class GitLabClient:
 
     def list_projects(
         self,
-        visibility: Optional[str] = None,
+        visibility: str | None = None,
         page: int = 1,
         per_page: int = 20,
     ) -> dict[str, Any]:
@@ -697,7 +697,7 @@ class GitLabClient:
     def search_code(
         self,
         search_term: str,
-        project_id: Optional[Union[str, int]] = None,
+        project_id: str | int | None = None,
         page: int = 1,
         per_page: int = 20,
     ) -> list[dict[str, Any]]:
@@ -833,7 +833,7 @@ class GitLabClient:
 
     def list_project_members(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         page: int = 1,
         per_page: int = 20,
     ) -> list[dict[str, Any]]:
@@ -910,7 +910,7 @@ class GitLabClient:
 
     def get_project_statistics(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
     ) -> dict[str, Any]:
         """
         Get project statistics including storage, commits, and activity metrics.
@@ -984,8 +984,8 @@ class GitLabClient:
 
     def list_milestones(
         self,
-        project_id: Union[str, int],
-        state: Optional[str] = None,
+        project_id: str | int,
+        state: str | None = None,
         page: int = 1,
         per_page: int = 20,
     ) -> list[dict[str, Any]]:
@@ -1068,7 +1068,7 @@ class GitLabClient:
 
     def get_milestone(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         milestone_id: int,
     ) -> dict[str, Any]:
         """
@@ -1138,11 +1138,11 @@ class GitLabClient:
 
     def create_milestone(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         title: str,
-        description: Optional[str] = None,
-        due_date: Optional[str] = None,
-        start_date: Optional[str] = None,
+        description: str | None = None,
+        due_date: str | None = None,
+        start_date: str | None = None,
     ) -> dict[str, Any]:
         """
         Create a new milestone in a project.
@@ -1227,13 +1227,13 @@ class GitLabClient:
 
     def update_milestone(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         milestone_id: int,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        due_date: Optional[str] = None,
-        start_date: Optional[str] = None,
-        state: Optional[str] = None,
+        title: str | None = None,
+        description: str | None = None,
+        due_date: str | None = None,
+        start_date: str | None = None,
+        state: str | None = None,
     ) -> dict[str, Any]:
         """
         Update an existing milestone.
@@ -1330,8 +1330,8 @@ class GitLabClient:
 
     def list_labels(
         self,
-        project_id: Union[str, int],
-        search: Optional[str] = None,
+        project_id: str | int,
+        search: str | None = None,
     ) -> list[dict[str, Any]]:
         """
         List labels for a project.
@@ -1402,11 +1402,11 @@ class GitLabClient:
 
     def create_label(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         name: str,
         color: str,
-        description: Optional[str] = None,
-        priority: Optional[int] = None,
+        description: str | None = None,
+        priority: int | None = None,
     ) -> dict[str, Any]:
         """
         Create a new label in a project.
@@ -1492,12 +1492,12 @@ class GitLabClient:
 
     def update_label(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         label_id: int,
-        new_name: Optional[str] = None,
-        color: Optional[str] = None,
-        description: Optional[str] = None,
-        priority: Optional[int] = None,
+        new_name: str | None = None,
+        color: str | None = None,
+        description: str | None = None,
+        priority: int | None = None,
     ) -> dict[str, Any]:
         """
         Update an existing label.
@@ -1586,7 +1586,7 @@ class GitLabClient:
 
     def delete_label(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         label_id: int,
     ) -> None:
         """
@@ -1635,9 +1635,9 @@ class GitLabClient:
 
     def list_wiki_pages(
         self,
-        project_id: Union[str, int],
-        page: Optional[int] = None,
-        per_page: Optional[int] = None,
+        project_id: str | int,
+        page: int | None = None,
+        per_page: int | None = None,
     ) -> list[dict[str, Any]]:
         """
         List wiki pages for a project.
@@ -1693,7 +1693,7 @@ class GitLabClient:
 
     def get_wiki_page(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         slug: str,
     ) -> dict[str, Any]:
         """
@@ -1750,10 +1750,10 @@ class GitLabClient:
 
     def create_wiki_page(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         title: str,
         content: str,
-        format: Optional[str] = None,
+        format: str | None = None,
     ) -> dict[str, Any]:
         """
         Create a new wiki page.
@@ -1822,11 +1822,11 @@ class GitLabClient:
 
     def update_wiki_page(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         slug: str,
-        title: Optional[str] = None,
-        content: Optional[str] = None,
-        format: Optional[str] = None,
+        title: str | None = None,
+        content: str | None = None,
+        format: str | None = None,
     ) -> dict[str, Any]:
         """
         Update an existing wiki page.
@@ -1895,7 +1895,7 @@ class GitLabClient:
 
     def delete_wiki_page(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         slug: str,
     ) -> None:
         """
@@ -1941,7 +1941,7 @@ class GitLabClient:
 
     def list_snippets(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         page: int = 1,
         per_page: int = 20,
     ) -> list[dict]:
@@ -2000,7 +2000,7 @@ class GitLabClient:
 
     def get_snippet(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         snippet_id: int,
     ) -> dict:
         """
@@ -2047,12 +2047,12 @@ class GitLabClient:
 
     def create_snippet(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         title: str,
         file_name: str,
         content: str,
-        description: Optional[str] = None,
-        visibility: Optional[str] = None,
+        description: str | None = None,
+        visibility: str | None = None,
     ) -> dict:
         """
         Create a new snippet in a project.
@@ -2122,13 +2122,13 @@ class GitLabClient:
 
     def update_snippet(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         snippet_id: int,
-        title: Optional[str] = None,
-        file_name: Optional[str] = None,
-        content: Optional[str] = None,
-        description: Optional[str] = None,
-        visibility: Optional[str] = None,
+        title: str | None = None,
+        file_name: str | None = None,
+        content: str | None = None,
+        description: str | None = None,
+        visibility: str | None = None,
     ) -> dict:
         """
         Update an existing snippet.
@@ -2196,7 +2196,7 @@ class GitLabClient:
 
     def delete_snippet(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         snippet_id: int,
     ) -> None:
         """
@@ -2238,10 +2238,10 @@ class GitLabClient:
 
     def list_issues(
         self,
-        project_id: Union[str, int],
-        state: Optional[str] = None,
-        labels: Optional[list[str]] = None,
-        milestone: Optional[str] = None,
+        project_id: str | int,
+        state: str | None = None,
+        labels: list[str] | None = None,
+        milestone: str | None = None,
         page: int = 1,
         per_page: int = 20,
     ) -> list[Any]:
@@ -2305,7 +2305,7 @@ class GitLabClient:
 
     def get_issue(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         issue_iid: int,
     ) -> Any:
         """
@@ -2352,12 +2352,12 @@ class GitLabClient:
 
     def create_issue(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         title: str,
-        description: Optional[str] = None,
-        labels: Optional[list[str]] = None,
-        assignee_ids: Optional[list[int]] = None,
-        milestone_id: Optional[int] = None,
+        description: str | None = None,
+        labels: list[str] | None = None,
+        assignee_ids: list[int] | None = None,
+        milestone_id: int | None = None,
     ) -> Any:
         """
         Create a new issue in a project.
@@ -2426,13 +2426,13 @@ class GitLabClient:
 
     def update_issue(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         issue_iid: int,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        labels: Optional[list[str]] = None,
-        assignee_ids: Optional[list[int]] = None,
-        milestone_id: Optional[int] = None,
+        title: str | None = None,
+        description: str | None = None,
+        labels: list[str] | None = None,
+        assignee_ids: list[int] | None = None,
+        milestone_id: int | None = None,
     ) -> Any:
         """
         Update an existing issue.
@@ -2505,7 +2505,7 @@ class GitLabClient:
 
     def close_issue(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         issue_iid: int,
     ) -> Any:
         """
@@ -2556,7 +2556,7 @@ class GitLabClient:
 
     def reopen_issue(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         issue_iid: int,
     ) -> Any:
         """
@@ -2607,7 +2607,7 @@ class GitLabClient:
 
     def add_issue_comment(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         issue_iid: int,
         body: str,
     ) -> Any:
@@ -2666,7 +2666,7 @@ class GitLabClient:
 
     def list_issue_comments(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         issue_iid: int,
         page: int = 1,
         per_page: int = 20,
@@ -2723,13 +2723,13 @@ class GitLabClient:
 
     def create_file(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         file_path: str,
         branch: str,
         content: str,
         commit_message: str,
-        author_email: Optional[str] = None,
-        author_name: Optional[str] = None,
+        author_email: str | None = None,
+        author_name: str | None = None,
         encoding: str = "text",
     ) -> Any:
         """
@@ -2800,13 +2800,13 @@ class GitLabClient:
 
     def update_file(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         file_path: str,
         branch: str,
         content: str,
         commit_message: str,
-        author_email: Optional[str] = None,
-        author_name: Optional[str] = None,
+        author_email: str | None = None,
+        author_name: str | None = None,
         encoding: str = "text",
     ) -> Any:
         """
@@ -2882,12 +2882,12 @@ class GitLabClient:
 
     def delete_file(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         file_path: str,
         branch: str,
         commit_message: str,
-        author_email: Optional[str] = None,
-        author_name: Optional[str] = None,
+        author_email: str | None = None,
+        author_name: str | None = None,
     ) -> None:
         """
         Delete a file from a repository.
@@ -2951,8 +2951,8 @@ class GitLabClient:
 
     def list_merge_requests(
         self,
-        project_id: Union[str, int],
-        state: Optional[str] = None,
+        project_id: str | int,
+        state: str | None = None,
         page: int = 1,
         per_page: int = 20,
     ) -> list[dict[str, Any]]:
@@ -3009,7 +3009,7 @@ class GitLabClient:
 
     def get_merge_request(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         mr_iid: int,
     ) -> Any:
         """
@@ -3062,12 +3062,12 @@ class GitLabClient:
 
     def create_merge_request(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         source_branch: str,
         target_branch: str,
         title: str,
-        description: Optional[str] = None,
-        assignee_ids: Optional[list[int]] = None,
+        description: str | None = None,
+        assignee_ids: list[int] | None = None,
     ) -> Any:
         """
         Create a new merge request.
@@ -3143,12 +3143,12 @@ class GitLabClient:
 
     def update_merge_request(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         mr_iid: int,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        labels: Optional[list[str]] = None,
-        assignee_ids: Optional[list[int]] = None,
+        title: str | None = None,
+        description: str | None = None,
+        labels: list[str] | None = None,
+        assignee_ids: list[int] | None = None,
     ) -> Any:
         """
         Update an existing merge request.
@@ -3217,9 +3217,9 @@ class GitLabClient:
 
     def merge_merge_request(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         mr_iid: int,
-        merge_commit_message: Optional[str] = None,
+        merge_commit_message: str | None = None,
     ) -> Any:
         """
         Merge a merge request.
@@ -3274,7 +3274,7 @@ class GitLabClient:
 
     def close_merge_request(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         mr_iid: int,
     ) -> Any:
         """
@@ -3325,7 +3325,7 @@ class GitLabClient:
 
     def reopen_merge_request(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         mr_iid: int,
     ) -> None:
         """
@@ -3374,7 +3374,7 @@ class GitLabClient:
 
     def add_mr_comment(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         mr_iid: int,
         body: str,
     ) -> Any:
@@ -3433,7 +3433,7 @@ class GitLabClient:
 
     def list_mr_comments(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         mr_iid: int,
         page: int = 1,
         per_page: int = 20,
@@ -3486,7 +3486,7 @@ class GitLabClient:
 
     def approve_merge_request(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         mr_iid: int,
     ) -> Any:
         """
@@ -3534,7 +3534,7 @@ class GitLabClient:
 
     def unapprove_merge_request(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         mr_iid: int,
     ) -> None:
         """
@@ -3580,7 +3580,7 @@ class GitLabClient:
 
     def get_merge_request_changes(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         merge_request_iid: int,
     ) -> dict[str, Any]:
         """
@@ -3636,7 +3636,7 @@ class GitLabClient:
 
     def get_merge_request_commits(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         merge_request_iid: int,
     ) -> list[dict[str, Any]]:
         """
@@ -3700,7 +3700,7 @@ class GitLabClient:
 
     def get_merge_request_pipelines(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         merge_request_iid: int,
     ) -> list[dict[str, Any]]:
         """
@@ -3763,11 +3763,11 @@ class GitLabClient:
 
     def list_pipelines(
         self,
-        project_id: Union[int, str],
+        project_id: int | str,
         page: int = 1,
         per_page: int = 20,
-        ref: Optional[str] = None,
-        status: Optional[str] = None,
+        ref: str | None = None,
+        status: str | None = None,
     ) -> dict:
         """
         List pipelines for a project.
@@ -3839,7 +3839,7 @@ class GitLabClient:
 
     def get_pipeline(
         self,
-        project_id: Union[int, str],
+        project_id: int | str,
         pipeline_id: int,
     ) -> dict:
         """
@@ -3890,9 +3890,9 @@ class GitLabClient:
 
     def create_pipeline(
         self,
-        project_id: Union[int, str],
+        project_id: int | str,
         ref: str,
-        variables: Optional[dict] = None,
+        variables: dict | None = None,
     ) -> dict:
         """
         Create (trigger) a new pipeline for a ref.
@@ -3945,7 +3945,7 @@ class GitLabClient:
 
     def retry_pipeline(
         self,
-        project_id: Union[int, str],
+        project_id: int | str,
         pipeline_id: int,
     ) -> dict:
         """
@@ -3995,7 +3995,7 @@ class GitLabClient:
 
     def cancel_pipeline(
         self,
-        project_id: Union[int, str],
+        project_id: int | str,
         pipeline_id: int,
     ) -> dict:
         """
@@ -4045,7 +4045,7 @@ class GitLabClient:
 
     def delete_pipeline(
         self,
-        project_id: Union[int, str],
+        project_id: int | str,
         pipeline_id: int,
     ) -> dict:
         """
@@ -4095,7 +4095,7 @@ class GitLabClient:
 
     def list_pipeline_jobs(
         self,
-        project_id: Union[int, str],
+        project_id: int | str,
         pipeline_id: int,
         page: int = 1,
         per_page: int = 20,
@@ -4158,7 +4158,7 @@ class GitLabClient:
 
     def get_job(
         self,
-        project_id: Union[int, str],
+        project_id: int | str,
         job_id: int,
     ) -> dict:
         """
@@ -4208,8 +4208,9 @@ class GitLabClient:
 
     def get_job_trace(
         self,
-        project_id: Union[int, str],
+        project_id: int | str,
         job_id: int,
+        tail_lines: int | None = None,
     ) -> dict:
         """
         Get the execution log/trace of a job.
@@ -4217,12 +4218,18 @@ class GitLabClient:
         Args:
             project_id: Project ID or path (e.g., "group/project")
             job_id: Job ID
+            tail_lines: Optional number of lines to return from the end of the log.
+                       Useful for large logs to get only the most recent output (where errors typically are).
+                       If None, returns the full log. Recommended: 500-1000 for error analysis.
 
         Returns:
             Job trace details:
             {
                 "job_id": 1,
-                "trace": "Building project...\\nTests passed!\\n"
+                "trace": "Building project...\\nTests passed!\\n",
+                "truncated": false,
+                "total_lines": 1234,
+                "returned_lines": 1234
             }
 
         Raises:
@@ -4245,9 +4252,25 @@ class GitLabClient:
             else:
                 trace_str = str(trace) if trace else ""
 
+            # Calculate line counts
+            lines = trace_str.splitlines(keepends=True) if trace_str else []
+            total_lines = len(lines)
+
+            # Apply tail if requested
+            truncated = False
+            if tail_lines is not None and tail_lines > 0 and total_lines > tail_lines:
+                lines = lines[-tail_lines:]
+                trace_str = "".join(lines)
+                truncated = True
+
+            returned_lines = len(lines)
+
             return {
                 "job_id": job_id,
                 "trace": trace_str,
+                "truncated": truncated,
+                "total_lines": total_lines,
+                "returned_lines": returned_lines,
             }
 
         except GitlabGetError as e:
@@ -4259,7 +4282,7 @@ class GitLabClient:
         except Exception as e:
             raise self._convert_exception(e) from e
 
-    def retry_job(self, project_id: Union[str, int], job_id: int) -> dict[str, Union[str, int]]:
+    def retry_job(self, project_id: str | int, job_id: int) -> dict[str, str | int]:
         """
         Retry a failed job.
 
@@ -4305,7 +4328,7 @@ class GitLabClient:
         except Exception as e:
             raise self._convert_exception(e) from e
 
-    def cancel_job(self, project_id: Union[str, int], job_id: int) -> dict[str, Union[str, int]]:
+    def cancel_job(self, project_id: str | int, job_id: int) -> dict[str, str | int]:
         """
         Cancel a running job.
 
@@ -4351,7 +4374,7 @@ class GitLabClient:
         except Exception as e:
             raise self._convert_exception(e) from e
 
-    def play_job(self, project_id: Union[str, int], job_id: int) -> dict[str, Union[str, int]]:
+    def play_job(self, project_id: str | int, job_id: int) -> dict[str, str | int]:
         """
         Start a manual job.
 
@@ -4398,8 +4421,8 @@ class GitLabClient:
             raise self._convert_exception(e) from e
 
     def download_job_artifacts(
-        self, project_id: Union[str, int], job_id: int
-    ) -> dict[str, Union[int, bytes]]:
+        self, project_id: str | int, job_id: int
+    ) -> dict[str, int | bytes]:
         """
         Download job artifacts.
 
@@ -4450,7 +4473,7 @@ class GitLabClient:
             raise self._convert_exception(e) from e
 
     def list_pipeline_variables(
-        self, project_id: Union[str, int], pipeline_id: int
+        self, project_id: str | int, pipeline_id: int
     ) -> list[dict[str, str]]:
         """
         List variables for a pipeline.
@@ -4539,7 +4562,7 @@ class GitLabClient:
 
     def list_releases(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         page: int = 1,
         per_page: int = 20,
     ) -> list[dict[str, Any]]:
@@ -4601,7 +4624,7 @@ class GitLabClient:
 
     def get_release(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         tag_name: str,
     ) -> dict[str, Any]:
         """
@@ -4664,11 +4687,11 @@ class GitLabClient:
 
     def create_release(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         tag_name: str,
         name: str,
-        description: Optional[str] = None,
-        ref: Optional[str] = None,
+        description: str | None = None,
+        ref: str | None = None,
     ) -> None:
         """
         Create a new release for a project.
@@ -4730,10 +4753,10 @@ class GitLabClient:
 
     def update_release(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         tag_name: str,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
+        name: str | None = None,
+        description: str | None = None,
     ) -> None:
         """
         Update an existing release.
@@ -4791,7 +4814,7 @@ class GitLabClient:
 
     def delete_release(
         self,
-        project_id: Union[str, int],
+        project_id: str | int,
         tag_name: str,
     ) -> None:
         """
@@ -5025,7 +5048,7 @@ class GitLabClient:
         except Exception as e:
             raise self._convert_exception(e) from e
 
-    def get_group(self, group_id: Union[str, int]) -> dict:
+    def get_group(self, group_id: str | int) -> dict:
         """Get group details by ID or path.
 
         Args:
@@ -5069,7 +5092,7 @@ class GitLabClient:
 
     def list_group_members(
         self,
-        group_id: Union[str, int],
+        group_id: str | int,
         page: int = 1,
         per_page: int = 20,
     ) -> list[dict]:

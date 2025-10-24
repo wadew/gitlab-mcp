@@ -9,7 +9,6 @@ This module provides:
 
 import logging
 import re
-from typing import Optional
 
 # Patterns to identify and redact sensitive data
 SENSITIVE_PATTERNS = [
@@ -29,7 +28,7 @@ SENSITIVE_PATTERNS = [
 ]
 
 
-def redact_sensitive_data(message: Optional[str]) -> str:
+def redact_sensitive_data(message: str | None) -> str:
     """Redact sensitive data from a message.
 
     Replaces tokens, passwords, and authentication credentials with [REDACTED].

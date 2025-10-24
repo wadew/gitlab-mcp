@@ -12,14 +12,14 @@ This module provides MCP tools for GitLab project management operations includin
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
 
 async def list_projects(
     client: GitLabClient,
-    visibility: Optional[str] = None,
+    visibility: str | None = None,
     page: int = 1,
     per_page: int = 20,
 ) -> dict[str, Any]:
@@ -44,7 +44,7 @@ async def list_projects(
 
 async def get_project(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
 ) -> Any:
     """
     Get detailed information about a specific project.
@@ -86,7 +86,7 @@ async def search_projects(
 
 async def list_project_members(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     page: int = 1,
     per_page: int = 20,
 ) -> list[dict[str, Any]]:
@@ -111,7 +111,7 @@ async def list_project_members(
 
 async def get_project_statistics(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
 ) -> dict[str, Any]:
     """
     Get project statistics.
@@ -128,8 +128,8 @@ async def get_project_statistics(
 
 async def list_milestones(
     client: GitLabClient,
-    project_id: Union[str, int],
-    state: Optional[str] = None,
+    project_id: str | int,
+    state: str | None = None,
     page: int = 1,
     per_page: int = 20,
 ) -> list[dict[str, Any]]:
@@ -156,7 +156,7 @@ async def list_milestones(
 
 async def get_milestone(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     milestone_id: int,
 ) -> dict[str, Any]:
     """
@@ -175,11 +175,11 @@ async def get_milestone(
 
 async def create_milestone(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     title: str,
-    description: Optional[str] = None,
-    due_date: Optional[str] = None,
-    start_date: Optional[str] = None,
+    description: str | None = None,
+    due_date: str | None = None,
+    start_date: str | None = None,
 ) -> dict[str, Any]:
     """
     Create a new milestone.
@@ -206,13 +206,13 @@ async def create_milestone(
 
 async def update_milestone(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     milestone_id: int,
-    title: Optional[str] = None,
-    description: Optional[str] = None,
-    due_date: Optional[str] = None,
-    start_date: Optional[str] = None,
-    state: Optional[str] = None,
+    title: str | None = None,
+    description: str | None = None,
+    due_date: str | None = None,
+    start_date: str | None = None,
+    state: str | None = None,
 ) -> dict[str, Any]:
     """
     Update an existing milestone.

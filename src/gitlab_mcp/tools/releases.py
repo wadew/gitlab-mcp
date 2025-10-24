@@ -11,14 +11,14 @@ This module provides MCP tools for GitLab release operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
 
 async def list_releases(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
 ) -> list[dict[str, Any]]:
     """
     List project releases.
@@ -35,7 +35,7 @@ async def list_releases(
 
 async def get_release(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     tag_name: str,
 ) -> dict[str, Any]:
     """
@@ -54,11 +54,11 @@ async def get_release(
 
 async def create_release(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     tag_name: str,
     name: str,
-    description: Optional[str] = None,
-    ref: Optional[str] = None,
+    description: str | None = None,
+    ref: str | None = None,
 ) -> None:
     """
     Create a new release.
@@ -85,10 +85,10 @@ async def create_release(
 
 async def update_release(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     tag_name: str,
-    name: Optional[str] = None,
-    description: Optional[str] = None,
+    name: str | None = None,
+    description: str | None = None,
 ) -> None:
     """
     Update an existing release.
@@ -113,7 +113,7 @@ async def update_release(
 
 async def delete_release(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     tag_name: str,
 ) -> None:
     """

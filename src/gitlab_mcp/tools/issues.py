@@ -11,17 +11,17 @@ This module provides MCP tools for GitLab issues operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
 
 async def list_issues(
     client: GitLabClient,
-    project_id: Union[str, int],
-    state: Optional[str] = None,
-    labels: Optional[list[str]] = None,
-    milestone: Optional[str] = None,
+    project_id: str | int,
+    state: str | None = None,
+    labels: list[str] | None = None,
+    milestone: str | None = None,
     page: int = 1,
     per_page: int = 20,
 ) -> dict[str, Any]:
@@ -152,7 +152,7 @@ async def list_issues(
 
 async def get_issue(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     issue_iid: int,
 ) -> dict[str, Any]:
     """
@@ -249,12 +249,12 @@ async def get_issue(
 
 async def create_issue(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     title: str,
-    description: Optional[str] = None,
-    labels: Optional[list[str]] = None,
-    assignee_ids: Optional[list[int]] = None,
-    milestone_id: Optional[int] = None,
+    description: str | None = None,
+    labels: list[str] | None = None,
+    assignee_ids: list[int] | None = None,
+    milestone_id: int | None = None,
 ) -> dict[str, Any]:
     """
     Create a new issue in a GitLab project.

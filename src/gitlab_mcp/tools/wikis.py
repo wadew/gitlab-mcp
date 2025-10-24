@@ -11,16 +11,16 @@ This module provides MCP tools for GitLab wiki operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
 
 async def list_wiki_pages(
     client: GitLabClient,
-    project_id: Union[str, int],
-    page: Optional[int] = None,
-    per_page: Optional[int] = None,
+    project_id: str | int,
+    page: int | None = None,
+    per_page: int | None = None,
 ) -> list[dict[str, Any]]:
     """
     List wiki pages for a project.
@@ -39,7 +39,7 @@ async def list_wiki_pages(
 
 async def get_wiki_page(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     slug: str,
 ) -> dict[str, Any]:
     """
@@ -58,7 +58,7 @@ async def get_wiki_page(
 
 async def create_wiki_page(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     title: str,
     content: str,
     format: str = "markdown",
@@ -86,11 +86,11 @@ async def create_wiki_page(
 
 async def update_wiki_page(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     slug: str,
-    title: Optional[str] = None,
-    content: Optional[str] = None,
-    format: Optional[str] = None,
+    title: str | None = None,
+    content: str | None = None,
+    format: str | None = None,
 ) -> dict[str, Any]:
     """
     Update an existing wiki page.
@@ -117,7 +117,7 @@ async def update_wiki_page(
 
 async def delete_wiki_page(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     slug: str,
 ) -> None:
     """

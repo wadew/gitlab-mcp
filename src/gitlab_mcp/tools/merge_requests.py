@@ -14,15 +14,15 @@ This module provides MCP tools for GitLab merge request operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
-from typing import Any, Optional, Union
+from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
 
 async def list_merge_requests(
     client: GitLabClient,
-    project_id: Union[str, int],
-    state: Optional[str] = None,
+    project_id: str | int,
+    state: str | None = None,
     page: int = 1,
     per_page: int = 20,
 ) -> list[Any]:
@@ -49,7 +49,7 @@ async def list_merge_requests(
 
 async def get_merge_request(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     mr_iid: int,
 ) -> Any:
     """
@@ -68,12 +68,12 @@ async def get_merge_request(
 
 async def create_merge_request(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     source_branch: str,
     target_branch: str,
     title: str,
-    description: Optional[str] = None,
-    assignee_ids: Optional[list[int]] = None,
+    description: str | None = None,
+    assignee_ids: list[int] | None = None,
 ) -> Any:
     """
     Create a new merge request.
@@ -102,12 +102,12 @@ async def create_merge_request(
 
 async def update_merge_request(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     mr_iid: int,
-    title: Optional[str] = None,
-    description: Optional[str] = None,
-    labels: Optional[list[str]] = None,
-    assignee_ids: Optional[list[int]] = None,
+    title: str | None = None,
+    description: str | None = None,
+    labels: list[str] | None = None,
+    assignee_ids: list[int] | None = None,
 ) -> Any:
     """
     Update an existing merge request.
@@ -136,9 +136,9 @@ async def update_merge_request(
 
 async def merge_merge_request(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     mr_iid: int,
-    merge_commit_message: Optional[str] = None,
+    merge_commit_message: str | None = None,
 ) -> Any:
     """
     Merge a merge request.
@@ -161,7 +161,7 @@ async def merge_merge_request(
 
 async def close_merge_request(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     mr_iid: int,
 ) -> Any:
     """
@@ -180,7 +180,7 @@ async def close_merge_request(
 
 async def reopen_merge_request(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     mr_iid: int,
 ) -> None:
     """
@@ -199,7 +199,7 @@ async def reopen_merge_request(
 
 async def approve_merge_request(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     mr_iid: int,
 ) -> Any:
     """
@@ -218,7 +218,7 @@ async def approve_merge_request(
 
 async def unapprove_merge_request(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     mr_iid: int,
 ) -> None:
     """
@@ -237,7 +237,7 @@ async def unapprove_merge_request(
 
 async def get_merge_request_changes(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     merge_request_iid: int,
 ) -> dict[str, Any]:
     """
@@ -258,7 +258,7 @@ async def get_merge_request_changes(
 
 async def get_merge_request_commits(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     merge_request_iid: int,
 ) -> list[dict[str, Any]]:
     """
@@ -279,7 +279,7 @@ async def get_merge_request_commits(
 
 async def get_merge_request_pipelines(
     client: GitLabClient,
-    project_id: Union[str, int],
+    project_id: str | int,
     merge_request_iid: int,
 ) -> list[dict[str, Any]]:
     """
