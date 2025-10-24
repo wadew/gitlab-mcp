@@ -13,8 +13,8 @@ from unittest.mock import MagicMock
 import pytest
 
 from gitlab_mcp import tools
-from gitlab_mcp.server import GitLabMCPServer
 from gitlab_mcp.config.settings import GitLabConfig
+from gitlab_mcp.server import GitLabMCPServer
 
 
 class TestToolsImports:

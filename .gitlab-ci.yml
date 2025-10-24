@@ -119,7 +119,7 @@ lint:mypy:
   stage: lint
   script:
     - echo "Running mypy type checker..."
-    - mypy src/gitlab_mcp/ --junit-xml=mypy-report.xml
+    - mypy src/gitlab_mcp/ --junit-xml=mypy-report.xml --exclude='.venv'
   artifacts:
     reports:
       junit: mypy-report.xml
@@ -145,13 +145,6 @@ lint:mypy:
     expire_in: 1 week
     when: always
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
-
-# Python 3.9 unit tests
-test:unit:py39:
-  extends: .test-unit-template
-  image: python:3.9
-  variables:
-    PYTHON_VERSION: "3.9"
 
 # Python 3.10 unit tests
 test:unit:py310:

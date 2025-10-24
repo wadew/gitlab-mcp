@@ -525,371 +525,1007 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
     return [
         # Context tools (1)
         ("get_current_context", "Get current GitLab user and server context information", {}),
-
         # Repository tools (6)
-        ("list_repository_tree", "List files and directories in a repository tree", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "path": {"type": "string", "description": "Path in repository (optional)"},
-            "ref": {"type": "string", "description": "Branch, tag, or commit SHA (optional, default: HEAD)"},
-            "recursive": {"type": "boolean", "description": "List recursively (optional, default: false)"},
-        }),
-        ("get_file_contents", "Get the contents of a file from a repository", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "file_path": {"type": "string", "description": "Path to file in repository"},
-            "ref": {"type": "string", "description": "Branch, tag, or commit SHA (optional, default: HEAD)"},
-        }),
-        ("search_code", "Search for code in project repositories", {
-            "search_term": {"type": "string", "description": "Search query string"},
-            "project_id": {"type": "string", "description": "Project ID or path (optional, search all accessible projects if not specified)"},
-        }),
-        ("create_file", "Create a new file in a repository with commit", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "file_path": {"type": "string", "description": "Full path for the new file (e.g., 'src/main.py')"},
-            "branch": {"type": "string", "description": "Name of the branch to create the file in"},
-            "content": {"type": "string", "description": "Content of the file (text or base64-encoded)"},
-            "commit_message": {"type": "string", "description": "Commit message for the file creation"},
-            "author_email": {"type": "string", "description": "Email of commit author (optional)"},
-            "author_name": {"type": "string", "description": "Name of commit author (optional)"},
-            "encoding": {"type": "string", "description": "Content encoding: 'text' or 'base64' (optional, default: text)"},
-        }),
-        ("update_file", "Update existing file content with commit", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "file_path": {"type": "string", "description": "Full path to the file to update"},
-            "branch": {"type": "string", "description": "Name of the branch containing the file"},
-            "content": {"type": "string", "description": "New content for the file (text or base64-encoded)"},
-            "commit_message": {"type": "string", "description": "Commit message for the file update"},
-            "author_email": {"type": "string", "description": "Email of commit author (optional)"},
-            "author_name": {"type": "string", "description": "Name of commit author (optional)"},
-            "encoding": {"type": "string", "description": "Content encoding: 'text' or 'base64' (optional, default: text)"},
-        }),
-        ("delete_file", "Delete a file from repository with commit", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "file_path": {"type": "string", "description": "Full path to the file to delete"},
-            "branch": {"type": "string", "description": "Name of the branch containing the file"},
-            "commit_message": {"type": "string", "description": "Commit message for the file deletion"},
-            "author_email": {"type": "string", "description": "Email of commit author (optional)"},
-            "author_name": {"type": "string", "description": "Name of commit author (optional)"},
-        }),
-
+        (
+            "list_repository_tree",
+            "List files and directories in a repository tree",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "path": {"type": "string", "description": "Path in repository (optional)"},
+                "ref": {
+                    "type": "string",
+                    "description": "Branch, tag, or commit SHA (optional, default: HEAD)",
+                },
+                "recursive": {
+                    "type": "boolean",
+                    "description": "List recursively (optional, default: false)",
+                },
+            },
+        ),
+        (
+            "get_file_contents",
+            "Get the contents of a file from a repository",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "file_path": {"type": "string", "description": "Path to file in repository"},
+                "ref": {
+                    "type": "string",
+                    "description": "Branch, tag, or commit SHA (optional, default: HEAD)",
+                },
+            },
+        ),
+        (
+            "search_code",
+            "Search for code in project repositories",
+            {
+                "search_term": {"type": "string", "description": "Search query string"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (optional, search all accessible projects if not specified)",
+                },
+            },
+        ),
+        (
+            "create_file",
+            "Create a new file in a repository with commit",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "file_path": {
+                    "type": "string",
+                    "description": "Full path for the new file (e.g., 'src/main.py')",
+                },
+                "branch": {
+                    "type": "string",
+                    "description": "Name of the branch to create the file in",
+                },
+                "content": {
+                    "type": "string",
+                    "description": "Content of the file (text or base64-encoded)",
+                },
+                "commit_message": {
+                    "type": "string",
+                    "description": "Commit message for the file creation",
+                },
+                "author_email": {
+                    "type": "string",
+                    "description": "Email of commit author (optional)",
+                },
+                "author_name": {
+                    "type": "string",
+                    "description": "Name of commit author (optional)",
+                },
+                "encoding": {
+                    "type": "string",
+                    "description": "Content encoding: 'text' or 'base64' (optional, default: text)",
+                },
+            },
+        ),
+        (
+            "update_file",
+            "Update existing file content with commit",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "file_path": {"type": "string", "description": "Full path to the file to update"},
+                "branch": {
+                    "type": "string",
+                    "description": "Name of the branch containing the file",
+                },
+                "content": {
+                    "type": "string",
+                    "description": "New content for the file (text or base64-encoded)",
+                },
+                "commit_message": {
+                    "type": "string",
+                    "description": "Commit message for the file update",
+                },
+                "author_email": {
+                    "type": "string",
+                    "description": "Email of commit author (optional)",
+                },
+                "author_name": {
+                    "type": "string",
+                    "description": "Name of commit author (optional)",
+                },
+                "encoding": {
+                    "type": "string",
+                    "description": "Content encoding: 'text' or 'base64' (optional, default: text)",
+                },
+            },
+        ),
+        (
+            "delete_file",
+            "Delete a file from repository with commit",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "file_path": {"type": "string", "description": "Full path to the file to delete"},
+                "branch": {
+                    "type": "string",
+                    "description": "Name of the branch containing the file",
+                },
+                "commit_message": {
+                    "type": "string",
+                    "description": "Commit message for the file deletion",
+                },
+                "author_email": {
+                    "type": "string",
+                    "description": "Email of commit author (optional)",
+                },
+                "author_name": {
+                    "type": "string",
+                    "description": "Name of commit author (optional)",
+                },
+            },
+        ),
         # Issue tools (3)
-        ("list_issues", "List issues for a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "state": {"type": "string", "description": "Filter by state: opened, closed, all (optional, default: opened)"},
-            "labels": {"type": "array", "items": {"type": "string"}, "description": "Filter by labels (optional)"},
-            "milestone": {"type": "string", "description": "Filter by milestone title (optional)"},
-            "author_id": {"type": "integer", "description": "Filter by author ID (optional)"},
-            "assignee_id": {"type": "integer", "description": "Filter by assignee ID (optional)"},
-            "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
-        }),
-        ("get_issue", "Get details of a specific issue", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
-        }),
-        ("create_issue", "Create a new issue in a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "title": {"type": "string", "description": "Issue title"},
-            "description": {"type": "string", "description": "Issue description (optional)"},
-            "labels": {"type": "array", "items": {"type": "string"}, "description": "Labels (optional)"},
-            "assignee_ids": {"type": "array", "items": {"type": "integer"}, "description": "Assignee user IDs (optional)"},
-            "milestone_id": {"type": "integer", "description": "Milestone ID (optional)"},
-        }),
-
+        (
+            "list_issues",
+            "List issues for a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "state": {
+                    "type": "string",
+                    "description": "Filter by state: opened, closed, all (optional, default: opened)",
+                },
+                "labels": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Filter by labels (optional)",
+                },
+                "milestone": {
+                    "type": "string",
+                    "description": "Filter by milestone title (optional)",
+                },
+                "author_id": {"type": "integer", "description": "Filter by author ID (optional)"},
+                "assignee_id": {
+                    "type": "integer",
+                    "description": "Filter by assignee ID (optional)",
+                },
+                "per_page": {
+                    "type": "integer",
+                    "description": "Results per page (optional, default: 20)",
+                },
+            },
+        ),
+        (
+            "get_issue",
+            "Get details of a specific issue",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+            },
+        ),
+        (
+            "create_issue",
+            "Create a new issue in a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "title": {"type": "string", "description": "Issue title"},
+                "description": {"type": "string", "description": "Issue description (optional)"},
+                "labels": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Labels (optional)",
+                },
+                "assignee_ids": {
+                    "type": "array",
+                    "items": {"type": "integer"},
+                    "description": "Assignee user IDs (optional)",
+                },
+                "milestone_id": {"type": "integer", "description": "Milestone ID (optional)"},
+            },
+        ),
         # Merge Request tools (12)
-        ("list_merge_requests", "List merge requests for a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "state": {"type": "string", "description": "Filter by state: opened, closed, merged, all (optional, default: opened)"},
-            "labels": {"type": "array", "items": {"type": "string"}, "description": "Filter by labels (optional)"},
-            "milestone": {"type": "string", "description": "Filter by milestone title (optional)"},
-            "author_id": {"type": "integer", "description": "Filter by author ID (optional)"},
-            "assignee_id": {"type": "integer", "description": "Filter by assignee ID (optional)"},
-            "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
-        }),
-        ("get_merge_request", "Get details of a specific merge request", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-        }),
-        ("create_merge_request", "Create a new merge request", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "source_branch": {"type": "string", "description": "Source branch name"},
-            "target_branch": {"type": "string", "description": "Target branch name"},
-            "title": {"type": "string", "description": "MR title"},
-            "description": {"type": "string", "description": "MR description (optional)"},
-            "labels": {"type": "array", "items": {"type": "string"}, "description": "Labels (optional)"},
-            "assignee_ids": {"type": "array", "items": {"type": "integer"}, "description": "Assignee user IDs (optional)"},
-            "milestone_id": {"type": "integer", "description": "Milestone ID (optional)"},
-        }),
-        ("update_merge_request", "Update an existing merge request", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-            "title": {"type": "string", "description": "New title (optional)"},
-            "description": {"type": "string", "description": "New description (optional)"},
-            "labels": {"type": "array", "items": {"type": "string"}, "description": "New labels (optional)"},
-            "assignee_ids": {"type": "array", "items": {"type": "integer"}, "description": "New assignee user IDs (optional)"},
-            "milestone_id": {"type": "integer", "description": "New milestone ID (optional)"},
-        }),
-        ("merge_merge_request", "Merge an approved merge request", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-            "merge_commit_message": {"type": "string", "description": "Merge commit message (optional)"},
-            "should_remove_source_branch": {"type": "boolean", "description": "Remove source branch after merge (optional)"},
-        }),
-        ("close_merge_request", "Close a merge request without merging", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-        }),
-        ("reopen_merge_request", "Reopen a closed merge request", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-        }),
-        ("approve_merge_request", "Approve a merge request", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-        }),
-        ("unapprove_merge_request", "Remove approval from a merge request", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-        }),
-        ("get_merge_request_changes", "Get the file changes in a merge request", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-        }),
-        ("get_merge_request_commits", "Get commits in a merge request", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-        }),
-        ("get_merge_request_pipelines", "Get pipelines for a merge request", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-        }),
-
+        (
+            "list_merge_requests",
+            "List merge requests for a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "state": {
+                    "type": "string",
+                    "description": "Filter by state: opened, closed, merged, all (optional, default: opened)",
+                },
+                "labels": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Filter by labels (optional)",
+                },
+                "milestone": {
+                    "type": "string",
+                    "description": "Filter by milestone title (optional)",
+                },
+                "author_id": {"type": "integer", "description": "Filter by author ID (optional)"},
+                "assignee_id": {
+                    "type": "integer",
+                    "description": "Filter by assignee ID (optional)",
+                },
+                "per_page": {
+                    "type": "integer",
+                    "description": "Results per page (optional, default: 20)",
+                },
+            },
+        ),
+        (
+            "get_merge_request",
+            "Get details of a specific merge request",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+            },
+        ),
+        (
+            "create_merge_request",
+            "Create a new merge request",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "source_branch": {"type": "string", "description": "Source branch name"},
+                "target_branch": {"type": "string", "description": "Target branch name"},
+                "title": {"type": "string", "description": "MR title"},
+                "description": {"type": "string", "description": "MR description (optional)"},
+                "labels": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Labels (optional)",
+                },
+                "assignee_ids": {
+                    "type": "array",
+                    "items": {"type": "integer"},
+                    "description": "Assignee user IDs (optional)",
+                },
+                "milestone_id": {"type": "integer", "description": "Milestone ID (optional)"},
+            },
+        ),
+        (
+            "update_merge_request",
+            "Update an existing merge request",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "title": {"type": "string", "description": "New title (optional)"},
+                "description": {"type": "string", "description": "New description (optional)"},
+                "labels": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "New labels (optional)",
+                },
+                "assignee_ids": {
+                    "type": "array",
+                    "items": {"type": "integer"},
+                    "description": "New assignee user IDs (optional)",
+                },
+                "milestone_id": {"type": "integer", "description": "New milestone ID (optional)"},
+            },
+        ),
+        (
+            "merge_merge_request",
+            "Merge an approved merge request",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "merge_commit_message": {
+                    "type": "string",
+                    "description": "Merge commit message (optional)",
+                },
+                "should_remove_source_branch": {
+                    "type": "boolean",
+                    "description": "Remove source branch after merge (optional)",
+                },
+            },
+        ),
+        (
+            "close_merge_request",
+            "Close a merge request without merging",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+            },
+        ),
+        (
+            "reopen_merge_request",
+            "Reopen a closed merge request",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+            },
+        ),
+        (
+            "approve_merge_request",
+            "Approve a merge request",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+            },
+        ),
+        (
+            "unapprove_merge_request",
+            "Remove approval from a merge request",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+            },
+        ),
+        (
+            "get_merge_request_changes",
+            "Get the file changes in a merge request",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+            },
+        ),
+        (
+            "get_merge_request_commits",
+            "Get commits in a merge request",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+            },
+        ),
+        (
+            "get_merge_request_pipelines",
+            "Get pipelines for a merge request",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+            },
+        ),
         # Pipeline tools (14)
-        ("list_pipelines", "List pipelines for a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "ref": {"type": "string", "description": "Filter by branch/tag (optional)"},
-            "status": {"type": "string", "description": "Filter by status: running, pending, success, failed, canceled (optional)"},
-            "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
-        }),
-        ("get_pipeline", "Get details of a specific pipeline", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
-        }),
-        ("create_pipeline", "Create a new pipeline", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "ref": {"type": "string", "description": "Branch or tag name"},
-            "variables": {"type": "object", "description": "Pipeline variables (optional)"},
-        }),
-        ("retry_pipeline", "Retry a failed pipeline", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
-        }),
-        ("cancel_pipeline", "Cancel a running pipeline", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
-        }),
-        ("delete_pipeline", "Delete a pipeline", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
-        }),
-        ("list_pipeline_jobs", "List jobs in a pipeline", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
-        }),
-        ("get_job", "Get details of a specific job", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "job_id": {"type": "integer", "description": "Job ID"},
-        }),
-        ("get_job_trace", "Get the trace log of a job", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "job_id": {"type": "integer", "description": "Job ID"},
-        }),
-        ("retry_job", "Retry a failed job", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "job_id": {"type": "integer", "description": "Job ID"},
-        }),
-        ("cancel_job", "Cancel a running job", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "job_id": {"type": "integer", "description": "Job ID"},
-        }),
-        ("play_job", "Play a manual job", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "job_id": {"type": "integer", "description": "Job ID"},
-        }),
-        ("download_job_artifacts", "Download artifacts from a job", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "job_id": {"type": "integer", "description": "Job ID"},
-            "artifact_path": {"type": "string", "description": "Path to specific artifact (optional, download all if not specified)"},
-        }),
-        ("list_pipeline_variables", "List variables for a pipeline", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
-        }),
-
+        (
+            "list_pipelines",
+            "List pipelines for a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "ref": {"type": "string", "description": "Filter by branch/tag (optional)"},
+                "status": {
+                    "type": "string",
+                    "description": "Filter by status: running, pending, success, failed, canceled (optional)",
+                },
+                "per_page": {
+                    "type": "integer",
+                    "description": "Results per page (optional, default: 20)",
+                },
+            },
+        ),
+        (
+            "get_pipeline",
+            "Get details of a specific pipeline",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+            },
+        ),
+        (
+            "create_pipeline",
+            "Create a new pipeline",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "ref": {"type": "string", "description": "Branch or tag name"},
+                "variables": {"type": "object", "description": "Pipeline variables (optional)"},
+            },
+        ),
+        (
+            "retry_pipeline",
+            "Retry a failed pipeline",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+            },
+        ),
+        (
+            "cancel_pipeline",
+            "Cancel a running pipeline",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+            },
+        ),
+        (
+            "delete_pipeline",
+            "Delete a pipeline",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+            },
+        ),
+        (
+            "list_pipeline_jobs",
+            "List jobs in a pipeline",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+            },
+        ),
+        (
+            "get_job",
+            "Get details of a specific job",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "job_id": {"type": "integer", "description": "Job ID"},
+            },
+        ),
+        (
+            "get_job_trace",
+            "Get the trace log of a job",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "job_id": {"type": "integer", "description": "Job ID"},
+            },
+        ),
+        (
+            "retry_job",
+            "Retry a failed job",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "job_id": {"type": "integer", "description": "Job ID"},
+            },
+        ),
+        (
+            "cancel_job",
+            "Cancel a running job",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "job_id": {"type": "integer", "description": "Job ID"},
+            },
+        ),
+        (
+            "play_job",
+            "Play a manual job",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "job_id": {"type": "integer", "description": "Job ID"},
+            },
+        ),
+        (
+            "download_job_artifacts",
+            "Download artifacts from a job",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "job_id": {"type": "integer", "description": "Job ID"},
+                "artifact_path": {
+                    "type": "string",
+                    "description": "Path to specific artifact (optional, download all if not specified)",
+                },
+            },
+        ),
+        (
+            "list_pipeline_variables",
+            "List variables for a pipeline",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+            },
+        ),
         # Project tools (9)
-        ("list_projects", "List projects accessible by the user", {
-            "visibility": {"type": "string", "description": "Filter by visibility: public, internal, private (optional)"},
-            "owned": {"type": "boolean", "description": "Limit to owned projects (optional)"},
-            "membership": {"type": "boolean", "description": "Limit to projects where user is a member (optional)"},
-            "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
-        }),
-        ("get_project", "Get details of a specific project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-        }),
-        ("search_projects", "Search for projects by name or description", {
-            "search_term": {"type": "string", "description": "Search query string"},
-        }),
-        ("list_project_members", "List members of a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-        }),
-        ("get_project_statistics", "Get statistics for a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-        }),
-        ("list_milestones", "List milestones for a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "state": {"type": "string", "description": "Filter by state: active, closed, all (optional, default: active)"},
-        }),
-        ("get_milestone", "Get details of a specific milestone", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "milestone_id": {"type": "integer", "description": "Milestone ID"},
-        }),
-        ("create_milestone", "Create a new milestone", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "title": {"type": "string", "description": "Milestone title"},
-            "description": {"type": "string", "description": "Milestone description (optional)"},
-            "due_date": {"type": "string", "description": "Due date (YYYY-MM-DD format, optional)"},
-            "start_date": {"type": "string", "description": "Start date (YYYY-MM-DD format, optional)"},
-        }),
-        ("update_milestone", "Update an existing milestone", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "milestone_id": {"type": "integer", "description": "Milestone ID"},
-            "title": {"type": "string", "description": "New title (optional)"},
-            "description": {"type": "string", "description": "New description (optional)"},
-            "due_date": {"type": "string", "description": "New due date (YYYY-MM-DD format, optional)"},
-            "start_date": {"type": "string", "description": "New start date (YYYY-MM-DD format, optional)"},
-            "state_event": {"type": "string", "description": "State event: close, activate (optional)"},
-        }),
-
+        (
+            "list_projects",
+            "List projects accessible by the user",
+            {
+                "visibility": {
+                    "type": "string",
+                    "description": "Filter by visibility: public, internal, private (optional)",
+                },
+                "owned": {"type": "boolean", "description": "Limit to owned projects (optional)"},
+                "membership": {
+                    "type": "boolean",
+                    "description": "Limit to projects where user is a member (optional)",
+                },
+                "per_page": {
+                    "type": "integer",
+                    "description": "Results per page (optional, default: 20)",
+                },
+            },
+        ),
+        (
+            "get_project",
+            "Get details of a specific project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+            },
+        ),
+        (
+            "search_projects",
+            "Search for projects by name or description",
+            {
+                "search_term": {"type": "string", "description": "Search query string"},
+            },
+        ),
+        (
+            "list_project_members",
+            "List members of a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+            },
+        ),
+        (
+            "get_project_statistics",
+            "Get statistics for a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+            },
+        ),
+        (
+            "list_milestones",
+            "List milestones for a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "state": {
+                    "type": "string",
+                    "description": "Filter by state: active, closed, all (optional, default: active)",
+                },
+            },
+        ),
+        (
+            "get_milestone",
+            "Get details of a specific milestone",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "milestone_id": {"type": "integer", "description": "Milestone ID"},
+            },
+        ),
+        (
+            "create_milestone",
+            "Create a new milestone",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "title": {"type": "string", "description": "Milestone title"},
+                "description": {
+                    "type": "string",
+                    "description": "Milestone description (optional)",
+                },
+                "due_date": {
+                    "type": "string",
+                    "description": "Due date (YYYY-MM-DD format, optional)",
+                },
+                "start_date": {
+                    "type": "string",
+                    "description": "Start date (YYYY-MM-DD format, optional)",
+                },
+            },
+        ),
+        (
+            "update_milestone",
+            "Update an existing milestone",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "milestone_id": {"type": "integer", "description": "Milestone ID"},
+                "title": {"type": "string", "description": "New title (optional)"},
+                "description": {"type": "string", "description": "New description (optional)"},
+                "due_date": {
+                    "type": "string",
+                    "description": "New due date (YYYY-MM-DD format, optional)",
+                },
+                "start_date": {
+                    "type": "string",
+                    "description": "New start date (YYYY-MM-DD format, optional)",
+                },
+                "state_event": {
+                    "type": "string",
+                    "description": "State event: close, activate (optional)",
+                },
+            },
+        ),
         # Label tools (4)
-        ("list_labels", "List labels for a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-        }),
-        ("create_label", "Create a new label", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "name": {"type": "string", "description": "Label name"},
-            "color": {"type": "string", "description": "Label color (hex format, e.g., '#FF0000')"},
-            "description": {"type": "string", "description": "Label description (optional)"},
-        }),
-        ("update_label", "Update an existing label", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "name": {"type": "string", "description": "Current label name"},
-            "new_name": {"type": "string", "description": "New label name (optional)"},
-            "color": {"type": "string", "description": "New color (hex format, optional)"},
-            "description": {"type": "string", "description": "New description (optional)"},
-        }),
-        ("delete_label", "Delete a label", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "name": {"type": "string", "description": "Label name"},
-        }),
-
+        (
+            "list_labels",
+            "List labels for a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+            },
+        ),
+        (
+            "create_label",
+            "Create a new label",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "name": {"type": "string", "description": "Label name"},
+                "color": {
+                    "type": "string",
+                    "description": "Label color (hex format, e.g., '#FF0000')",
+                },
+                "description": {"type": "string", "description": "Label description (optional)"},
+            },
+        ),
+        (
+            "update_label",
+            "Update an existing label",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "name": {"type": "string", "description": "Current label name"},
+                "new_name": {"type": "string", "description": "New label name (optional)"},
+                "color": {"type": "string", "description": "New color (hex format, optional)"},
+                "description": {"type": "string", "description": "New description (optional)"},
+            },
+        ),
+        (
+            "delete_label",
+            "Delete a label",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "name": {"type": "string", "description": "Label name"},
+            },
+        ),
         # Wiki tools (5)
-        ("list_wiki_pages", "List wiki pages for a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-        }),
-        ("get_wiki_page", "Get content of a specific wiki page", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "slug": {"type": "string", "description": "Wiki page slug (URL-friendly identifier)"},
-        }),
-        ("create_wiki_page", "Create a new wiki page", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "title": {"type": "string", "description": "Page title"},
-            "content": {"type": "string", "description": "Page content (Markdown format)"},
-        }),
-        ("update_wiki_page", "Update an existing wiki page", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "slug": {"type": "string", "description": "Wiki page slug (URL-friendly identifier)"},
-            "title": {"type": "string", "description": "New page title (optional)"},
-            "content": {"type": "string", "description": "New page content (optional)"},
-        }),
-        ("delete_wiki_page", "Delete a wiki page", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "slug": {"type": "string", "description": "Wiki page slug (URL-friendly identifier)"},
-        }),
-
+        (
+            "list_wiki_pages",
+            "List wiki pages for a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+            },
+        ),
+        (
+            "get_wiki_page",
+            "Get content of a specific wiki page",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "slug": {
+                    "type": "string",
+                    "description": "Wiki page slug (URL-friendly identifier)",
+                },
+            },
+        ),
+        (
+            "create_wiki_page",
+            "Create a new wiki page",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "title": {"type": "string", "description": "Page title"},
+                "content": {"type": "string", "description": "Page content (Markdown format)"},
+            },
+        ),
+        (
+            "update_wiki_page",
+            "Update an existing wiki page",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "slug": {
+                    "type": "string",
+                    "description": "Wiki page slug (URL-friendly identifier)",
+                },
+                "title": {"type": "string", "description": "New page title (optional)"},
+                "content": {"type": "string", "description": "New page content (optional)"},
+            },
+        ),
+        (
+            "delete_wiki_page",
+            "Delete a wiki page",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "slug": {
+                    "type": "string",
+                    "description": "Wiki page slug (URL-friendly identifier)",
+                },
+            },
+        ),
         # Snippet tools (5)
-        ("list_snippets", "List snippets for a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-        }),
-        ("get_snippet", "Get content of a specific snippet", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "snippet_id": {"type": "integer", "description": "Snippet ID"},
-        }),
-        ("create_snippet", "Create a new snippet", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "title": {"type": "string", "description": "Snippet title"},
-            "file_name": {"type": "string", "description": "File name"},
-            "content": {"type": "string", "description": "Snippet content"},
-            "visibility": {"type": "string", "description": "Visibility: private, internal, public (optional, default: private)"},
-        }),
-        ("update_snippet", "Update an existing snippet", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "snippet_id": {"type": "integer", "description": "Snippet ID"},
-            "title": {"type": "string", "description": "New title (optional)"},
-            "file_name": {"type": "string", "description": "New file name (optional)"},
-            "content": {"type": "string", "description": "New content (optional)"},
-            "visibility": {"type": "string", "description": "New visibility (optional)"},
-        }),
-        ("delete_snippet", "Delete a snippet", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "snippet_id": {"type": "integer", "description": "Snippet ID"},
-        }),
-
+        (
+            "list_snippets",
+            "List snippets for a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+            },
+        ),
+        (
+            "get_snippet",
+            "Get content of a specific snippet",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "snippet_id": {"type": "integer", "description": "Snippet ID"},
+            },
+        ),
+        (
+            "create_snippet",
+            "Create a new snippet",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "title": {"type": "string", "description": "Snippet title"},
+                "file_name": {"type": "string", "description": "File name"},
+                "content": {"type": "string", "description": "Snippet content"},
+                "visibility": {
+                    "type": "string",
+                    "description": "Visibility: private, internal, public (optional, default: private)",
+                },
+            },
+        ),
+        (
+            "update_snippet",
+            "Update an existing snippet",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "snippet_id": {"type": "integer", "description": "Snippet ID"},
+                "title": {"type": "string", "description": "New title (optional)"},
+                "file_name": {"type": "string", "description": "New file name (optional)"},
+                "content": {"type": "string", "description": "New content (optional)"},
+                "visibility": {"type": "string", "description": "New visibility (optional)"},
+            },
+        ),
+        (
+            "delete_snippet",
+            "Delete a snippet",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "snippet_id": {"type": "integer", "description": "Snippet ID"},
+            },
+        ),
         # Release tools (5)
-        ("list_releases", "List releases for a project", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-        }),
-        ("get_release", "Get details of a specific release", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "tag_name": {"type": "string", "description": "Git tag name associated with release"},
-        }),
-        ("create_release", "Create a new release", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "tag_name": {"type": "string", "description": "Git tag name"},
-            "name": {"type": "string", "description": "Release name"},
-            "description": {"type": "string", "description": "Release description (optional)"},
-            "ref": {"type": "string", "description": "Commit SHA, branch, or tag (optional, default: default branch)"},
-        }),
-        ("update_release", "Update an existing release", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "tag_name": {"type": "string", "description": "Git tag name"},
-            "name": {"type": "string", "description": "New release name (optional)"},
-            "description": {"type": "string", "description": "New release description (optional)"},
-        }),
-        ("delete_release", "Delete a release", {
-            "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-            "tag_name": {"type": "string", "description": "Git tag name"},
-        }),
-
+        (
+            "list_releases",
+            "List releases for a project",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+            },
+        ),
+        (
+            "get_release",
+            "Get details of a specific release",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "tag_name": {
+                    "type": "string",
+                    "description": "Git tag name associated with release",
+                },
+            },
+        ),
+        (
+            "create_release",
+            "Create a new release",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "tag_name": {"type": "string", "description": "Git tag name"},
+                "name": {"type": "string", "description": "Release name"},
+                "description": {"type": "string", "description": "Release description (optional)"},
+                "ref": {
+                    "type": "string",
+                    "description": "Commit SHA, branch, or tag (optional, default: default branch)",
+                },
+            },
+        ),
+        (
+            "update_release",
+            "Update an existing release",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "tag_name": {"type": "string", "description": "Git tag name"},
+                "name": {"type": "string", "description": "New release name (optional)"},
+                "description": {
+                    "type": "string",
+                    "description": "New release description (optional)",
+                },
+            },
+        ),
+        (
+            "delete_release",
+            "Delete a release",
+            {
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "tag_name": {"type": "string", "description": "Git tag name"},
+            },
+        ),
         # User tools (3)
-        ("get_user", "Get details of a specific user", {
-            "user_id": {"type": "integer", "description": "User ID"},
-        }),
-        ("search_users", "Search for users by username or email", {
-            "search": {"type": "string", "description": "Search query string"},
-        }),
-        ("list_user_projects", "List projects for a specific user", {
-            "user_id": {"type": "integer", "description": "User ID"},
-        }),
-
+        (
+            "get_user",
+            "Get details of a specific user",
+            {
+                "user_id": {"type": "integer", "description": "User ID"},
+            },
+        ),
+        (
+            "search_users",
+            "Search for users by username or email",
+            {
+                "search": {"type": "string", "description": "Search query string"},
+            },
+        ),
+        (
+            "list_user_projects",
+            "List projects for a specific user",
+            {
+                "user_id": {"type": "integer", "description": "User ID"},
+            },
+        ),
         # Group tools (3)
-        ("list_groups", "List groups accessible by the user", {
-            "owned": {"type": "boolean", "description": "Limit to owned groups (optional)"},
-            "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
-        }),
-        ("get_group", "Get details of a specific group", {
-            "group_id": {"type": "string", "description": "Group ID or path"},
-        }),
-        ("list_group_members", "List members of a group", {
-            "group_id": {"type": "string", "description": "Group ID or path"},
-        }),
+        (
+            "list_groups",
+            "List groups accessible by the user",
+            {
+                "owned": {"type": "boolean", "description": "Limit to owned groups (optional)"},
+                "per_page": {
+                    "type": "integer",
+                    "description": "Results per page (optional, default: 20)",
+                },
+            },
+        ),
+        (
+            "get_group",
+            "Get details of a specific group",
+            {
+                "group_id": {"type": "string", "description": "Group ID or path"},
+            },
+        ),
+        (
+            "list_group_members",
+            "List members of a group",
+            {
+                "group_id": {"type": "string", "description": "Group ID or path"},
+            },
+        ),
     ]
 
 
@@ -914,6 +1550,7 @@ async def async_main() -> None:
         client.authenticate()
     except Exception as e:
         import sys
+
         print(f"Failed to authenticate with GitLab: {e}", file=sys.stderr)
         sys.exit(1)
 
@@ -946,11 +1583,13 @@ async def async_main() -> None:
             if required:
                 input_schema["required"] = required
 
-            result.append(Tool(
-                name=name,
-                description=description,
-                inputSchema=input_schema,
-            ))
+            result.append(
+                Tool(
+                    name=name,
+                    description=description,
+                    inputSchema=input_schema,
+                )
+            )
 
         return result
 
@@ -971,16 +1610,11 @@ async def async_main() -> None:
 
             # Convert result to MCP response format
             import json
-            return [TextContent(
-                type="text",
-                text=json.dumps(result, indent=2)
-            )]
+
+            return [TextContent(type="text", text=json.dumps(result, indent=2))]
         except Exception as e:
             # Return error as text content
-            return [TextContent(
-                type="text",
-                text=f"Error executing {name}: {str(e)}"
-            )]
+            return [TextContent(type="text", text=f"Error executing {name}: {str(e)}")]
 
     # Run the server with stdio transport
     async with stdio_server() as (read_stream, write_stream):

@@ -8,7 +8,7 @@ These tests verify that:
 4. Error handling works correctly
 """
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -16,6 +16,7 @@ from gitlab_mcp.config.settings import GitLabConfig
 from gitlab_mcp.server import GitLabMCPServer
 
 
+@pytest.mark.e2e
 class TestToolInvocation:
     """Test tool invocation through MCP server."""
 
@@ -42,6 +43,7 @@ class TestToolInvocation:
     @pytest.mark.asyncio
     async def test_call_simple_tool_passes_arguments(self, server):
         """Test that call_tool correctly passes arguments to tool functions."""
+
         # Register a simple test tool
         async def mock_tool(arg1, arg2):
             return {"result": f"{arg1}-{arg2}"}
@@ -57,6 +59,7 @@ class TestToolInvocation:
     @pytest.mark.asyncio
     async def test_call_tool_with_no_arguments(self, server):
         """Test calling a tool with no arguments."""
+
         # Register a tool that takes no arguments
         async def mock_tool():
             return {"status": "success"}
@@ -72,6 +75,7 @@ class TestToolInvocation:
     @pytest.mark.asyncio
     async def test_call_tool_with_complex_arguments(self, server):
         """Test calling a tool with complex arguments (lists, dicts)."""
+
         # Register a tool that accepts complex types
         async def mock_tool(items, metadata):
             return {"count": len(items), "name": metadata["name"]}
@@ -100,6 +104,7 @@ class TestToolInvocation:
         assert callable(tool_info["function"])
 
 
+@pytest.mark.e2e
 class TestToolInvocationErrorHandling:
     """Test error handling during tool invocation."""
 
@@ -119,6 +124,7 @@ class TestToolInvocationErrorHandling:
     @pytest.mark.asyncio
     async def test_tool_raises_exception_propagates(self, server):
         """Test that exceptions from tools are propagated."""
+
         # Register a tool that raises an exception
         async def failing_tool():
             raise ValueError("Tool failed")
@@ -132,6 +138,7 @@ class TestToolInvocationErrorHandling:
     @pytest.mark.asyncio
     async def test_tool_with_missing_required_argument_raises_error(self, server):
         """Test that calling a tool without required arguments raises TypeError."""
+
         # Register a tool with required arguments
         async def tool_with_args(required_arg):
             return {"arg": required_arg}
@@ -145,6 +152,7 @@ class TestToolInvocationErrorHandling:
     @pytest.mark.asyncio
     async def test_tool_with_invalid_argument_type_propagates_error(self, server):
         """Test that calling a tool with invalid argument types propagates error."""
+
         # Register a tool that validates types
         async def strict_tool(number: int):
             if not isinstance(number, int):

@@ -13,7 +13,6 @@ They should be run separately from unit tests using: pytest tests/integration/ -
 """
 
 import os
-from typing import Dict
 
 import pytest
 
@@ -95,7 +94,7 @@ def gitlab_client(integration_config: GitLabConfig) -> GitLabClient:
 
 
 @pytest.fixture(scope="session")
-def test_project_info() -> Dict[str, str]:
+def test_project_info() -> dict[str, str]:
     """Provide information about the test project to use.
 
     This fixture defines which project to use for integration tests.
@@ -125,7 +124,7 @@ def test_project_info() -> Dict[str, str]:
 
 
 @pytest.fixture
-def test_project_id(test_project_info: Dict[str, str]) -> str:
+def test_project_id(test_project_info: dict[str, str]) -> str:
     """Provide the test project ID as a simple string.
 
     This is a convenience fixture that just returns the project_id string.

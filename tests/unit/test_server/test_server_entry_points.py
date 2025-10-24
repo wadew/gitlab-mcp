@@ -5,8 +5,9 @@ Tests the async_main(), main(), and _get_tool_definitions() functions.
 Following TDD: These tests are written FIRST (RED phase).
 """
 
-import pytest
 from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
 
 from gitlab_mcp.server import _get_tool_definitions, main
 
@@ -77,10 +78,18 @@ class TestToolDefinitions:
         tool_names = {name for name, _, _ in tool_defs}
 
         expected_mr_tools = {
-            "list_merge_requests", "get_merge_request", "create_merge_request",
-            "update_merge_request", "merge_merge_request", "close_merge_request",
-            "reopen_merge_request", "approve_merge_request", "unapprove_merge_request",
-            "get_merge_request_changes", "get_merge_request_commits", "get_merge_request_pipelines"
+            "list_merge_requests",
+            "get_merge_request",
+            "create_merge_request",
+            "update_merge_request",
+            "merge_merge_request",
+            "close_merge_request",
+            "reopen_merge_request",
+            "approve_merge_request",
+            "unapprove_merge_request",
+            "get_merge_request_changes",
+            "get_merge_request_commits",
+            "get_merge_request_pipelines",
         }
         assert expected_mr_tools.issubset(tool_names)
 
@@ -90,10 +99,20 @@ class TestToolDefinitions:
         tool_names = {name for name, _, _ in tool_defs}
 
         expected_pipeline_tools = {
-            "list_pipelines", "get_pipeline", "create_pipeline", "retry_pipeline",
-            "cancel_pipeline", "delete_pipeline", "list_pipeline_jobs", "get_job",
-            "get_job_trace", "retry_job", "cancel_job", "play_job",
-            "download_job_artifacts", "list_pipeline_variables"
+            "list_pipelines",
+            "get_pipeline",
+            "create_pipeline",
+            "retry_pipeline",
+            "cancel_pipeline",
+            "delete_pipeline",
+            "list_pipeline_jobs",
+            "get_job",
+            "get_job_trace",
+            "retry_job",
+            "cancel_job",
+            "play_job",
+            "download_job_artifacts",
+            "list_pipeline_variables",
         }
         assert expected_pipeline_tools.issubset(tool_names)
 
@@ -103,9 +122,15 @@ class TestToolDefinitions:
         tool_names = {name for name, _, _ in tool_defs}
 
         expected_project_tools = {
-            "list_projects", "get_project", "search_projects",
-            "list_project_members", "get_project_statistics",
-            "list_milestones", "get_milestone", "create_milestone", "update_milestone"
+            "list_projects",
+            "get_project",
+            "search_projects",
+            "list_project_members",
+            "get_project_statistics",
+            "list_milestones",
+            "get_milestone",
+            "create_milestone",
+            "update_milestone",
         }
         assert expected_project_tools.issubset(tool_names)
 
@@ -123,8 +148,11 @@ class TestToolDefinitions:
         tool_names = {name for name, _, _ in tool_defs}
 
         expected_wiki_tools = {
-            "list_wiki_pages", "get_wiki_page", "create_wiki_page",
-            "update_wiki_page", "delete_wiki_page"
+            "list_wiki_pages",
+            "get_wiki_page",
+            "create_wiki_page",
+            "update_wiki_page",
+            "delete_wiki_page",
         }
         assert expected_wiki_tools.issubset(tool_names)
 
@@ -134,8 +162,11 @@ class TestToolDefinitions:
         tool_names = {name for name, _, _ in tool_defs}
 
         expected_snippet_tools = {
-            "list_snippets", "get_snippet", "create_snippet",
-            "update_snippet", "delete_snippet"
+            "list_snippets",
+            "get_snippet",
+            "create_snippet",
+            "update_snippet",
+            "delete_snippet",
         }
         assert expected_snippet_tools.issubset(tool_names)
 
@@ -145,8 +176,11 @@ class TestToolDefinitions:
         tool_names = {name for name, _, _ in tool_defs}
 
         expected_release_tools = {
-            "list_releases", "get_release", "create_release",
-            "update_release", "delete_release"
+            "list_releases",
+            "get_release",
+            "create_release",
+            "update_release",
+            "delete_release",
         }
         assert expected_release_tools.issubset(tool_names)
 
@@ -170,16 +204,19 @@ class TestToolDefinitions:
         """Test that tool parameter schemas are valid JSON schema objects."""
         tool_defs = _get_tool_definitions()
 
-        for name, description, params_schema in tool_defs:
+        for name, _description, params_schema in tool_defs:
             # Each parameter should have type and description
             for param_name, param_def in params_schema.items():
                 assert "type" in param_def, f"Parameter {param_name} in {name} missing 'type'"
-                assert "description" in param_def, f"Parameter {param_name} in {name} missing 'description'"
+                assert (
+                    "description" in param_def
+                ), f"Parameter {param_name} in {name} missing 'description'"
 
                 # Type should be a valid JSON schema type
                 valid_types = ["string", "integer", "boolean", "array", "object", "number"]
-                assert param_def["type"] in valid_types, \
-                    f"Parameter {param_name} in {name} has invalid type: {param_def['type']}"
+                assert (
+                    param_def["type"] in valid_types
+                ), f"Parameter {param_name} in {name} has invalid type: {param_def['type']}"
 
 
 class TestMainEntryPoint:
@@ -188,8 +225,6 @@ class TestMainEntryPoint:
     @patch("gitlab_mcp.server.asyncio.run")
     def test_main_calls_asyncio_run(self, mock_asyncio_run: Mock) -> None:
         """Test that main() calls asyncio.run with async_main."""
-        from gitlab_mcp.server import async_main
-
         main()
 
         # Verify asyncio.run was called with async_main coroutine
@@ -198,7 +233,7 @@ class TestMainEntryPoint:
         call_args = mock_asyncio_run.call_args[0]
         assert len(call_args) == 1
         # Check it's a coroutine by checking if it has a cr_code attribute
-        assert hasattr(call_args[0], 'cr_code') or hasattr(call_args[0], '__await__')
+        assert hasattr(call_args[0], "cr_code") or hasattr(call_args[0], "__await__")
 
 
 class TestAsyncMainEntryPoint:
@@ -245,6 +280,7 @@ class TestAsyncMainEntryPoint:
 
         # Call async_main
         from gitlab_mcp.server import async_main
+
         await async_main()
 
         # Verify config was loaded
@@ -290,6 +326,7 @@ class TestAsyncMainEntryPoint:
 
         # Call async_main
         from gitlab_mcp.server import async_main
+
         await async_main()
 
         # Verify client was created with config
@@ -324,6 +361,7 @@ class TestAsyncMainEntryPoint:
 
         # Call async_main - it will call sys.exit(1) which will raise SystemExit
         from gitlab_mcp.server import async_main
+
         with pytest.raises(SystemExit) as exc_info:
             await async_main()
 

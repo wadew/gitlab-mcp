@@ -8,7 +8,7 @@ These tests verify that:
 4. Server can shut down gracefully
 """
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -16,6 +16,7 @@ from gitlab_mcp.config.settings import GitLabConfig
 from gitlab_mcp.server import GitLabMCPServer
 
 
+@pytest.mark.e2e
 class TestServerLifecycle:
     """Test MCP server lifecycle operations."""
 
@@ -80,6 +81,7 @@ class TestServerLifecycle:
         assert "GitLab MCP Server" in info["description"]
 
 
+@pytest.mark.e2e
 class TestServerToolRegistration:
     """Test tool registration functionality."""
 
@@ -98,6 +100,7 @@ class TestServerToolRegistration:
 
     def test_register_single_tool(self, server):
         """Test registering a single tool."""
+
         async def dummy_tool(**kwargs):
             return {"result": "success"}
 
@@ -116,6 +119,7 @@ class TestServerToolRegistration:
     @pytest.mark.asyncio
     async def test_registered_tools_are_callable(self, server):
         """Test that registered tool functions are callable."""
+
         async def dummy_tool(**kwargs):
             return {"result": "success"}
 

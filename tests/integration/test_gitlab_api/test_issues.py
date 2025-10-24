@@ -61,7 +61,9 @@ class TestIssueOperations:
         """
         # Step 1: Create an issue
         test_title = "[Integration Test] Test Issue - Please ignore"
-        test_description = "This is a test issue created by integration tests. It will be closed automatically."
+        test_description = (
+            "This is a test issue created by integration tests. It will be closed automatically."
+        )
 
         created_issue = gitlab_client.create_issue(
             project_id=test_project_id, title=test_title, description=test_description
@@ -102,7 +104,9 @@ class TestIssueOperations:
             assert updated_description in updated_issue.description
 
             # Step 4: Close the issue
-            closed_issue = gitlab_client.close_issue(project_id=test_project_id, issue_iid=issue_iid)
+            closed_issue = gitlab_client.close_issue(
+                project_id=test_project_id, issue_iid=issue_iid
+            )
 
             assert closed_issue is not None
             assert closed_issue.state == "closed"
