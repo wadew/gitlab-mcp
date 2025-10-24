@@ -1,0 +1,323 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":enablePreCommit",
+    "group:monorepos",
+    "group:recommended",
+    "workarounds:all"
+  ],
+  "description": "Renovate configuration for GitLab MCP Server - Python project with MCP SDK, GitLab client, and dev tools",
+  "timezone": "America/New_York",
+  "schedule": [
+    "after 9am and before 5pm every weekday",
+    "every weekend"
+  ],
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
+  "assignees": [
+    "@wadew"
+  ],
+  "reviewers": [
+    "@wadew"
+  ],
+  "platform": "gitlab",
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "branchConcurrentLimit": 10,
+  "automerge": false,
+  "automergeType": "pr",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Dependency Dashboard",
+  "dependencyDashboardLabels": [
+    "dependencies",
+    "renovate"
+  ],
+  "commitMessagePrefix": "chore(deps):",
+  "commitMessageAction": "update",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageExtra": "to {{#if isPinDigest}}{{{newDigestShort}}}{{else}}{{#if isMajor}}{{prettyNewMajor}}{{else}}{{#if isSingleVersion}}{{prettyNewVersion}}{{else}}{{#if newValue}}{{{newValue}}}{{else}}{{{newDigestShort}}}{{/if}}{{/if}}{{/if}}{{/if}}",
+  "commitMessageSuffix": "",
+  "semanticCommits": "enabled",
+  "commitBody": "See changes: {{{sourceUrl}}}/compare/{{{currentVersion}}}...{{{newVersion}}}",
+  "updateNotScheduled": false,
+  "gitLabAutomerge": false,
+  "platformAutomerge": false,
+  "rangeStrategy": "bump",
+  "python": {
+    "enabled": true,
+    "packageRules": [
+      {
+        "description": "Group all Python runtime dependencies together",
+        "matchManagers": [
+          "pip_requirements",
+          "pip_setup",
+          "pipenv",
+          "poetry",
+          "pep621"
+        ],
+        "matchDepTypes": [
+          "dependencies"
+        ],
+        "groupName": "Python runtime dependencies",
+        "schedule": [
+          "every weekend"
+        ],
+        "automerge": false
+      },
+      {
+        "description": "Group all Python dev dependencies together",
+        "matchManagers": [
+          "pip_requirements",
+          "pip_setup",
+          "pipenv",
+          "poetry",
+          "pep621"
+        ],
+        "matchDepTypes": [
+          "dev"
+        ],
+        "groupName": "Python dev dependencies",
+        "schedule": [
+          "every weekend"
+        ],
+        "automerge": false
+      }
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "Critical security updates - high priority",
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "matchCurrentVersion": "!/^0/",
+      "matchDatasources": [
+        "pypi"
+      ],
+      "labels": [
+        "security",
+        "priority::high"
+      ],
+      "automerge": false,
+      "schedule": [
+        "at any time"
+      ]
+    },
+    {
+      "description": "Major version updates - review carefully",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "labels": [
+        "major-update",
+        "breaking-change"
+      ],
+      "automerge": false,
+      "schedule": [
+        "every weekend"
+      ],
+      "commitMessagePrefix": "chore(deps)!:"
+    },
+    {
+      "description": "Minor and patch updates - safer",
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "labels": [
+        "minor-update"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Pin dependencies for build system",
+      "matchDepTypes": [
+        "build-system"
+      ],
+      "rangeStrategy": "pin"
+    },
+    {
+      "description": "MCP SDK - critical dependency",
+      "matchPackageNames": [
+        "mcp"
+      ],
+      "labels": [
+        "mcp",
+        "priority::high"
+      ],
+      "automerge": false,
+      "schedule": [
+        "at any time"
+      ]
+    },
+    {
+      "description": "GitLab API client - critical dependency",
+      "matchPackageNames": [
+        "python-gitlab"
+      ],
+      "labels": [
+        "gitlab-api",
+        "priority::high"
+      ],
+      "automerge": false,
+      "schedule": [
+        "at any time"
+      ]
+    },
+    {
+      "description": "Pydantic - data validation",
+      "matchPackageNames": [
+        "pydantic"
+      ],
+      "labels": [
+        "validation"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Testing frameworks",
+      "matchPackageNames": [
+        "pytest",
+        "pytest-cov",
+        "pytest-asyncio",
+        "pytest-mock"
+      ],
+      "groupName": "pytest packages",
+      "labels": [
+        "testing"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Code quality tools",
+      "matchPackageNames": [
+        "black",
+        "ruff",
+        "mypy"
+      ],
+      "groupName": "code quality tools",
+      "labels": [
+        "code-quality"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "HTTP client library",
+      "matchPackageNames": [
+        "httpx"
+      ],
+      "labels": [
+        "http-client"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Environment and configuration",
+      "matchPackageNames": [
+        "python-dotenv"
+      ],
+      "labels": [
+        "configuration"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Type stubs",
+      "matchPackageNames": [
+        "types-*"
+      ],
+      "groupName": "type stubs",
+      "labels": [
+        "type-stubs"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Require passing tests before merge",
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "requiredStatusChecks": [
+        "test",
+        "lint",
+        "type-check"
+      ]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": [
+      "security",
+      "vulnerability"
+    ],
+    "assignees": [
+      "@wadew"
+    ]
+  },
+  "lockFileMaintenance": {
+    "enabled": false,
+    "schedule": [
+      "before 6am on monday"
+    ],
+    "commitMessageAction": "Update lock file",
+    "labels": [
+      "lock-file-maintenance"
+    ]
+  },
+  "constraints": {
+    "python": ">=3.9"
+  },
+  "ignoreDeps": [],
+  "ignorePresets": [],
+  "prCreation": "immediate",
+  "prNotPendingHours": 0,
+  "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelogs}}}{{{configDescription}}}{{{controls}}}{{{footer}}}",
+  "prBodyDefinitions": {
+    "Package": "{{#if repositoryUrl}}[{{depName}}]({{repositoryUrl}}){{else}}`{{depName}}`{{/if}}",
+    "Type": "{{depType}}",
+    "Update": "{{updateType}}",
+    "Current": "`{{currentValue}}`",
+    "New": "`{{newValue}}`",
+    "References": "{{#if homepage}}[Homepage]({{homepage}}){{/if}} {{#if sourceUrl}}[Source]({{sourceUrl}}){{/if}} {{#if changelogUrl}}[Changelog]({{changelogUrl}}){{/if}}"
+  },
+  "prBodyColumns": [
+    "Package",
+    "Type",
+    "Update",
+    "Current",
+    "New",
+    "References"
+  ],
+  "prBodyNotes": [
+    "This MR has been generated by Renovate Bot.",
+    "",
+    "**Testing**: Please ensure all tests pass before merging.",
+    "**Coverage**: Verify code coverage remains ≥80%.",
+    "**Breaking Changes**: Review changelog for any breaking changes.",
+    "",
+    "See the [Renovate Dashboard]({{depDashboardLink}}) for more updates."
+  ],
+  "includeForks": false,
+  "forkProcessing": "disabled",
+  "rebaseWhen": "behind-base-branch",
+  "rebaseLabel": "rebase",
+  "stopUpdatingLabel": "renovate-stop",
+  "dryRun": null,
+  "printConfig": false,
+  "onboarding": true,
+  "requireConfig": "required",
+  "onboardingConfig": {
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+      "config:recommended"
+    ]
+  },
+  "repositories": [],
+  "platformCommit": false
+}
