@@ -5468,15 +5468,17 @@ class TestGitLabClientGetMergeRequest:
             gitlab_token="test-token-123",
         )
 
-        # Mock MR object
+        # Mock MR object with asdict() method
         mock_mr = Mock()
-        mock_mr.iid = 42
-        mock_mr.title = "Add new feature"
-        mock_mr.state = "opened"
-        mock_mr.source_branch = "feature/new-feature"
-        mock_mr.target_branch = "main"
-        mock_mr.description = "This MR adds a new feature"
-        mock_mr.author = {"id": 1, "username": "test_user"}
+        mock_mr.asdict.return_value = {
+            "iid": 42,
+            "title": "Add new feature",
+            "state": "opened",
+            "source_branch": "feature/new-feature",
+            "target_branch": "main",
+            "description": "This MR adds a new feature",
+            "author": {"id": 1, "username": "test_user"},
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -5498,9 +5500,9 @@ class TestGitLabClientGetMergeRequest:
 
             mr = client.get_merge_request(project_id=123, mr_iid=42)
 
-            assert mr.iid == 42
-            assert mr.title == "Add new feature"
-            assert mr.state == "opened"
+            assert mr["iid"] == 42
+            assert mr["title"] == "Add new feature"
+            assert mr["state"] == "opened"
             mock_mrs_manager.get.assert_called_once_with(42)
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
@@ -5860,6 +5862,10 @@ class TestGitLabClientUpdateMergeRequest:
         mock_mr.iid = 1
         mock_mr.title = "Original title"
         mock_mr.save = Mock()
+        mock_mr.asdict.return_value = {
+            "iid": 1,
+            "title": "Updated title",
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -5885,7 +5891,7 @@ class TestGitLabClientUpdateMergeRequest:
                 title="Updated title",
             )
 
-            assert result.title == "Updated title"
+            assert result["title"] == "Updated title"
             mock_mr.save.assert_called_once()
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
@@ -5901,6 +5907,10 @@ class TestGitLabClientUpdateMergeRequest:
         mock_mr.iid = 1
         mock_mr.description = "Original description"
         mock_mr.save = Mock()
+        mock_mr.asdict.return_value = {
+            "iid": 1,
+            "description": "Updated description",
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -5926,7 +5936,7 @@ class TestGitLabClientUpdateMergeRequest:
                 description="Updated description",
             )
 
-            assert result.description == "Updated description"
+            assert result["description"] == "Updated description"
             mock_mr.save.assert_called_once()
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
@@ -5942,6 +5952,10 @@ class TestGitLabClientUpdateMergeRequest:
         mock_mr.iid = 1
         mock_mr.labels = ["bug"]
         mock_mr.save = Mock()
+        mock_mr.asdict.return_value = {
+            "iid": 1,
+            "labels": ["bug", "high-priority"],
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -5967,7 +5981,7 @@ class TestGitLabClientUpdateMergeRequest:
                 labels=["bug", "high-priority"],
             )
 
-            assert result.labels == ["bug", "high-priority"]
+            assert result["labels"] == ["bug", "high-priority"]
             mock_mr.save.assert_called_once()
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
@@ -5983,6 +5997,10 @@ class TestGitLabClientUpdateMergeRequest:
         mock_mr.iid = 1
         mock_mr.assignee_ids = [10]
         mock_mr.save = Mock()
+        mock_mr.asdict.return_value = {
+            "iid": 1,
+            "assignee_ids": [10, 20],
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -6008,7 +6026,7 @@ class TestGitLabClientUpdateMergeRequest:
                 assignee_ids=[10, 20],
             )
 
-            assert result.assignee_ids == [10, 20]
+            assert result["assignee_ids"] == [10, 20]
             mock_mr.save.assert_called_once()
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
@@ -6026,6 +6044,12 @@ class TestGitLabClientUpdateMergeRequest:
         mock_mr.description = "Original description"
         mock_mr.labels = ["bug"]
         mock_mr.save = Mock()
+        mock_mr.asdict.return_value = {
+            "iid": 1,
+            "title": "Updated title",
+            "description": "Original description",
+            "labels": ["bug"],
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -6053,10 +6077,10 @@ class TestGitLabClientUpdateMergeRequest:
             )
 
             # Title should be updated
-            assert result.title == "Updated title"
+            assert result["title"] == "Updated title"
             # Description and labels should remain unchanged
-            assert result.description == "Original description"
-            assert result.labels == ["bug"]
+            assert result["description"] == "Original description"
+            assert result["labels"] == ["bug"]
             mock_mr.save.assert_called_once()
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
@@ -6112,6 +6136,10 @@ class TestGitLabClientMergeMergeRequest:
         mock_mr.iid = 1
         mock_mr.state = "merged"
         mock_mr.merge = Mock()
+        mock_mr.asdict.return_value = {
+            "iid": 1,
+            "state": "merged",
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -6136,7 +6164,7 @@ class TestGitLabClientMergeMergeRequest:
                 mr_iid=1,
             )
 
-            assert result.state == "merged"
+            assert result["state"] == "merged"
             mock_mr.merge.assert_called_once()
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
@@ -6152,6 +6180,10 @@ class TestGitLabClientMergeMergeRequest:
         mock_mr.iid = 1
         mock_mr.state = "merged"
         mock_mr.merge = Mock()
+        mock_mr.asdict.return_value = {
+            "iid": 1,
+            "state": "merged",
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -6177,7 +6209,7 @@ class TestGitLabClientMergeMergeRequest:
                 merge_commit_message="Custom merge message",
             )
 
-            assert result.state == "merged"
+            assert result["state"] == "merged"
             mock_mr.merge.assert_called_once_with(merge_commit_message="Custom merge message")
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
@@ -6309,6 +6341,11 @@ class TestGitLabClientCloseMergeRequest:
         mock_mr.state = "closed"
         mock_mr.state_event = None
         mock_mr.save = Mock()
+        mock_mr.asdict.return_value = {
+            "iid": 1,
+            "state": "closed",
+            "state_event": "close",
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -6333,7 +6370,7 @@ class TestGitLabClientCloseMergeRequest:
                 mr_iid=1,
             )
 
-            assert result.state_event == "close"
+            assert result["state_event"] == "close"
             mock_mr.save.assert_called_once()
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
@@ -6351,6 +6388,12 @@ class TestGitLabClientCloseMergeRequest:
         mock_mr.state = "closed"
         mock_mr.state_event = None
         mock_mr.save = Mock()
+        mock_mr.asdict.return_value = {
+            "iid": 1,
+            "title": "Test MR",
+            "state": "closed",
+            "state_event": "close",
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -6375,8 +6418,8 @@ class TestGitLabClientCloseMergeRequest:
                 mr_iid=1,
             )
 
-            assert result.iid == 1
-            assert result.title == "Test MR"
+            assert result["iid"] == 1
+            assert result["title"] == "Test MR"
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
     def test_close_merge_request_not_found(self, mock_gitlab_class):
