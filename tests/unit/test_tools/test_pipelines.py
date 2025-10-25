@@ -276,8 +276,33 @@ class TestListPipelineJobs:
         """Test listing jobs in a pipeline."""
         mock_client = Mock()
         mock_jobs = [
-            {"id": 1, "name": "build", "status": "success"},
-            {"id": 2, "name": "test", "status": "failed"},
+            {
+                "id": 1,
+                "name": "build",
+                "stage": "build",
+                "status": "success",
+                "ref": "main",
+                "web_url": "https://gitlab.example.com/project/jobs/1",
+                "created_at": "2024-01-01T00:00:00Z",
+                "started_at": "2024-01-01T00:01:00Z",
+                "finished_at": "2024-01-01T00:05:00Z",
+                "duration": 240.0,
+                "allow_failure": False,
+            },
+            {
+                "id": 2,
+                "name": "test",
+                "stage": "test",
+                "status": "failed",
+                "ref": "main",
+                "web_url": "https://gitlab.example.com/project/jobs/2",
+                "created_at": "2024-01-01T00:05:00Z",
+                "started_at": "2024-01-01T00:06:00Z",
+                "finished_at": "2024-01-01T00:07:00Z",
+                "duration": 60.0,
+                "allow_failure": True,
+                "failure_reason": "script_failure",
+            },
         ]
         mock_client.list_pipeline_jobs = Mock(return_value=mock_jobs)
 
@@ -288,6 +313,10 @@ class TestListPipelineJobs:
         )
         assert len(result) == 2
         assert result[0]["name"] == "build"
+        assert result[0]["stage"] == "build"
+        assert result[0]["status"] == "success"
+        assert result[1]["name"] == "test"
+        assert result[1]["failure_reason"] == "script_failure"
 
     @pytest.mark.asyncio
     async def test_list_pipeline_jobs_with_pagination(self):

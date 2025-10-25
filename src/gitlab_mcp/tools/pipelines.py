@@ -234,14 +234,36 @@ async def list_pipeline_jobs(
         per_page: Results per page
 
     Returns:
-        List of job dictionaries
+        List of job dictionaries with essential fields only
     """
-    return client.list_pipeline_jobs(
+    jobs = client.list_pipeline_jobs(
         project_id=project_id,
         pipeline_id=pipeline_id,
         page=page,
         per_page=per_page,
     )
+
+    # Filter to only essential fields to reduce token usage
+    formatted_jobs = []
+    for job in jobs:
+        formatted_jobs.append(
+            {
+                "id": job["id"],
+                "name": job["name"],
+                "stage": job["stage"],
+                "status": job["status"],
+                "ref": job["ref"],
+                "web_url": job["web_url"],
+                "created_at": job.get("created_at"),
+                "started_at": job.get("started_at"),
+                "finished_at": job.get("finished_at"),
+                "duration": job.get("duration"),
+                "allow_failure": job.get("allow_failure", False),
+                "failure_reason": job.get("failure_reason"),
+            }
+        )
+
+    return formatted_jobs
 
 
 async def get_job(
