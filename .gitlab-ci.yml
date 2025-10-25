@@ -283,7 +283,7 @@ build:package:
   stage: build
   needs:
     - job: test:unit:py311
-      artifacts: true
+      artifacts: false  # Don't need test artifacts for building
     - job: lint:ruff
       artifacts: false
     - job: lint:black
@@ -296,7 +296,8 @@ build:package:
     - python -m build
     - echo "Verifying package contents..."
     - tar -tzf dist/*.tar.gz | head -20
-    - ls -lh dist/
+    - echo "Listing package files..."
+    - ls -lh dist/ || true
   artifacts:
     paths:
       - dist/
