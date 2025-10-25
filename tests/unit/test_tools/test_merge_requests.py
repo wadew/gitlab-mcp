@@ -9,6 +9,7 @@ from unittest.mock import Mock
 import pytest
 
 from gitlab_mcp.tools.merge_requests import (
+    add_mr_comment,
     approve_merge_request,
     close_merge_request,
     create_merge_request,
@@ -17,6 +18,7 @@ from gitlab_mcp.tools.merge_requests import (
     get_merge_request_commits,
     get_merge_request_pipelines,
     list_merge_requests,
+    list_mr_comments,
     merge_merge_request,
     reopen_merge_request,
     unapprove_merge_request,
@@ -289,3 +291,125 @@ class TestGetMergeRequestPipelines:
             project_id=123, merge_request_iid=10
         )
         assert len(result) == 1
+
+
+class TestAddMrComment:
+    """Test add_mr_comment tool."""
+
+    @pytest.mark.asyncio
+    async def test_add_mr_comment_returns_formatted_result(self):
+        """Test adding a comment to a merge request returns properly formatted result."""
+        mock_note = Mock()
+        mock_note.id = 100
+        mock_note.body = "This is a test MR comment"
+        mock_note.created_at = "2025-01-15T10:00:00Z"
+        mock_note.updated_at = "2025-01-15T10:00:00Z"
+
+        mock_author = Mock()
+        mock_author.username = "reviewer1"
+        mock_author.name = "Reviewer One"
+        mock_note.author = mock_author
+
+        mock_client = Mock()
+        mock_client.add_mr_comment = Mock(return_value=mock_note)
+
+        result = await add_mr_comment(
+            mock_client, project_id=123, mr_iid=42, body="This is a test MR comment"
+        )
+
+        mock_client.add_mr_comment.assert_called_once_with(
+            project_id=123, mr_iid=42, body="This is a test MR comment"
+        )
+
+        assert result["id"] == 100
+        assert result["body"] == "This is a test MR comment"
+        assert result["author"]["username"] == "reviewer1"
+        assert result["author"]["name"] == "Reviewer One"
+        assert result["created_at"] == "2025-01-15T10:00:00Z"
+
+    @pytest.mark.asyncio
+    async def test_add_mr_comment_handles_missing_author(self):
+        """Test add_mr_comment handles missing author gracefully."""
+        mock_note = Mock(spec=["id", "body", "created_at", "updated_at"])
+        mock_note.id = 100
+        mock_note.body = "Comment without author"
+        mock_note.created_at = "2025-01-15T10:00:00Z"
+        mock_note.updated_at = "2025-01-15T10:00:00Z"
+
+        mock_client = Mock()
+        mock_client.add_mr_comment = Mock(return_value=mock_note)
+
+        result = await add_mr_comment(mock_client, project_id=123, mr_iid=42, body="Test")
+
+        assert result["author"] is None
+
+
+class TestListMrComments:
+    """Test list_mr_comments tool."""
+
+    @pytest.mark.asyncio
+    async def test_list_mr_comments_returns_formatted_results(self):
+        """Test listing MR comments returns properly formatted results."""
+        mock_note1 = Mock()
+        mock_note1.id = 100
+        mock_note1.body = "First MR comment"
+        mock_note1.created_at = "2025-01-15T10:00:00Z"
+        mock_note1.updated_at = "2025-01-15T10:00:00Z"
+        mock_author1 = Mock()
+        mock_author1.username = "reviewer1"
+        mock_author1.name = "Reviewer One"
+        mock_note1.author = mock_author1
+
+        mock_note2 = Mock()
+        mock_note2.id = 101
+        mock_note2.body = "Second MR comment"
+        mock_note2.created_at = "2025-01-15T11:00:00Z"
+        mock_note2.updated_at = "2025-01-15T11:00:00Z"
+        mock_author2 = Mock()
+        mock_author2.username = "reviewer2"
+        mock_author2.name = "Reviewer Two"
+        mock_note2.author = mock_author2
+
+        mock_client = Mock()
+        mock_client.list_mr_comments = Mock(return_value=[mock_note1, mock_note2])
+
+        result = await list_mr_comments(mock_client, project_id=123, mr_iid=42)
+
+        mock_client.list_mr_comments.assert_called_once_with(
+            project_id=123, mr_iid=42, page=1, per_page=20
+        )
+
+        assert "comments" in result
+        assert "pagination" in result
+        assert len(result["comments"]) == 2
+        assert result["comments"][0]["body"] == "First MR comment"
+        assert result["comments"][1]["author"]["username"] == "reviewer2"
+
+    @pytest.mark.asyncio
+    async def test_list_mr_comments_with_pagination(self):
+        """Test listing MR comments with pagination."""
+        mock_client = Mock()
+        mock_client.list_mr_comments = Mock(return_value=[])
+
+        await list_mr_comments(mock_client, project_id=123, mr_iid=42, page=2, per_page=50)
+
+        mock_client.list_mr_comments.assert_called_once_with(
+            project_id=123, mr_iid=42, page=2, per_page=50
+        )
+
+    @pytest.mark.asyncio
+    async def test_list_mr_comments_handles_missing_author(self):
+        """Test list_mr_comments handles comments with missing author."""
+        mock_note = Mock(spec=["id", "body", "created_at", "updated_at"])
+        mock_note.id = 100
+        mock_note.body = "Comment without author"
+        mock_note.created_at = "2025-01-15T10:00:00Z"
+        mock_note.updated_at = "2025-01-15T10:00:00Z"
+
+        mock_client = Mock()
+        mock_client.list_mr_comments = Mock(return_value=[mock_note])
+
+        result = await list_mr_comments(mock_client, project_id=123, mr_iid=42)
+
+        assert len(result["comments"]) == 1
+        assert result["comments"][0]["author"] is None

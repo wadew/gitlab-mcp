@@ -11,7 +11,15 @@ from unittest.mock import Mock
 import pytest
 
 from gitlab_mcp.client.exceptions import AuthenticationError, NotFoundError
-from gitlab_mcp.tools.issues import get_issue, list_issues
+from gitlab_mcp.tools.issues import (
+    add_issue_comment,
+    close_issue,
+    get_issue,
+    list_issue_comments,
+    list_issues,
+    reopen_issue,
+    update_issue,
+)
 
 
 class TestListIssues:
@@ -524,3 +532,312 @@ class TestCreateIssue:
 
         with pytest.raises(AuthenticationError):
             await create_issue(mock_client, project_id=123, title="Test")
+
+
+class TestUpdateIssue:
+    """Test update_issue tool."""
+
+    @pytest.mark.asyncio
+    async def test_update_issue_with_all_fields(self):
+        """Test updating issue with all fields."""
+        mock_issue = Mock()
+        mock_issue.iid = 42
+        mock_issue.title = "Updated Title"
+        mock_issue.description = "Updated description"
+        mock_issue.state = "opened"
+        mock_issue.labels = ["bug", "high-priority"]
+        mock_issue.web_url = "https://gitlab.example.com/issue/42"
+        mock_issue.created_at = "2025-01-01T00:00:00Z"
+        mock_issue.updated_at = "2025-01-15T10:00:00Z"
+        mock_issue.closed_at = None
+
+        mock_author = Mock()
+        mock_author.username = "user1"
+        mock_author.name = "User One"
+        mock_issue.author = mock_author
+
+        mock_assignee = Mock()
+        mock_assignee.username = "assignee1"
+        mock_assignee.name = "Assignee One"
+        mock_issue.assignees = [mock_assignee]
+
+        mock_milestone = Mock()
+        mock_milestone.title = "v1.0"
+        mock_milestone.web_url = "https://gitlab.example.com/milestone/1"
+        mock_issue.milestone = mock_milestone
+
+        mock_client = Mock()
+        mock_client.update_issue = Mock(return_value=mock_issue)
+
+        result = await update_issue(
+            mock_client,
+            project_id=123,
+            issue_iid=42,
+            title="Updated Title",
+            description="Updated description",
+            labels=["bug", "high-priority"],
+            assignee_ids=[10],
+            milestone_id=5,
+        )
+
+        mock_client.update_issue.assert_called_once_with(
+            project_id=123,
+            issue_iid=42,
+            title="Updated Title",
+            description="Updated description",
+            labels=["bug", "high-priority"],
+            assignee_ids=[10],
+            milestone_id=5,
+        )
+
+        assert result["iid"] == 42
+        assert result["title"] == "Updated Title"
+        assert result["description"] == "Updated description"
+        assert result["labels"] == ["bug", "high-priority"]
+        assert len(result["assignees"]) == 1
+        assert result["milestone"]["title"] == "v1.0"
+
+    @pytest.mark.asyncio
+    async def test_update_issue_handles_non_iterable_assignees(self):
+        """Test update_issue handles TypeError when assignees is not iterable."""
+        mock_issue = Mock()
+        mock_issue.iid = 42
+        mock_issue.title = "Test"
+        mock_issue.state = "opened"
+        mock_issue.web_url = "https://gitlab.example.com/issue/42"
+        mock_issue.created_at = "2025-01-01T00:00:00Z"
+        mock_issue.updated_at = "2025-01-15T10:00:00Z"
+        mock_issue.closed_at = None
+        mock_issue.description = ""
+        mock_issue.labels = []
+
+        # Make assignees raise TypeError when iterated - use an integer (truly not iterable)
+        mock_issue.assignees = 12345  # Integer is not iterable
+
+        mock_client = Mock()
+        mock_client.update_issue = Mock(return_value=mock_issue)
+
+        result = await update_issue(mock_client, project_id=123, issue_iid=42)
+
+        # Should handle TypeError gracefully and return empty assignees list
+        assert result["assignees"] == []
+
+    @pytest.mark.asyncio
+    async def test_update_issue_minimal_fields(self):
+        """Test updating issue with minimal fields."""
+        mock_issue = Mock(spec=["iid", "title", "state", "web_url", "created_at", "updated_at"])
+        mock_issue.iid = 1
+        mock_issue.title = "Test"
+        mock_issue.state = "opened"
+        mock_issue.web_url = "https://gitlab.example.com/issue/1"
+        mock_issue.created_at = "2025-01-01T00:00:00Z"
+        mock_issue.updated_at = "2025-01-02T00:00:00Z"
+
+        mock_client = Mock()
+        mock_client.update_issue = Mock(return_value=mock_issue)
+
+        result = await update_issue(mock_client, project_id=123, issue_iid=1)
+
+        assert result["description"] == ""
+        assert result["labels"] == []
+        assert result["author"] is None
+        assert result["assignees"] == []
+        assert result["milestone"] is None
+
+
+class TestCloseIssue:
+    """Test close_issue tool."""
+
+    @pytest.mark.asyncio
+    async def test_close_issue_returns_formatted_result(self):
+        """Test closing an issue returns properly formatted result."""
+        mock_issue = Mock()
+        mock_issue.iid = 42
+        mock_issue.title = "Closed Issue"
+        mock_issue.state = "closed"
+        mock_issue.web_url = "https://gitlab.example.com/issue/42"
+        mock_issue.closed_at = "2025-01-15T10:00:00Z"
+
+        mock_author = Mock()
+        mock_author.username = "user1"
+        mock_author.name = "User One"
+        mock_issue.author = mock_author
+
+        mock_assignee = Mock()
+        mock_assignee.username = "assignee1"
+        mock_assignee.name = "Assignee One"
+        mock_issue.assignees = [mock_assignee]
+
+        mock_client = Mock()
+        mock_client.close_issue = Mock(return_value=mock_issue)
+
+        result = await close_issue(mock_client, project_id=123, issue_iid=42)
+
+        mock_client.close_issue.assert_called_once_with(project_id=123, issue_iid=42)
+
+        assert result["iid"] == 42
+        assert result["state"] == "closed"
+        assert result["closed_at"] == "2025-01-15T10:00:00Z"
+        assert result["author"]["username"] == "user1"
+        assert len(result["assignees"]) == 1
+
+    @pytest.mark.asyncio
+    async def test_close_issue_handles_non_iterable_assignees(self):
+        """Test close_issue handles TypeError when assignees is not iterable."""
+        mock_issue = Mock()
+        mock_issue.iid = 42
+        mock_issue.title = "Test"
+        mock_issue.state = "closed"
+        mock_issue.web_url = "https://gitlab.example.com/issue/42"
+        mock_issue.closed_at = "2025-01-15T10:00:00Z"
+
+        # Make assignees raise TypeError when iterated - use an integer
+        mock_issue.assignees = 12345
+
+        mock_client = Mock()
+        mock_client.close_issue = Mock(return_value=mock_issue)
+
+        result = await close_issue(mock_client, project_id=123, issue_iid=42)
+
+        # Should handle TypeError gracefully
+        assert result["assignees"] == []
+
+
+class TestReopenIssue:
+    """Test reopen_issue tool."""
+
+    @pytest.mark.asyncio
+    async def test_reopen_issue_returns_formatted_result(self):
+        """Test reopening an issue returns properly formatted result."""
+        mock_issue = Mock()
+        mock_issue.iid = 42
+        mock_issue.title = "Reopened Issue"
+        mock_issue.state = "opened"
+        mock_issue.web_url = "https://gitlab.example.com/issue/42"
+
+        mock_author = Mock()
+        mock_author.username = "user1"
+        mock_author.name = "User One"
+        mock_issue.author = mock_author
+
+        mock_issue.assignees = []
+
+        mock_client = Mock()
+        mock_client.reopen_issue = Mock(return_value=mock_issue)
+
+        result = await reopen_issue(mock_client, project_id=123, issue_iid=42)
+
+        mock_client.reopen_issue.assert_called_once_with(project_id=123, issue_iid=42)
+
+        assert result["iid"] == 42
+        assert result["state"] == "opened"
+        # reopen_issue doesn't return closed_at field
+        assert "closed_at" not in result
+
+    @pytest.mark.asyncio
+    async def test_reopen_issue_handles_non_iterable_assignees(self):
+        """Test reopen_issue handles TypeError when assignees is not iterable."""
+        mock_issue = Mock()
+        mock_issue.iid = 42
+        mock_issue.title = "Test"
+        mock_issue.state = "opened"
+        mock_issue.web_url = "https://gitlab.example.com/issue/42"
+        mock_issue.closed_at = None
+
+        # Make assignees raise TypeError when iterated
+        mock_issue.assignees = 123  # Not iterable
+
+        mock_client = Mock()
+        mock_client.reopen_issue = Mock(return_value=mock_issue)
+
+        result = await reopen_issue(mock_client, project_id=123, issue_iid=42)
+
+        # Should handle TypeError gracefully
+        assert result["assignees"] == []
+
+
+class TestAddIssueComment:
+    """Test add_issue_comment tool."""
+
+    @pytest.mark.asyncio
+    async def test_add_issue_comment_returns_formatted_result(self):
+        """Test adding a comment to an issue returns properly formatted result."""
+        mock_note = Mock()
+        mock_note.id = 100
+        mock_note.body = "This is a test comment"
+        mock_note.created_at = "2025-01-15T10:00:00Z"
+        mock_note.updated_at = "2025-01-15T10:00:00Z"
+
+        mock_author = Mock()
+        mock_author.username = "commenter1"
+        mock_author.name = "Commenter One"
+        mock_note.author = mock_author
+
+        mock_client = Mock()
+        mock_client.add_issue_comment = Mock(return_value=mock_note)
+
+        result = await add_issue_comment(
+            mock_client, project_id=123, issue_iid=42, body="This is a test comment"
+        )
+
+        mock_client.add_issue_comment.assert_called_once_with(
+            project_id=123, issue_iid=42, body="This is a test comment"
+        )
+
+        assert result["id"] == 100
+        assert result["body"] == "This is a test comment"
+        assert result["author"]["username"] == "commenter1"
+
+
+class TestListIssueComments:
+    """Test list_issue_comments tool."""
+
+    @pytest.mark.asyncio
+    async def test_list_issue_comments_returns_formatted_results(self):
+        """Test listing issue comments returns properly formatted results."""
+        mock_note1 = Mock()
+        mock_note1.id = 100
+        mock_note1.body = "First comment"
+        mock_note1.created_at = "2025-01-15T10:00:00Z"
+        mock_note1.updated_at = "2025-01-15T10:00:00Z"
+        mock_author1 = Mock()
+        mock_author1.username = "user1"
+        mock_author1.name = "User One"
+        mock_note1.author = mock_author1
+
+        mock_note2 = Mock()
+        mock_note2.id = 101
+        mock_note2.body = "Second comment"
+        mock_note2.created_at = "2025-01-15T11:00:00Z"
+        mock_note2.updated_at = "2025-01-15T11:00:00Z"
+        mock_author2 = Mock()
+        mock_author2.username = "user2"
+        mock_author2.name = "User Two"
+        mock_note2.author = mock_author2
+
+        mock_client = Mock()
+        mock_client.list_issue_comments = Mock(return_value=[mock_note1, mock_note2])
+
+        result = await list_issue_comments(mock_client, project_id=123, issue_iid=42)
+
+        mock_client.list_issue_comments.assert_called_once_with(
+            project_id=123, issue_iid=42, page=1, per_page=20
+        )
+
+        assert "comments" in result
+        assert "pagination" in result
+        assert len(result["comments"]) == 2
+        assert result["comments"][0]["body"] == "First comment"
+        assert result["comments"][1]["author"]["username"] == "user2"
+
+    @pytest.mark.asyncio
+    async def test_list_issue_comments_with_pagination(self):
+        """Test listing issue comments with pagination."""
+        mock_client = Mock()
+        mock_client.list_issue_comments = Mock(return_value=[])
+
+        await list_issue_comments(mock_client, project_id=123, issue_iid=42, page=2, per_page=50)
+
+        mock_client.list_issue_comments.assert_called_once_with(
+            project_id=123, issue_iid=42, page=2, per_page=50
+        )
