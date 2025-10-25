@@ -295,9 +295,9 @@ build:package:
     - uv pip install build
     - python -m build
     - echo "Verifying package contents..."
-    - tar -tzf dist/*.tar.gz | head -20
+    - tar -tzf dist/*.tar.gz | head -20 || true
     - echo "Listing package files..."
-    - ls -lh dist/ || true
+    - ls -lh dist/
   artifacts:
     paths:
       - dist/
