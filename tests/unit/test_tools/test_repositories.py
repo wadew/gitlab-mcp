@@ -44,22 +44,23 @@ class TestGetRepository:
         """Test getting repository by numeric project ID."""
         # Mock GitLab client
         mock_client = Mock()
-        mock_project = Mock()
-        mock_project.id = 123
-        mock_project.name = "Test Project"
-        mock_project.path = "test-project"
-        mock_project.path_with_namespace = "group/test-project"
-        mock_project.description = "A test project"
-        mock_project.visibility = "private"
-        mock_project.web_url = "https://gitlab.example.com/group/test-project"
-        mock_project.default_branch = "main"
-        mock_project.created_at = "2025-01-01T00:00:00Z"
-        mock_project.last_activity_at = "2025-10-23T00:00:00Z"
-        mock_project.star_count = 5
-        mock_project.forks_count = 2
-        mock_project.open_issues_count = 3
+        project_dict = {
+            "id": 123,
+            "name": "Test Project",
+            "path": "test-project",
+            "path_with_namespace": "group/test-project",
+            "description": "A test project",
+            "visibility": "private",
+            "web_url": "https://gitlab.example.com/group/test-project",
+            "default_branch": "main",
+            "created_at": "2025-01-01T00:00:00Z",
+            "last_activity_at": "2025-10-23T00:00:00Z",
+            "star_count": 5,
+            "forks_count": 2,
+            "open_issues_count": 3,
+        }
 
-        mock_client.get_project = Mock(return_value=mock_project)
+        mock_client.get_project = Mock(return_value=project_dict)
 
         result = await get_repository(mock_client, 123)
 
@@ -77,21 +78,22 @@ class TestGetRepository:
     async def test_get_repository_by_path_returns_details(self):
         """Test getting repository by path (namespace/project)."""
         mock_client = Mock()
-        mock_project = Mock()
-        mock_project.id = 456
-        mock_project.name = "Another Project"
-        mock_project.path_with_namespace = "mygroup/myproject"
-        mock_project.description = "Another test project"
-        mock_project.visibility = "public"
-        mock_project.web_url = "https://gitlab.example.com/mygroup/myproject"
-        mock_project.default_branch = "master"
-        mock_project.created_at = "2024-01-01T00:00:00Z"
-        mock_project.last_activity_at = "2025-10-22T00:00:00Z"
-        mock_project.star_count = 10
-        mock_project.forks_count = 5
-        mock_project.open_issues_count = 7
+        project_dict = {
+            "id": 456,
+            "name": "Another Project",
+            "path_with_namespace": "mygroup/myproject",
+            "description": "Another test project",
+            "visibility": "public",
+            "web_url": "https://gitlab.example.com/mygroup/myproject",
+            "default_branch": "master",
+            "created_at": "2024-01-01T00:00:00Z",
+            "last_activity_at": "2025-10-22T00:00:00Z",
+            "star_count": 10,
+            "forks_count": 5,
+            "open_issues_count": 7,
+        }
 
-        mock_client.get_project = Mock(return_value=mock_project)
+        mock_client.get_project = Mock(return_value=project_dict)
 
         result = await get_repository(mock_client, "mygroup/myproject")
 
@@ -181,24 +183,21 @@ class TestGetRepository:
     async def test_get_repository_handles_missing_optional_fields(self):
         """Test that get_repository handles missing optional fields gracefully."""
         mock_client = Mock()
-        mock_project = Mock()
-        # Minimal required fields
-        mock_project.id = 100
-        mock_project.name = "Minimal Project"
-        mock_project.path_with_namespace = "min/project"
-        # Missing optional fields - should use getattr with defaults
-        mock_project.description = None
-        mock_project.visibility = "private"
-        mock_project.web_url = "https://gitlab.example.com/min/project"
-        mock_project.default_branch = "main"
-        mock_project.created_at = "2025-01-01T00:00:00Z"
-        mock_project.last_activity_at = "2025-01-01T00:00:00Z"
-        # These might be missing
-        delattr(mock_project, "star_count")
-        delattr(mock_project, "forks_count")
-        delattr(mock_project, "open_issues_count")
+        # Minimal required fields in dictionary format
+        project_dict = {
+            "id": 100,
+            "name": "Minimal Project",
+            "path_with_namespace": "min/project",
+            "description": None,
+            "visibility": "private",
+            "web_url": "https://gitlab.example.com/min/project",
+            "default_branch": "main",
+            "created_at": "2025-01-01T00:00:00Z",
+            "last_activity_at": "2025-01-01T00:00:00Z",
+            # Missing optional fields - dict.get() will return None
+        }
 
-        mock_client.get_project = Mock(return_value=mock_project)
+        mock_client.get_project = Mock(return_value=project_dict)
 
         result = await get_repository(mock_client, 100)
 

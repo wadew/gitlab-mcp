@@ -530,18 +530,20 @@ class TestGitLabClientGetProject:
 
         # Mock project object
         mock_project = Mock()
-        mock_project.id = 123
-        mock_project.name = "Test Project"
-        mock_project.path = "test-project"
-        mock_project.path_with_namespace = "group/test-project"
-        mock_project.description = "A test project"
-        mock_project.visibility = "private"
-        mock_project.web_url = "https://gitlab.example.com/group/test-project"
-        mock_project.default_branch = "main"
-        mock_project.created_at = "2025-01-01T00:00:00Z"
-        mock_project.last_activity_at = "2025-10-23T00:00:00Z"
-        mock_project.star_count = 5
-        mock_project.forks_count = 2
+        mock_project.asdict.return_value = {
+            "id": 123,
+            "name": "Test Project",
+            "path": "test-project",
+            "path_with_namespace": "group/test-project",
+            "description": "A test project",
+            "visibility": "private",
+            "web_url": "https://gitlab.example.com/group/test-project",
+            "default_branch": "main",
+            "created_at": "2025-01-01T00:00:00Z",
+            "last_activity_at": "2025-10-23T00:00:00Z",
+            "star_count": 5,
+            "forks_count": 2,
+        }
 
         mock_projects_manager = Mock()
         mock_projects_manager.get.return_value = mock_project
@@ -557,9 +559,9 @@ class TestGitLabClientGetProject:
         project = client.get_project(123)
 
         mock_projects_manager.get.assert_called_once_with(123)
-        assert project.id == 123
-        assert project.name == "Test Project"
-        assert project.path_with_namespace == "group/test-project"
+        assert project["id"] == 123
+        assert project["name"] == "Test Project"
+        assert project["path_with_namespace"] == "group/test-project"
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
     def test_get_project_by_path_returns_details(self, mock_gitlab_class):
@@ -570,9 +572,11 @@ class TestGitLabClientGetProject:
         )
 
         mock_project = Mock()
-        mock_project.id = 456
-        mock_project.name = "Another Project"
-        mock_project.path_with_namespace = "mygroup/myproject"
+        mock_project.asdict.return_value = {
+            "id": 456,
+            "name": "Another Project",
+            "path_with_namespace": "mygroup/myproject",
+        }
 
         mock_projects_manager = Mock()
         mock_projects_manager.get.return_value = mock_project
@@ -588,8 +592,8 @@ class TestGitLabClientGetProject:
         project = client.get_project("mygroup/myproject")
 
         mock_projects_manager.get.assert_called_once_with("mygroup/myproject")
-        assert project.id == 456
-        assert project.path_with_namespace == "mygroup/myproject"
+        assert project["id"] == 456
+        assert project["path_with_namespace"] == "mygroup/myproject"
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
     def test_get_project_not_found(self, mock_gitlab_class):
@@ -5285,18 +5289,22 @@ class TestGitLabClientListMergeRequests:
 
         # Mock MR objects
         mock_mr1 = Mock()
-        mock_mr1.iid = 1
-        mock_mr1.title = "Add new feature"
-        mock_mr1.state = "opened"
-        mock_mr1.source_branch = "feature/new-feature"
-        mock_mr1.target_branch = "main"
+        mock_mr1.asdict.return_value = {
+            "iid": 1,
+            "title": "Add new feature",
+            "state": "opened",
+            "source_branch": "feature/new-feature",
+            "target_branch": "main",
+        }
 
         mock_mr2 = Mock()
-        mock_mr2.iid = 2
-        mock_mr2.title = "Fix bug"
-        mock_mr2.state = "merged"
-        mock_mr2.source_branch = "fix/bug-123"
-        mock_mr2.target_branch = "main"
+        mock_mr2.asdict.return_value = {
+            "iid": 2,
+            "title": "Fix bug",
+            "state": "merged",
+            "source_branch": "fix/bug-123",
+            "target_branch": "main",
+        }
 
         # Mock project and MRs manager
         mock_project = Mock()
@@ -5319,10 +5327,10 @@ class TestGitLabClientListMergeRequests:
             merge_requests = client.list_merge_requests(project_id=123)
 
             assert len(merge_requests) == 2
-            assert merge_requests[0].iid == 1
-            assert merge_requests[0].title == "Add new feature"
-            assert merge_requests[1].iid == 2
-            assert merge_requests[1].title == "Fix bug"
+            assert merge_requests[0]["iid"] == 1
+            assert merge_requests[0]["title"] == "Add new feature"
+            assert merge_requests[1]["iid"] == 2
+            assert merge_requests[1]["title"] == "Fix bug"
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
     def test_list_merge_requests_with_state_filter(self, mock_gitlab_class):
@@ -5590,10 +5598,12 @@ class TestGitLabClientCreateMergeRequest:
 
         # Mock created MR
         mock_mr = Mock()
-        mock_mr.iid = 1
-        mock_mr.title = "Add new feature"
-        mock_mr.source_branch = "feature/new-feature"
-        mock_mr.target_branch = "main"
+        mock_mr.asdict.return_value = {
+            "iid": 1,
+            "title": "Add new feature",
+            "source_branch": "feature/new-feature",
+            "target_branch": "main",
+        }
 
         # Mock project and MR manager
         mock_project = Mock()
@@ -5620,8 +5630,8 @@ class TestGitLabClientCreateMergeRequest:
                 title="Add new feature",
             )
 
-            assert mr.iid == 1
-            assert mr.title == "Add new feature"
+            assert mr["iid"] == 1
+            assert mr["title"] == "Add new feature"
             mock_mrs_manager.create.assert_called_once()
             create_args = mock_mrs_manager.create.call_args[0][0]
             assert create_args["source_branch"] == "feature/new-feature"
@@ -11434,12 +11444,14 @@ class TestDeleteWikiPage:
         config = GitLabConfig(gitlab_url="https://gitlab.example.com", gitlab_token="test-token")
 
         mock_snippet = Mock()
-        mock_snippet.id = 1
-        mock_snippet.title = "Test Snippet"
-        mock_snippet.file_name = "test.py"
-        mock_snippet.description = "A test snippet"
-        mock_snippet.visibility = "private"
-        mock_snippet.content = "print('Hello World')"
+        mock_snippet.asdict.return_value = {
+            "id": 1,
+            "title": "Test Snippet",
+            "file_name": "test.py",
+            "description": "A test snippet",
+            "visibility": "private",
+            "content": "print('Hello World')",
+        }
 
         mock_project = Mock()
         mock_project.snippets.get.return_value = mock_snippet
@@ -11503,32 +11515,20 @@ class TestDeleteWikiPage:
         """Test getting snippet with all available fields."""
         config = GitLabConfig(gitlab_url="https://gitlab.example.com", gitlab_token="test-token")
 
-        mock_snippet = Mock(
-            spec=[
-                "id",
-                "title",
-                "file_name",
-                "description",
-                "visibility",
-                "author",
-                "content",
-                "created_at",
-                "updated_at",
-                "web_url",
-                "raw_url",
-            ]
-        )
-        mock_snippet.id = 1
-        mock_snippet.title = "Full Snippet"
-        mock_snippet.file_name = "full.py"
-        mock_snippet.description = "Complete snippet"
-        mock_snippet.visibility = "public"
-        mock_snippet.author = {"name": "John Doe"}
-        mock_snippet.content = "def foo(): pass"
-        mock_snippet.created_at = "2024-01-01T00:00:00Z"
-        mock_snippet.updated_at = "2024-01-02T00:00:00Z"
-        mock_snippet.web_url = "https://gitlab.example.com/snippets/1"
-        mock_snippet.raw_url = "https://gitlab.example.com/snippets/1/raw"
+        mock_snippet = Mock()
+        mock_snippet.asdict.return_value = {
+            "id": 1,
+            "title": "Full Snippet",
+            "file_name": "full.py",
+            "description": "Complete snippet",
+            "visibility": "public",
+            "author": {"name": "John Doe"},
+            "content": "def foo(): pass",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-02T00:00:00Z",
+            "web_url": "https://gitlab.example.com/snippets/1",
+            "raw_url": "https://gitlab.example.com/snippets/1/raw",
+        }
 
         mock_project = Mock()
         mock_project.snippets.get.return_value = mock_snippet
@@ -11554,10 +11554,12 @@ class TestDeleteWikiPage:
         config = GitLabConfig(gitlab_url="https://gitlab.example.com", gitlab_token="test-token")
 
         mock_snippet = Mock()
-        mock_snippet.id = 1
-        mock_snippet.title = "New Snippet"
-        mock_snippet.file_name = "test.py"
-        mock_snippet.content = "print('test')"
+        mock_snippet.asdict.return_value = {
+            "id": 1,
+            "title": "New Snippet",
+            "file_name": "test.py",
+            "content": "print('test')",
+        }
 
         mock_project = Mock()
         mock_project.snippets.create.return_value = mock_snippet
@@ -11585,7 +11587,7 @@ class TestDeleteWikiPage:
         config = GitLabConfig(gitlab_url="https://gitlab.example.com", gitlab_token="test-token")
 
         mock_snippet = Mock()
-        mock_snippet.id = 1
+        mock_snippet.asdict.return_value = {"id": 1}
 
         mock_project = Mock()
         mock_project.snippets.create.return_value = mock_snippet
@@ -11677,6 +11679,10 @@ class TestDeleteWikiPage:
         mock_snippet.id = 1
         mock_snippet.title = "Updated Snippet"
         mock_snippet.save = Mock()
+        mock_snippet.asdict.return_value = {
+            "id": 1,
+            "title": "Updated Snippet",
+        }
 
         mock_project = Mock()
         mock_project.snippets.get.return_value = mock_snippet
@@ -12100,11 +12106,11 @@ class TestReleases:
         """Test deleting a release successfully."""
         config = GitLabConfig(gitlab_url="https://gitlab.example.com", gitlab_token="test-token")
 
-        mock_release = Mock()
-        mock_release.delete = Mock()
+        mock_releases_manager = Mock()
+        mock_releases_manager.delete = Mock()
 
         mock_project = Mock()
-        mock_project.releases.get.return_value = mock_release
+        mock_project.releases = mock_releases_manager
 
         mock_gitlab_instance = Mock()
         mock_gitlab_instance.projects.get.return_value = mock_project
@@ -12116,15 +12122,18 @@ class TestReleases:
 
         client.delete_release(project_id=123, tag_name="v1.0.0")
 
-        mock_release.delete.assert_called_once()
+        mock_releases_manager.delete.assert_called_once_with("v1.0.0")
 
     @patch("gitlab_mcp.client.gitlab_client.Gitlab")
     def test_delete_release_not_found(self, mock_gitlab_class: Mock) -> None:
         """Test deleting non-existent release raises NotFoundError."""
         config = GitLabConfig(gitlab_url="https://gitlab.example.com", gitlab_token="test-token")
 
+        mock_releases_manager = Mock()
+        mock_releases_manager.delete.side_effect = GitlabGetError("Not found", response_code=404)
+
         mock_project = Mock()
-        mock_project.releases.get.side_effect = GitlabGetError("Not found", response_code=404)
+        mock_project.releases = mock_releases_manager
 
         mock_gitlab_instance = Mock()
         mock_gitlab_instance.projects.get.return_value = mock_project
