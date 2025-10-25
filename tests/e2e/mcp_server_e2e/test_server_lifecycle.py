@@ -59,8 +59,8 @@ class TestServerLifecycle:
         server.register_all_tools()
         tools = await server.list_tools()
 
-        # Should have 70 tools
-        assert len(tools) == 70
+        # Should have 87 tools (updated from 70 to include all GitLab API methods)
+        assert len(tools) == 87
 
         # Each tool should have name and description
         for tool in tools:
@@ -112,9 +112,9 @@ class TestServerToolRegistration:
         assert server._tools["test_tool"]["function"] == dummy_tool
 
     def test_register_all_tools_creates_67_tools(self, server):
-        """Test that register_all_tools creates all 70 tools."""
+        """Test that register_all_tools creates all 87 tools."""
         server.register_all_tools()
-        assert len(server._tools) == 70
+        assert len(server._tools) == 87
 
     @pytest.mark.asyncio
     async def test_registered_tools_are_callable(self, server):

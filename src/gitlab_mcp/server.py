@@ -46,11 +46,11 @@ class GitLabMCPServer:
         """
         Register all available MCP tools.
 
-        This method registers all 70 MCP tools organized by category:
+        This method registers all 87 MCP tools organized by category:
         - Context tools (1)
-        - Repository tools (6)
-        - Issue tools (3)
-        - Merge Request tools (12)
+        - Repository tools (16) - files, branches, commits, tags
+        - Issue tools (8) - list, get, create, update, close, reopen, comments
+        - Merge Request tools (14) - CRUD, approve, comments, changes, commits, pipelines
         - Pipeline tools (14)
         - Project tools (9)
         - Label tools (4)
@@ -98,6 +98,56 @@ class GitLabMCPServer:
             "Delete a file from repository with commit",
             lambda **kwargs: tools.delete_file(self.gitlab_client, **kwargs),
         )
+        self.register_tool(
+            "list_branches",
+            "List all branches in a repository",
+            lambda **kwargs: tools.list_branches(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "get_branch",
+            "Get details of a specific branch",
+            lambda **kwargs: tools.get_branch(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "create_branch",
+            "Create a new branch",
+            lambda **kwargs: tools.create_branch(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "delete_branch",
+            "Delete a branch",
+            lambda **kwargs: tools.delete_branch(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "get_commit",
+            "Get details of a specific commit",
+            lambda **kwargs: tools.get_commit(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "list_commits",
+            "List commits for a project or branch",
+            lambda **kwargs: tools.list_commits(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "compare_branches",
+            "Compare two branches, tags, or commits",
+            lambda **kwargs: tools.compare_branches(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "list_tags",
+            "List repository tags",
+            lambda **kwargs: tools.list_tags(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "get_tag",
+            "Get details of a specific tag",
+            lambda **kwargs: tools.get_tag(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "create_tag",
+            "Create a new tag",
+            lambda **kwargs: tools.create_tag(self.gitlab_client, **kwargs),
+        )
 
         # Issue tools
         self.register_tool(
@@ -114,6 +164,31 @@ class GitLabMCPServer:
             "create_issue",
             "Create a new issue in a project",
             lambda **kwargs: tools.create_issue(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "update_issue",
+            "Update an existing issue",
+            lambda **kwargs: tools.update_issue(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "close_issue",
+            "Close an issue",
+            lambda **kwargs: tools.close_issue(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "reopen_issue",
+            "Reopen a closed issue",
+            lambda **kwargs: tools.reopen_issue(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "add_issue_comment",
+            "Add a comment to an issue",
+            lambda **kwargs: tools.add_issue_comment(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "list_issue_comments",
+            "List all comments on an issue",
+            lambda **kwargs: tools.list_issue_comments(self.gitlab_client, **kwargs),
         )
 
         # Merge Request tools
@@ -176,6 +251,16 @@ class GitLabMCPServer:
             "get_merge_request_pipelines",
             "Get pipelines for a merge request",
             lambda **kwargs: tools.get_merge_request_pipelines(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "add_mr_comment",
+            "Add a comment to a merge request",
+            lambda **kwargs: tools.add_mr_comment(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
+            "list_mr_comments",
+            "List all comments on a merge request",
+            lambda **kwargs: tools.list_mr_comments(self.gitlab_client, **kwargs),
         )
 
         # Pipeline tools
@@ -518,7 +603,7 @@ class GitLabMCPServer:
 
 def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
     """
-    Get tool definitions with JSON schemas for all 67 GitLab MCP tools.
+    Get tool definitions with JSON schemas for all 87 GitLab MCP tools.
 
     Returns:
         List of tuples: (name, description, input_schema)
@@ -672,6 +757,100 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
             },
         ),
+        (
+            "list_branches",
+            "List all branches in a repository",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "search": {"type": "string", "description": "Search term to filter branches (optional)"},
+                "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
+                "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
+            },
+        ),
+        (
+            "get_branch",
+            "Get details of a specific branch",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "branch_name": {"type": "string", "description": "Name of the branch"},
+            },
+        ),
+        (
+            "create_branch",
+            "Create a new branch",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "branch_name": {"type": "string", "description": "Name for the new branch"},
+                "ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
+            },
+        ),
+        (
+            "delete_branch",
+            "Delete a branch",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "branch_name": {"type": "string", "description": "Name of branch to delete"},
+            },
+        ),
+        (
+            "get_commit",
+            "Get details of a specific commit",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "commit_sha": {"type": "string", "description": "Commit SHA"},
+            },
+        ),
+        (
+            "list_commits",
+            "List commits for a project or branch",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "ref": {"type": "string", "description": "Branch/tag name (optional)"},
+                "since": {"type": "string", "description": "Only commits after this date (ISO 8601, optional)"},
+                "until": {"type": "string", "description": "Only commits before this date (ISO 8601, optional)"},
+                "path": {"type": "string", "description": "Only commits affecting this file path (optional)"},
+                "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
+                "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
+            },
+        ),
+        (
+            "compare_branches",
+            "Compare two branches, tags, or commits",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "from_ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
+                "to_ref": {"type": "string", "description": "Target branch, tag, or commit SHA"},
+                "straight": {"type": "boolean", "description": "Compare refs directly without merge base (optional)"},
+            },
+        ),
+        (
+            "list_tags",
+            "List repository tags",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "search": {"type": "string", "description": "Search pattern to filter tags (optional)"},
+                "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
+                "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
+            },
+        ),
+        (
+            "get_tag",
+            "Get details of a specific tag",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "tag_name": {"type": "string", "description": "Name of the tag"},
+            },
+        ),
+        (
+            "create_tag",
+            "Create a new tag",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "tag_name": {"type": "string", "description": "Name for the new tag"},
+                "ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
+                "message": {"type": "string", "description": "Optional tag message (creates annotated tag)"},
+            },
+        ),
         # Issue tools (3)
         (
             "list_issues",
@@ -737,6 +916,55 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "description": "Assignee user IDs (optional)",
                 },
                 "milestone_id": {"type": "integer", "description": "Milestone ID (optional)"},
+            },
+        ),
+        (
+            "update_issue",
+            "Update an existing issue",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "title": {"type": "string", "description": "New title (optional)"},
+                "description": {"type": "string", "description": "New description (optional)"},
+                "labels": {"type": "array", "items": {"type": "string"}, "description": "New labels (optional)"},
+                "assignee_ids": {"type": "array", "items": {"type": "integer"}, "description": "New assignee user IDs (optional)"},
+                "milestone_id": {"type": "integer", "description": "New milestone ID (optional)"},
+                "state_event": {"type": "string", "description": "State event: close, reopen (optional)"},
+            },
+        ),
+        (
+            "close_issue",
+            "Close an issue",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+            },
+        ),
+        (
+            "reopen_issue",
+            "Reopen a closed issue",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+            },
+        ),
+        (
+            "add_issue_comment",
+            "Add a comment to an issue",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "body": {"type": "string", "description": "Comment text (supports Markdown)"},
+            },
+        ),
+        (
+            "list_issue_comments",
+            "List all comments on an issue",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
+                "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
             },
         ),
         # Merge Request tools (12)
@@ -926,6 +1154,25 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "description": "Project ID or path (e.g., 'group/project')",
                 },
                 "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+            },
+        ),
+        (
+            "add_mr_comment",
+            "Add a comment to a merge request",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "body": {"type": "string", "description": "Comment text (supports Markdown)"},
+            },
+        ),
+        (
+            "list_mr_comments",
+            "List all comments on a merge request",
+            {
+                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
+                "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
             },
         ),
         # Pipeline tools (14)

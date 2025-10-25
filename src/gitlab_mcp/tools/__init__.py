@@ -28,9 +28,14 @@ from gitlab_mcp.tools.groups import (
 
 # Issue tools
 from gitlab_mcp.tools.issues import (
+    add_issue_comment,
+    close_issue,
     create_issue,
     get_issue,
+    list_issue_comments,
     list_issues,
+    reopen_issue,
+    update_issue,
 )
 
 # Label tools
@@ -43,6 +48,7 @@ from gitlab_mcp.tools.labels import (
 
 # Merge Request tools
 from gitlab_mcp.tools.merge_requests import (
+    add_mr_comment,
     approve_merge_request,
     close_merge_request,
     create_merge_request,
@@ -50,6 +56,7 @@ from gitlab_mcp.tools.merge_requests import (
     get_merge_request_changes,
     get_merge_request_commits,
     get_merge_request_pipelines,
+    list_mr_comments,
     list_merge_requests,
     merge_merge_request,
     reopen_merge_request,
@@ -99,10 +106,20 @@ from gitlab_mcp.tools.releases import (
 
 # Repository tools
 from gitlab_mcp.tools.repositories import (
+    compare_branches,
+    create_branch,
     create_file,
+    create_tag,
+    delete_branch,
     delete_file,
+    get_branch,
+    get_commit,
     get_file_contents,
+    get_tag,
+    list_branches,
+    list_commits,
     list_repository_tree,
+    list_tags,
     search_code,
     update_file,
 )
@@ -142,10 +159,25 @@ __all__ = [
     "create_file",
     "update_file",
     "delete_file",
+    "list_branches",
+    "get_branch",
+    "create_branch",
+    "delete_branch",
+    "get_commit",
+    "list_commits",
+    "compare_branches",
+    "list_tags",
+    "get_tag",
+    "create_tag",
     # Issues
     "list_issues",
     "get_issue",
     "create_issue",
+    "update_issue",
+    "close_issue",
+    "reopen_issue",
+    "add_issue_comment",
+    "list_issue_comments",
     # Merge Requests
     "list_merge_requests",
     "get_merge_request",
@@ -159,6 +191,8 @@ __all__ = [
     "get_merge_request_changes",
     "get_merge_request_commits",
     "get_merge_request_pipelines",
+    "add_mr_comment",
+    "list_mr_comments",
     # Pipelines
     "list_pipelines",
     "get_pipeline",

@@ -296,3 +296,134 @@ async def get_merge_request_pipelines(
     return client.get_merge_request_pipelines(
         project_id=project_id, merge_request_iid=merge_request_iid
     )
+
+
+async def add_mr_comment(
+    client: GitLabClient,
+    project_id: str | int,
+    mr_iid: int,
+    body: str,
+) -> dict[str, Any]:
+    """
+    Add a comment to a merge request.
+
+    This tool adds a new comment/note to an existing merge request.
+
+    Args:
+        client: Authenticated GitLabClient instance
+        project_id: Project ID (int) or path (str) in format 'namespace/project'
+        mr_iid: MR IID (internal ID within the project)
+        body: Comment text (supports Markdown)
+
+    Returns:
+        Dictionary with comment details
+
+    Raises:
+        AuthenticationError: If not authenticated
+        NotFoundError: If project or MR doesn't exist
+        PermissionError: If user doesn't have permission to comment
+        GitLabAPIError: If API call fails
+
+    Example:
+        >>> client = GitLabClient(config)
+        >>> comment = await add_mr_comment(
+        ...     client,
+        ...     "mygroup/myproject",
+        ...     15,
+        ...     "LGTM! This looks good to merge."
+        ... )
+        >>> print(f"Added comment by {comment['author']['username']}")
+    """
+    note = client.add_mr_comment(
+        project_id=project_id,
+        mr_iid=mr_iid,
+        body=body,
+    )
+
+    # Extract author info
+    author = None
+    if hasattr(note, "author") and note.author:
+        author = {
+            "username": getattr(note.author, "username", ""),
+            "name": getattr(note.author, "name", ""),
+        }
+
+    return {
+        "id": note.id,
+        "body": note.body,
+        "author": author,
+        "created_at": getattr(note, "created_at", ""),
+        "updated_at": getattr(note, "updated_at", ""),
+    }
+
+
+async def list_mr_comments(
+    client: GitLabClient,
+    project_id: str | int,
+    mr_iid: int,
+    page: int = 1,
+    per_page: int = 20,
+) -> dict[str, Any]:
+    """
+    List all comments on a merge request.
+
+    This tool retrieves all comments/notes for a specific merge request.
+
+    Args:
+        client: Authenticated GitLabClient instance
+        project_id: Project ID (int) or path (str) in format 'namespace/project'
+        mr_iid: MR IID (internal ID within the project)
+        page: Page number for pagination (default: 1)
+        per_page: Results per page (default: 20, max: 100)
+
+    Returns:
+        Dictionary with comments list
+
+    Raises:
+        AuthenticationError: If not authenticated
+        NotFoundError: If project or MR doesn't exist
+        PermissionError: If user doesn't have permission to view comments
+        GitLabAPIError: If API call fails
+
+    Example:
+        >>> client = GitLabClient(config)
+        >>> result = await list_mr_comments(client, "mygroup/myproject", 15)
+        >>> for comment in result["comments"]:
+        ...     print(f"{comment['author']['username']}: {comment['body'][:50]}...")
+    """
+    notes = client.list_mr_comments(
+        project_id=project_id,
+        mr_iid=mr_iid,
+        page=page,
+        per_page=per_page,
+    )
+
+    # Format comments
+    formatted_comments = []
+    for note in notes:
+        # Extract author info
+        author = None
+        if hasattr(note, "author") and note.author:
+            author = {
+                "username": getattr(note.author, "username", ""),
+                "name": getattr(note.author, "name", ""),
+            }
+
+        formatted_comments.append(
+            {
+                "id": note.id,
+                "body": note.body,
+                "author": author,
+                "created_at": getattr(note, "created_at", ""),
+                "updated_at": getattr(note, "updated_at", ""),
+            }
+        )
+
+    return {
+        "comments": formatted_comments,
+        "pagination": {
+            "page": page,
+            "per_page": per_page,
+            "total": len(formatted_comments),
+        },
+    }
