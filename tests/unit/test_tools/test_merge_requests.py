@@ -66,9 +66,7 @@ class TestGetMergeRequest:
 
         result = await get_merge_request(mock_client, "project/path", 10)
 
-        mock_client.get_merge_request.assert_called_once_with(
-            project_id="project/path", mr_iid=10
-        )
+        mock_client.get_merge_request.assert_called_once_with(project_id="project/path", mr_iid=10)
         assert result["iid"] == 10
 
 
@@ -82,9 +80,7 @@ class TestCreateMergeRequest:
         mock_mr = {"id": 1, "iid": 10, "title": "New MR"}
         mock_client.create_merge_request = Mock(return_value=mock_mr)
 
-        result = await create_merge_request(
-            mock_client, 123, "feature", "main", "New Feature"
-        )
+        result = await create_merge_request(mock_client, 123, "feature", "main", "New Feature")
 
         mock_client.create_merge_request.assert_called_once_with(
             project_id=123,
@@ -133,9 +129,7 @@ class TestUpdateMergeRequest:
         mock_mr = {"id": 1, "iid": 10, "title": "Updated"}
         mock_client.update_merge_request = Mock(return_value=mock_mr)
 
-        result = await update_merge_request(
-            mock_client, 123, 10, title="Updated", labels=["bug"]
-        )
+        result = await update_merge_request(mock_client, 123, 10, title="Updated", labels=["bug"])
 
         mock_client.update_merge_request.assert_called_once_with(
             project_id=123,

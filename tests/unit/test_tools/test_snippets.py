@@ -45,9 +45,7 @@ class TestGetSnippet:
 
         result = await get_snippet(mock_client, "project/path", 1)
 
-        mock_client.get_snippet.assert_called_once_with(
-            project_id="project/path", snippet_id=1
-        )
+        mock_client.get_snippet.assert_called_once_with(project_id="project/path", snippet_id=1)
         assert result["id"] == 1
 
 
@@ -61,9 +59,7 @@ class TestCreateSnippet:
         mock_snippet = {"id": 1, "title": "New Snippet"}
         mock_client.create_snippet = Mock(return_value=mock_snippet)
 
-        result = await create_snippet(
-            mock_client, 123, "New Snippet", "test.py", "print('hello')"
-        )
+        result = await create_snippet(mock_client, 123, "New Snippet", "test.py", "print('hello')")
 
         mock_client.create_snippet.assert_called_once_with(
             project_id=123,
@@ -137,6 +133,4 @@ class TestDeleteSnippet:
 
         await delete_snippet(mock_client, "project/path", 1)
 
-        mock_client.delete_snippet.assert_called_once_with(
-            project_id="project/path", snippet_id=1
-        )
+        mock_client.delete_snippet.assert_called_once_with(project_id="project/path", snippet_id=1)

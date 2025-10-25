@@ -45,9 +45,7 @@ class TestGetRelease:
 
         result = await get_release(mock_client, "project/path", "v1.0")
 
-        mock_client.get_release.assert_called_once_with(
-            project_id="project/path", tag_name="v1.0"
-        )
+        mock_client.get_release.assert_called_once_with(project_id="project/path", tag_name="v1.0")
         assert result["tag_name"] == "v1.0"
 
 

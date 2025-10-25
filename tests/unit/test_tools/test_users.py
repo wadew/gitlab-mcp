@@ -51,9 +51,7 @@ class TestSearchUsers:
 
         await search_users(mock_client, "test", page=3, per_page=50)
 
-        mock_client.search_users.assert_called_once_with(
-            search="test", page=3, per_page=50
-        )
+        mock_client.search_users.assert_called_once_with(search="test", page=3, per_page=50)
 
 
 class TestListUserProjects:
@@ -71,9 +69,7 @@ class TestListUserProjects:
 
         result = await list_user_projects(mock_client, 123)
 
-        mock_client.list_user_projects.assert_called_once_with(
-            user_id=123, page=1, per_page=20
-        )
+        mock_client.list_user_projects.assert_called_once_with(user_id=123, page=1, per_page=20)
         assert len(result) == 2
 
     @pytest.mark.asyncio
@@ -84,6 +80,4 @@ class TestListUserProjects:
 
         await list_user_projects(mock_client, 456, page=2, per_page=100)
 
-        mock_client.list_user_projects.assert_called_once_with(
-            user_id=456, page=2, per_page=100
-        )
+        mock_client.list_user_projects.assert_called_once_with(user_id=456, page=2, per_page=100)

@@ -77,9 +77,7 @@ class TestListGroupMembers:
 
         result = await list_group_members(mock_client, 123)
 
-        mock_client.list_group_members.assert_called_once_with(
-            group_id=123, page=1, per_page=20
-        )
+        mock_client.list_group_members.assert_called_once_with(group_id=123, page=1, per_page=20)
         assert len(result) == 2
 
     @pytest.mark.asyncio

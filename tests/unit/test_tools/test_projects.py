@@ -33,9 +33,7 @@ class TestListProjects:
 
         result = await list_projects(mock_client)
 
-        mock_client.list_projects.assert_called_once_with(
-            visibility=None, page=1, per_page=20
-        )
+        mock_client.list_projects.assert_called_once_with(visibility=None, page=1, per_page=20)
         assert "projects" in result
 
     @pytest.mark.asyncio
@@ -46,9 +44,7 @@ class TestListProjects:
 
         await list_projects(mock_client, visibility="public", page=2, per_page=50)
 
-        mock_client.list_projects.assert_called_once_with(
-            visibility="public", page=2, per_page=50
-        )
+        mock_client.list_projects.assert_called_once_with(visibility="public", page=2, per_page=50)
 
 
 class TestGetProject:
@@ -79,9 +75,7 @@ class TestSearchProjects:
 
         result = await search_projects(mock_client, "test")
 
-        mock_client.search_projects.assert_called_once_with(
-            search_term="test", page=1, per_page=20
-        )
+        mock_client.search_projects.assert_called_once_with(search_term="test", page=1, per_page=20)
         assert len(result) == 1
 
 

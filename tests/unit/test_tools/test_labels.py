@@ -37,9 +37,7 @@ class TestListLabels:
 
         await list_labels(mock_client, "project/path", search="bug")
 
-        mock_client.list_labels.assert_called_once_with(
-            project_id="project/path", search="bug"
-        )
+        mock_client.list_labels.assert_called_once_with(project_id="project/path", search="bug")
 
 
 class TestCreateLabel:
@@ -98,9 +96,7 @@ class TestUpdateLabel:
         mock_label = {"id": 1, "name": "critical-bug", "color": "#CC0000"}
         mock_client.update_label = Mock(return_value=mock_label)
 
-        result = await update_label(
-            mock_client, 123, 1, new_name="critical-bug", color="#CC0000"
-        )
+        result = await update_label(mock_client, 123, 1, new_name="critical-bug", color="#CC0000")
 
         mock_client.update_label.assert_called_once_with(
             project_id=123,

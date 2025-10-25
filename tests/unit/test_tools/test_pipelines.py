@@ -142,9 +142,7 @@ class TestGetPipeline:
 
         result = await get_pipeline(mock_client, "project/path", 123)
 
-        mock_client.get_pipeline.assert_called_once_with(
-            project_id="project/path", pipeline_id=123
-        )
+        mock_client.get_pipeline.assert_called_once_with(project_id="project/path", pipeline_id=123)
         assert result["id"] == 123
         assert result["status"] == "success"
         assert result["ref"] == "main"
@@ -219,9 +217,7 @@ class TestRetryPipeline:
 
         result = await retry_pipeline(mock_client, 456, 123)
 
-        mock_client.retry_pipeline.assert_called_once_with(
-            project_id=456, pipeline_id=123
-        )
+        mock_client.retry_pipeline.assert_called_once_with(project_id=456, pipeline_id=123)
         assert result["id"] == 123
         assert result["status"] == "pending"
         assert "retry" in result["message"].lower()
@@ -267,9 +263,7 @@ class TestDeletePipeline:
 
         result = await delete_pipeline(mock_client, 456, 123)
 
-        mock_client.delete_pipeline.assert_called_once_with(
-            project_id=456, pipeline_id=123
-        )
+        mock_client.delete_pipeline.assert_called_once_with(project_id=456, pipeline_id=123)
         assert result["pipeline_id"] == 123
         assert "deleted" in result["message"].lower()
 
@@ -333,9 +327,7 @@ class TestGetJob:
 
         result = await get_job(mock_client, "project/path", 789)
 
-        mock_client.get_job.assert_called_once_with(
-            project_id="project/path", job_id=789
-        )
+        mock_client.get_job.assert_called_once_with(project_id="project/path", job_id=789)
         assert result["id"] == 789
         assert result["name"] == "test-job"
         assert result["stage"] == "test"
@@ -433,9 +425,7 @@ class TestCancelJob:
 
         result = await cancel_job(mock_client, "project/path", 789)
 
-        mock_client.cancel_job.assert_called_once_with(
-            project_id="project/path", job_id=789
-        )
+        mock_client.cancel_job.assert_called_once_with(project_id="project/path", job_id=789)
         assert result["job_id"] == 789
         assert result["status"] == "canceled"
 
@@ -469,9 +459,7 @@ class TestDownloadJobArtifacts:
     async def test_download_job_artifacts_returns_info(self):
         """Test downloading job artifacts."""
         mock_client = Mock()
-        mock_client.download_job_artifacts = Mock(
-            return_value={"job_id": 789, "size_bytes": 12345}
-        )
+        mock_client.download_job_artifacts = Mock(return_value={"job_id": 789, "size_bytes": 12345})
 
         result = await download_job_artifacts(mock_client, "project/path", 789)
 
@@ -498,9 +486,7 @@ class TestListPipelineVariables:
 
         result = await list_pipeline_variables(mock_client, 123, 456)
 
-        mock_client.list_pipeline_variables.assert_called_once_with(
-            project_id=123, pipeline_id=456
-        )
+        mock_client.list_pipeline_variables.assert_called_once_with(project_id=123, pipeline_id=456)
         assert len(result) == 2
         assert result[0]["key"] == "ENV"
         assert result[1]["key"] == "DEBUG"

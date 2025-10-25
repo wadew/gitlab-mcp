@@ -59,9 +59,7 @@ class TestGetWikiPage:
 
         result = await get_wiki_page(mock_client, "project/path", "home")
 
-        mock_client.get_wiki_page.assert_called_once_with(
-            project_id="project/path", slug="home"
-        )
+        mock_client.get_wiki_page.assert_called_once_with(project_id="project/path", slug="home")
         assert result["slug"] == "home"
 
 
