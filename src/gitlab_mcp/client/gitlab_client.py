@@ -3040,7 +3040,7 @@ class GitLabClient:
 
             # Get the merge request
             merge_request = project.mergerequests.get(mr_iid)
-            return merge_request
+            return merge_request.asdict()
 
         except GitlabGetError as e:
             if getattr(e, "response_code", None) == 404:
@@ -3204,7 +3204,7 @@ class GitLabClient:
             # Save changes
             merge_request.save()
 
-            return merge_request
+            return merge_request.asdict()
 
         except GitlabGetError as e:
             if getattr(e, "response_code", None) == 404:
@@ -3261,7 +3261,9 @@ class GitLabClient:
             else:
                 merge_request.merge()
 
-            return merge_request
+            # Refresh to get updated state and return as dict
+            merge_request = project.mergerequests.get(mr_iid)
+            return merge_request.asdict()
 
         except GitlabGetError as e:
             if getattr(e, "response_code", None) == 404:
@@ -3312,7 +3314,7 @@ class GitLabClient:
             # Save changes
             merge_request.save()
 
-            return merge_request
+            return merge_request.asdict()
 
         except GitlabGetError as e:
             if getattr(e, "response_code", None) == 404:
