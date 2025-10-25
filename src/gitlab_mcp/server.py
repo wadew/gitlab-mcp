@@ -761,17 +761,29 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "list_branches",
             "List all branches in a repository",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-                "search": {"type": "string", "description": "Search term to filter branches (optional)"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "search": {
+                    "type": "string",
+                    "description": "Search term to filter branches (optional)",
+                },
                 "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
-                "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
+                "per_page": {
+                    "type": "integer",
+                    "description": "Results per page (optional, default: 20)",
+                },
             },
         ),
         (
             "get_branch",
             "Get details of a specific branch",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "branch_name": {"type": "string", "description": "Name of the branch"},
             },
         ),
@@ -779,7 +791,10 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "create_branch",
             "Create a new branch",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "branch_name": {"type": "string", "description": "Name for the new branch"},
                 "ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
             },
@@ -788,7 +803,10 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "delete_branch",
             "Delete a branch",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "branch_name": {"type": "string", "description": "Name of branch to delete"},
             },
         ),
@@ -796,7 +814,10 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "get_commit",
             "Get details of a specific commit",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "commit_sha": {"type": "string", "description": "Commit SHA"},
             },
         ),
@@ -804,40 +825,73 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "list_commits",
             "List commits for a project or branch",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "ref": {"type": "string", "description": "Branch/tag name (optional)"},
-                "since": {"type": "string", "description": "Only commits after this date (ISO 8601, optional)"},
-                "until": {"type": "string", "description": "Only commits before this date (ISO 8601, optional)"},
-                "path": {"type": "string", "description": "Only commits affecting this file path (optional)"},
+                "since": {
+                    "type": "string",
+                    "description": "Only commits after this date (ISO 8601, optional)",
+                },
+                "until": {
+                    "type": "string",
+                    "description": "Only commits before this date (ISO 8601, optional)",
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Only commits affecting this file path (optional)",
+                },
                 "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
-                "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
+                "per_page": {
+                    "type": "integer",
+                    "description": "Results per page (optional, default: 20)",
+                },
             },
         ),
         (
             "compare_branches",
             "Compare two branches, tags, or commits",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "from_ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
                 "to_ref": {"type": "string", "description": "Target branch, tag, or commit SHA"},
-                "straight": {"type": "boolean", "description": "Compare refs directly without merge base (optional)"},
+                "straight": {
+                    "type": "boolean",
+                    "description": "Compare refs directly without merge base (optional)",
+                },
             },
         ),
         (
             "list_tags",
             "List repository tags",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
-                "search": {"type": "string", "description": "Search pattern to filter tags (optional)"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
+                "search": {
+                    "type": "string",
+                    "description": "Search pattern to filter tags (optional)",
+                },
                 "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
-                "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
+                "per_page": {
+                    "type": "integer",
+                    "description": "Results per page (optional, default: 20)",
+                },
             },
         ),
         (
             "get_tag",
             "Get details of a specific tag",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "tag_name": {"type": "string", "description": "Name of the tag"},
             },
         ),
@@ -845,10 +899,16 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "create_tag",
             "Create a new tag",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "tag_name": {"type": "string", "description": "Name for the new tag"},
                 "ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
-                "message": {"type": "string", "description": "Optional tag message (creates annotated tag)"},
+                "message": {
+                    "type": "string",
+                    "description": "Optional tag message (creates annotated tag)",
+                },
             },
         ),
         # Issue tools (3)
@@ -922,21 +982,38 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "update_issue",
             "Update an existing issue",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
                 "title": {"type": "string", "description": "New title (optional)"},
                 "description": {"type": "string", "description": "New description (optional)"},
-                "labels": {"type": "array", "items": {"type": "string"}, "description": "New labels (optional)"},
-                "assignee_ids": {"type": "array", "items": {"type": "integer"}, "description": "New assignee user IDs (optional)"},
+                "labels": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "New labels (optional)",
+                },
+                "assignee_ids": {
+                    "type": "array",
+                    "items": {"type": "integer"},
+                    "description": "New assignee user IDs (optional)",
+                },
                 "milestone_id": {"type": "integer", "description": "New milestone ID (optional)"},
-                "state_event": {"type": "string", "description": "State event: close, reopen (optional)"},
+                "state_event": {
+                    "type": "string",
+                    "description": "State event: close, reopen (optional)",
+                },
             },
         ),
         (
             "close_issue",
             "Close an issue",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
             },
         ),
@@ -944,7 +1021,10 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "reopen_issue",
             "Reopen a closed issue",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
             },
         ),
@@ -952,7 +1032,10 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "add_issue_comment",
             "Add a comment to an issue",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
                 "body": {"type": "string", "description": "Comment text (supports Markdown)"},
             },
@@ -961,10 +1044,16 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "list_issue_comments",
             "List all comments on an issue",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
                 "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
-                "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
+                "per_page": {
+                    "type": "integer",
+                    "description": "Results per page (optional, default: 20)",
+                },
             },
         ),
         # Merge Request tools (12)
@@ -1160,7 +1249,10 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "add_mr_comment",
             "Add a comment to a merge request",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
                 "body": {"type": "string", "description": "Comment text (supports Markdown)"},
             },
@@ -1169,10 +1261,16 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "list_mr_comments",
             "List all comments on a merge request",
             {
-                "project_id": {"type": "string", "description": "Project ID or path (e.g., 'group/project')"},
+                "project_id": {
+                    "type": "string",
+                    "description": "Project ID or path (e.g., 'group/project')",
+                },
                 "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
                 "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
-                "per_page": {"type": "integer", "description": "Results per page (optional, default: 20)"},
+                "per_page": {
+                    "type": "integer",
+                    "description": "Results per page (optional, default: 20)",
+                },
             },
         ),
         # Pipeline tools (14)
