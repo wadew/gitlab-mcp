@@ -47,7 +47,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "mcp>=1.18.0",           # Official MCP SDK (latest: 1.18.0, Oct 2025)
+    "mcp>=1.19.0",           # Official MCP SDK (latest: 1.18.0, Oct 2025)
     "python-gitlab>=6.5.0",  # GitLab API client (latest: 6.5.0, Oct 2025)
     "pydantic>=2.12.3",      # Data validation (latest: 2.12.3, Oct 2025)
     "python-dotenv>=1.1.1",  # Environment variables (latest: 1.1.1, Jun 2025)
