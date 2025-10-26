@@ -10,6 +10,7 @@ import pytest
 
 from gitlab_mcp.tools.projects import (
     create_milestone,
+    create_project,
     get_milestone,
     get_project,
     get_project_statistics,
@@ -227,3 +228,83 @@ class TestUpdateMilestone:
             state=None,
         )
         assert result["title"] == "v1.1"
+
+
+class TestCreateProject:
+    """Test create_project tool."""
+
+    @pytest.mark.asyncio
+    async def test_create_project_minimal_parameters(self):
+        """Test creating project with only required parameter (name)."""
+        mock_client = Mock()
+        mock_project = {"id": 123, "name": "new-project", "path": "new-project"}
+        mock_client.create_project = Mock(return_value=mock_project)
+
+        result = await create_project(mock_client, "new-project")
+
+        mock_client.create_project.assert_called_once_with(
+            name="new-project",
+            path=None,
+            namespace_id=None,
+            description=None,
+            visibility="private",
+            initialize_with_readme=False,
+        )
+        assert result["name"] == "new-project"
+
+    @pytest.mark.asyncio
+    async def test_create_project_with_all_parameters(self):
+        """Test creating project with all parameters."""
+        mock_client = Mock()
+        mock_project = {
+            "id": 456,
+            "name": "My Project",
+            "path": "my-project",
+            "description": "A test project",
+            "visibility": "public",
+        }
+        mock_client.create_project = Mock(return_value=mock_project)
+
+        result = await create_project(
+            mock_client,
+            name="My Project",
+            path="my-project",
+            namespace_id=10,
+            description="A test project",
+            visibility="public",
+            initialize_with_readme=True,
+        )
+
+        mock_client.create_project.assert_called_once_with(
+            name="My Project",
+            path="my-project",
+            namespace_id=10,
+            description="A test project",
+            visibility="public",
+            initialize_with_readme=True,
+        )
+        assert result["name"] == "My Project"
+        assert result["visibility"] == "public"
+
+    @pytest.mark.asyncio
+    async def test_create_project_custom_visibility(self):
+        """Test creating project with custom visibility."""
+        mock_client = Mock()
+        mock_project = {"id": 789, "name": "internal-proj", "visibility": "internal"}
+        mock_client.create_project = Mock(return_value=mock_project)
+
+        result = await create_project(
+            mock_client,
+            name="internal-proj",
+            visibility="internal",
+        )
+
+        mock_client.create_project.assert_called_once_with(
+            name="internal-proj",
+            path=None,
+            namespace_id=None,
+            description=None,
+            visibility="internal",
+            initialize_with_readme=False,
+        )
+        assert result["visibility"] == "internal"

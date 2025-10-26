@@ -208,6 +208,63 @@ class GitLabClient:
         except Exception as e:
             raise self._convert_exception(e) from e
 
+    def create_project(
+        self,
+        name: str,
+        path: str | None = None,
+        namespace_id: int | None = None,
+        description: str | None = None,
+        visibility: str = "private",
+        initialize_with_readme: bool = False,
+    ) -> dict[str, Any]:
+        """
+        Create a new GitLab project.
+
+        Args:
+            name: Project name (required)
+            path: Project path/slug (optional, defaults to name if not provided)
+            namespace_id: ID of the namespace/group to create project in (optional)
+            description: Project description (optional)
+            visibility: Project visibility level - 'private', 'internal', or 'public'
+                       (default: 'private')
+            initialize_with_readme: Whether to initialize project with a README.md
+                                   (default: False)
+
+        Returns:
+            Dictionary with created project details
+
+        Raises:
+            AuthenticationError: If not authenticated
+            PermissionError: If user doesn't have permission to create projects
+            GitLabAPIError: If API call fails or validation error occurs
+        """
+        self._ensure_authenticated()
+
+        try:
+            # Build project creation parameters
+            project_data: dict[str, Any] = {
+                "name": name,
+                "visibility": visibility,
+                "initialize_with_readme": initialize_with_readme,
+            }
+
+            # Add optional parameters if provided
+            if path is not None:
+                project_data["path"] = path
+            if namespace_id is not None:
+                project_data["namespace_id"] = namespace_id
+            if description is not None:
+                project_data["description"] = description
+
+            # Create the project
+            project = self._gitlab.projects.create(project_data)  # type: ignore
+            return project.asdict()
+
+        except GitlabAuthenticationError as e:
+            raise AuthenticationError("Authentication required") from e
+        except Exception as e:
+            raise self._convert_exception(e) from e
+
     def list_branches(
         self,
         project_id: str | int,

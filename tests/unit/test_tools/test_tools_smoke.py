@@ -201,15 +201,15 @@ class TestServerToolRegistration:
         assert callable(server.register_all_tools)
 
     def test_register_all_tools_adds_67_tools(self, server):
-        """Test that register_all_tools registers all 87 tools."""
+        """Test that register_all_tools registers all 88 tools."""
         # Initially no tools
         assert len(server._tools) == 0
 
         # Register all tools
         server.register_all_tools()
 
-        # Should have 87 tools registered
-        assert len(server._tools) == 87
+        # Should have 88 tools registered
+        assert len(server._tools) == 88
 
     def test_all_registered_tools_have_descriptions(self, server):
         """Test that all registered tools have descriptions."""

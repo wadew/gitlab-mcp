@@ -347,6 +347,11 @@ class GitLabMCPServer:
             lambda **kwargs: tools.get_project(self.gitlab_client, **kwargs),
         )
         self.register_tool(
+            "create_project",
+            "Create a new project in GitLab",
+            lambda **kwargs: tools.create_project(self.gitlab_client, **kwargs),
+        )
+        self.register_tool(
             "search_projects",
             "Search for projects by name or description",
             lambda **kwargs: tools.search_projects(self.gitlab_client, **kwargs),
@@ -1472,6 +1477,36 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 "project_id": {
                     "type": "string",
                     "description": "Project ID or path (e.g., 'group/project')",
+                },
+            },
+        ),
+        (
+            "create_project",
+            "Create a new project in GitLab",
+            {
+                "name": {
+                    "type": "string",
+                    "description": "Project name (required)",
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Project path/slug (optional, defaults to name if not provided)",
+                },
+                "namespace_id": {
+                    "type": "integer",
+                    "description": "ID of the namespace/group to create project in (optional)",
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Project description (optional)",
+                },
+                "visibility": {
+                    "type": "string",
+                    "description": "Project visibility: 'private', 'internal', or 'public' (optional, default: private)",
+                },
+                "initialize_with_readme": {
+                    "type": "boolean",
+                    "description": "Initialize project with a README.md (optional, default: false)",
                 },
             },
         ),

@@ -85,6 +85,7 @@ from gitlab_mcp.tools.pipelines import (
 # Project tools
 from gitlab_mcp.tools.projects import (
     create_milestone,
+    create_project,
     get_milestone,
     get_project,
     get_project_statistics,
@@ -211,6 +212,7 @@ __all__ = [
     # Projects
     "list_projects",
     "get_project",
+    "create_project",
     "search_projects",
     "list_project_members",
     "get_project_statistics",

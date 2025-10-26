@@ -59,6 +59,42 @@ async def get_project(
     return client.get_project(project_id=project_id)
 
 
+async def create_project(
+    client: GitLabClient,
+    name: str,
+    path: str | None = None,
+    namespace_id: int | None = None,
+    description: str | None = None,
+    visibility: str = "private",
+    initialize_with_readme: bool = False,
+) -> dict[str, Any]:
+    """
+    Create a new GitLab project.
+
+    Args:
+        client: Authenticated GitLabClient instance
+        name: Project name (required)
+        path: Project path/slug (optional, defaults to name if not provided)
+        namespace_id: ID of the namespace/group to create project in (optional)
+        description: Project description (optional)
+        visibility: Project visibility level - 'private', 'internal', or 'public'
+                   (default: 'private')
+        initialize_with_readme: Whether to initialize project with a README.md
+                               (default: False)
+
+    Returns:
+        Dictionary with created project details
+    """
+    return client.create_project(
+        name=name,
+        path=path,
+        namespace_id=namespace_id,
+        description=description,
+        visibility=visibility,
+        initialize_with_readme=initialize_with_readme,
+    )
+
+
 async def search_projects(
     client: GitLabClient,
     search_term: str,
