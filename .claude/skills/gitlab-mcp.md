@@ -50,6 +50,18 @@ Parameters:
   - project_id: string (required) - project ID or path
 ```
 
+#### Create Project
+```
+mcp__gitlab__create_project
+Parameters:
+  - name: string (required) - project name
+  - path: string (optional) - project path/slug (defaults to name if not provided)
+  - namespace_id: integer (optional) - ID of the namespace/group to create project in
+  - description: string (optional) - project description
+  - visibility: string (optional) - "private", "internal", or "public" (default: private)
+  - initialize_with_readme: boolean (optional) - initialize with README.md (default: false)
+```
+
 #### Search Projects
 ```
 mcp__gitlab__search_projects
@@ -705,6 +717,34 @@ Parameters:
    - job_id: <from pipeline>
 ```
 
+### Workflow 6: Create a New Project
+```
+1. Get the group/namespace ID (if creating in a group):
+   mcp__gitlab__get_group
+   - group_id: "mcps"
+
+2. Create the project:
+   mcp__gitlab__create_project
+   - name: "my-new-project"
+   - path: "my-new-project"
+   - namespace_id: <from group response>
+   - description: "Project description"
+   - visibility: "private"
+   - initialize_with_readme: true
+
+3. Verify project was created:
+   mcp__gitlab__get_project
+   - project_id: "mcps/my-new-project"
+
+4. Set up initial structure (optional):
+   mcp__gitlab__create_file
+   - project_id: "mcps/my-new-project"
+   - file_path: ".gitlab-ci.yml"
+   - branch: "main"
+   - content: <CI/CD configuration>
+   - commit_message: "Add CI/CD configuration"
+```
+
 ## Best Practices
 
 1. **Always use project paths when possible** - More readable than numeric IDs
@@ -772,16 +812,17 @@ Example: `#FF0000` (red)
 Most commonly used operations:
 1. `list_projects` - Find available projects
 2. `get_project` - Get project details
-3. `list_repository_tree` - Browse files
-4. `get_file_contents` - Read files
-5. `list_issues` - View issues
-6. `list_merge_requests` - View MRs
-7. `get_merge_request_changes` - Review MR diff
-8. `list_pipelines` - Check CI/CD status
-9. `get_job_trace` - Debug failed jobs
-10. `search_code` - Find code across repos
+3. `create_project` - Create a new project
+4. `list_repository_tree` - Browse files
+5. `get_file_contents` - Read files
+6. `list_issues` - View issues
+7. `list_merge_requests` - View MRs
+8. `get_merge_request_changes` - Review MR diff
+9. `list_pipelines` - Check CI/CD status
+10. `get_job_trace` - Debug failed jobs
+11. `search_code` - Find code across repos
 
 ---
 
-**Last Updated**: 2025-10-24
+**Last Updated**: 2025-10-26
 **MCP Server Version**: Compatible with gitlab-mcp v1.0+
