@@ -58,9 +58,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8.4.2",         # Testing framework (latest: 8.4.2, Sep 2025)
-    "pytest-cov>=6.0.0",     # Code coverage (latest: 6.0.0, 2025)
-    "pytest-asyncio>=0.25.0", # Async testing (latest: 0.25.0, 2025)
-    "pytest-mock>=3.14.0",   # Mocking (latest: 3.14.0, 2025)
+    "pytest-cov>=6.3.0",     # Code coverage (latest: 6.0.0, 2025)
+    "pytest-asyncio>=0.26.0", # Async testing (latest: 0.25.0, 2025)
+    "pytest-mock>=3.15.1",   # Mocking (latest: 3.14.0, 2025)
     "black>=25.9.0",         # Code formatter (latest: 25.1.0, Jan 2025)
     "ruff>=0.14.2",          # Linter (latest: 0.14.1, Oct 2025)
     "mypy>=1.18.2",          # Type checker (latest: 1.18.2, Sep 2025)
