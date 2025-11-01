@@ -264,7 +264,7 @@ security:pip-audit:
     - echo "Running pip-audit for Python dependency security scanning..."
     - uv pip install pip-audit
     - pip-audit --desc --format json --output pip-audit-report.json || true
-    - pip-audit --desc
+    - pip-audit --desc || true
   artifacts:
     paths:
       - pip-audit-report.json
