@@ -46,8 +46,6 @@ stages:
   - lint      # Code quality and formatting checks
   - test      # Run tests with coverage
   - security  # Security scanning (SAST, dependency scanning)
-  - build     # Build Python packages
-  - release   # Publish to package registries (manual)
 
 # ============================================================================
 # REUSABLE TEMPLATES
@@ -275,112 +273,6 @@ security:pip-audit:
   allow_failure: true  # Don't block pipeline on vulnerabilities
 
 # ============================================================================
-# BUILD STAGE - Build Python packages
-# ============================================================================
-
-build:package:
-  extends: .uv-install
-  stage: build
-  needs:
-    - job: test:unit:py311
-      artifacts: false  # Don't need test artifacts for building
-    - job: lint:ruff
-      artifacts: false
-    - job: lint:black
-      artifacts: false
-    - job: lint:mypy
-      artifacts: false
-  script:
-    - echo "Building Python package (wheel and sdist)..."
-    - uv pip install build
-    - python -m build
-    - echo "Verifying package contents..."
-    - tar -tzf dist/*.tar.gz | head -20 || true
-    - echo "Listing package files..."
-    - ls -lh dist/
-  artifacts:
-    paths:
-      - dist/
-    expire_in: 1 month
-  rules:
-    # Build on main branch
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    # Build on tags (releases)
-    - if: $CI_COMMIT_TAG
-    # Build on merge requests
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-
-# ============================================================================
-# RELEASE STAGE - Publish packages
-# ============================================================================
-
-# Release to GitLab Package Registry (manual trigger)
-release:gitlab:
-  extends: .python-base
-  stage: release
-  needs:
-    - job: build:package
-      artifacts: true
-  script:
-    - echo "Publishing to GitLab Package Registry..."
-    - pip install twine
-    # Publish to GitLab Package Registry
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
-  rules:
-    # Only run on tags
-    - if: $CI_COMMIT_TAG
-      when: manual
-  environment:
-    name: gitlab-package-registry
-    url: $CI_PROJECT_URL/-/packages
-
-# Release to PyPI (manual trigger, requires PYPI_TOKEN)
-release:pypi:
-  extends: .python-base
-  stage: release
-  needs:
-    - job: build:package
-      artifacts: true
-  script:
-    - echo "Publishing to PyPI..."
-    - pip install twine
-    # Publish to PyPI using token from CI/CD variables
-    - TWINE_PASSWORD=${PYPI_TOKEN} TWINE_USERNAME=__token__ python -m twine upload dist/*
-  rules:
-    # Only run on tags
-    - if: $CI_COMMIT_TAG
-      when: manual
-  environment:
-    name: pypi
-    url: https://pypi.org/project/gitlab-mcp-server/
-
-# Create GitLab Release
-release:create:
-  stage: release
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
-  needs:
-    - job: build:package
-      artifacts: true
-  script:
-    - echo "Creating GitLab release for $CI_COMMIT_TAG..."
-  release:
-    name: 'Release $CI_COMMIT_TAG'
-    description: 'Release $CI_COMMIT_TAG - See CHANGELOG.md for details'
-    tag_name: '$CI_COMMIT_TAG'
-    assets:
-      links:
-        - name: 'Python Wheel'
-          url: '${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/file/dist/gitlab_mcp_server-${CI_COMMIT_TAG#v}-py3-none-any.whl'
-          link_type: 'package'
-        - name: 'Source Distribution'
-          url: '${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/file/dist/gitlab-mcp-server-${CI_COMMIT_TAG#v}.tar.gz'
-          link_type: 'package'
-  rules:
-    # Only run on tags
-    - if: $CI_COMMIT_TAG
-      when: manual
-
-# ============================================================================
 # PIPELINE OPTIMIZATION NOTES
 # ============================================================================
 #
@@ -403,11 +295,5 @@ release:create:
 # 2. Type Safety: mypy must pass with no errors
 # 3. Code Style: black and ruff must pass
 # 4. All Tests: Must pass on all Python versions
-#
-# Release Strategy:
-# 1. Packages built on main branch and tags
-# 2. Manual release to GitLab Package Registry
-# 3. Manual release to PyPI (optional)
-# 4. Automatic GitLab Release creation with artifacts
 #
 # ============================================================================
