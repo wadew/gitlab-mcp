@@ -203,37 +203,10 @@ async def get_issue(
     # Get issue from GitLab
     issue = client.get_issue(project_id=project_id, issue_iid=issue_iid)
 
-    # Extract author info
-    author = None
-    if hasattr(issue, "author") and issue.author:
-        author = {
-            "username": getattr(issue.author, "username", ""),
-            "name": getattr(issue.author, "name", ""),
-        }
-
-    # Extract assignees
-    assignees = []
-    if hasattr(issue, "assignees") and issue.assignees:
-        # Handle both list and non-iterable assignees
-        try:
-            for assignee in issue.assignees:
-                assignees.append(
-                    {
-                        "username": getattr(assignee, "username", ""),
-                        "name": getattr(assignee, "name", ""),
-                    }
-                )
-        except TypeError:
-            # assignees is not iterable
-            pass
-
-    # Extract milestone info
-    milestone_info = None
-    if hasattr(issue, "milestone") and issue.milestone:
-        milestone_info = {
-            "title": getattr(issue.milestone, "title", ""),
-            "web_url": getattr(issue.milestone, "web_url", ""),
-        }
+    # Extract author, assignees, and milestone using helper functions
+    author = _extract_author(issue)
+    assignees = _extract_assignees(issue)
+    milestone_info = _extract_milestone(issue)
 
     return {
         "iid": issue.iid,
