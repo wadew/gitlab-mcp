@@ -20,6 +20,20 @@ from gitlab_mcp.config.settings import GitLabConfig, load_config
 DESC_PROJECT_ID = "Project ID or path (e.g., 'group/project')"
 DESC_PAGE = "Page number (optional, default: 1)"
 DESC_PER_PAGE = "Results per page (optional, default: 20)"
+DESC_MR_IID = "Merge request IID (internal ID)"
+DESC_ISSUE_IID = "Issue IID (internal ID)"
+DESC_PIPELINE_ID = "Pipeline ID"
+DESC_JOB_ID = "Job ID"
+DESC_NEW_TITLE = "New title (optional)"
+DESC_NEW_DESC = "New description (optional)"
+DESC_WIKI_SLUG = "Wiki page slug (URL-friendly identifier)"
+DESC_SNIPPET_ID = "Snippet ID"
+DESC_TAG_NAME = "Git tag name"
+DESC_TAG_RELEASE = "Git tag name associated with release"
+DESC_SEARCH_QUERY = "Search query string"
+DESC_AUTHOR_EMAIL = "Email of commit author (optional)"
+DESC_AUTHOR_NAME = "Name of commit author (optional)"
+DESC_SOURCE_REF = "Source branch, tag, or commit SHA"
 
 
 class GitLabMCPServer:
@@ -660,7 +674,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "search_code",
             "Search for code in project repositories",
             {
-                "search_term": {"type": "string", "description": "Search query string"},
+                "search_term": {"type": "string", "description": DESC_SEARCH_QUERY},
                 "project_id": {
                     "type": "string",
                     "description": "Project ID or path (optional, search all accessible projects if not specified)",
@@ -693,11 +707,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "author_email": {
                     "type": "string",
-                    "description": "Email of commit author (optional)",
+                    "description": DESC_AUTHOR_EMAIL,
                 },
                 "author_name": {
                     "type": "string",
-                    "description": "Name of commit author (optional)",
+                    "description": DESC_AUTHOR_NAME,
                 },
                 "encoding": {
                     "type": "string",
@@ -728,11 +742,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "author_email": {
                     "type": "string",
-                    "description": "Email of commit author (optional)",
+                    "description": DESC_AUTHOR_EMAIL,
                 },
                 "author_name": {
                     "type": "string",
-                    "description": "Name of commit author (optional)",
+                    "description": DESC_AUTHOR_NAME,
                 },
                 "encoding": {
                     "type": "string",
@@ -759,11 +773,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "author_email": {
                     "type": "string",
-                    "description": "Email of commit author (optional)",
+                    "description": DESC_AUTHOR_EMAIL,
                 },
                 "author_name": {
                     "type": "string",
-                    "description": "Name of commit author (optional)",
+                    "description": DESC_AUTHOR_NAME,
                 },
             },
         ),
@@ -806,7 +820,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "description": DESC_PROJECT_ID,
                 },
                 "branch_name": {"type": "string", "description": "Name for the new branch"},
-                "ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
+                "ref": {"type": "string", "description": DESC_SOURCE_REF},
             },
         ),
         (
@@ -867,7 +881,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "from_ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
+                "from_ref": {"type": "string", "description": DESC_SOURCE_REF},
                 "to_ref": {"type": "string", "description": "Target branch, tag, or commit SHA"},
                 "straight": {
                     "type": "boolean",
@@ -914,7 +928,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "description": DESC_PROJECT_ID,
                 },
                 "tag_name": {"type": "string", "description": "Name for the new tag"},
-                "ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
+                "ref": {"type": "string", "description": DESC_SOURCE_REF},
                 "message": {
                     "type": "string",
                     "description": "Optional tag message (creates annotated tag)",
@@ -962,7 +976,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
             },
         ),
         (
@@ -996,9 +1010,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
-                "title": {"type": "string", "description": "New title (optional)"},
-                "description": {"type": "string", "description": "New description (optional)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
+                "title": {"type": "string", "description": DESC_NEW_TITLE},
+                "description": {"type": "string", "description": DESC_NEW_DESC},
                 "labels": {
                     "type": "array",
                     "items": {"type": "string"},
@@ -1024,7 +1038,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
             },
         ),
         (
@@ -1035,7 +1049,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
             },
         ),
         (
@@ -1046,7 +1060,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
                 "body": {"type": "string", "description": "Comment text (supports Markdown)"},
             },
         ),
@@ -1058,7 +1072,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
                 "page": {"type": "integer", "description": DESC_PAGE},
                 "per_page": {
                     "type": "integer",
@@ -1107,7 +1121,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1143,9 +1157,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-                "title": {"type": "string", "description": "New title (optional)"},
-                "description": {"type": "string", "description": "New description (optional)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
+                "title": {"type": "string", "description": DESC_NEW_TITLE},
+                "description": {"type": "string", "description": DESC_NEW_DESC},
                 "labels": {
                     "type": "array",
                     "items": {"type": "string"},
@@ -1167,7 +1181,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
                 "merge_commit_message": {
                     "type": "string",
                     "description": "Merge commit message (optional)",
@@ -1186,7 +1200,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1197,7 +1211,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1208,7 +1222,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1219,7 +1233,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1230,7 +1244,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1241,7 +1255,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1252,7 +1266,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1263,7 +1277,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
                 "body": {"type": "string", "description": "Comment text (supports Markdown)"},
             },
         ),
@@ -1275,7 +1289,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
                 "page": {"type": "integer", "description": DESC_PAGE},
                 "per_page": {
                     "type": "integer",
@@ -1311,7 +1325,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         (
@@ -1334,7 +1348,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         (
@@ -1345,7 +1359,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         (
@@ -1356,7 +1370,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         (
@@ -1367,7 +1381,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         (
@@ -1378,7 +1392,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
             },
         ),
         (
@@ -1389,7 +1403,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
                 "tail_lines": {
                     "type": "integer",
                     "description": "Optional: Number of lines to return from end of log (e.g., 500-1000 for error analysis). Prevents exceeding token limits on large logs.",
@@ -1404,7 +1418,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
             },
         ),
         (
@@ -1415,7 +1429,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
             },
         ),
         (
@@ -1426,7 +1440,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
             },
         ),
         (
@@ -1437,7 +1451,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
                 "artifact_path": {
                     "type": "string",
                     "description": "Path to specific artifact (optional, download all if not specified)",
@@ -1452,7 +1466,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         # Project tools (9)
@@ -1519,7 +1533,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "search_projects",
             "Search for projects by name or description",
             {
-                "search_term": {"type": "string", "description": "Search query string"},
+                "search_term": {"type": "string", "description": DESC_SEARCH_QUERY},
             },
         ),
         (
@@ -1599,8 +1613,8 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "description": DESC_PROJECT_ID,
                 },
                 "milestone_id": {"type": "integer", "description": "Milestone ID"},
-                "title": {"type": "string", "description": "New title (optional)"},
-                "description": {"type": "string", "description": "New description (optional)"},
+                "title": {"type": "string", "description": DESC_NEW_TITLE},
+                "description": {"type": "string", "description": DESC_NEW_DESC},
                 "due_date": {
                     "type": "string",
                     "description": "New due date (YYYY-MM-DD format, optional)",
@@ -1653,7 +1667,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 "name": {"type": "string", "description": "Current label name"},
                 "new_name": {"type": "string", "description": "New label name (optional)"},
                 "color": {"type": "string", "description": "New color (hex format, optional)"},
-                "description": {"type": "string", "description": "New description (optional)"},
+                "description": {"type": "string", "description": DESC_NEW_DESC},
             },
         ),
         (
@@ -1688,7 +1702,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "slug": {
                     "type": "string",
-                    "description": "Wiki page slug (URL-friendly identifier)",
+                    "description": DESC_WIKI_SLUG,
                 },
             },
         ),
@@ -1714,7 +1728,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "slug": {
                     "type": "string",
-                    "description": "Wiki page slug (URL-friendly identifier)",
+                    "description": DESC_WIKI_SLUG,
                 },
                 "title": {"type": "string", "description": "New page title (optional)"},
                 "content": {"type": "string", "description": "New page content (optional)"},
@@ -1730,7 +1744,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "slug": {
                     "type": "string",
-                    "description": "Wiki page slug (URL-friendly identifier)",
+                    "description": DESC_WIKI_SLUG,
                 },
             },
         ),
@@ -1753,7 +1767,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "snippet_id": {"type": "integer", "description": "Snippet ID"},
+                "snippet_id": {"type": "integer", "description": DESC_SNIPPET_ID},
             },
         ),
         (
@@ -1781,8 +1795,8 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "snippet_id": {"type": "integer", "description": "Snippet ID"},
-                "title": {"type": "string", "description": "New title (optional)"},
+                "snippet_id": {"type": "integer", "description": DESC_SNIPPET_ID},
+                "title": {"type": "string", "description": DESC_NEW_TITLE},
                 "file_name": {"type": "string", "description": "New file name (optional)"},
                 "content": {"type": "string", "description": "New content (optional)"},
                 "visibility": {"type": "string", "description": "New visibility (optional)"},
@@ -1796,7 +1810,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "snippet_id": {"type": "integer", "description": "Snippet ID"},
+                "snippet_id": {"type": "integer", "description": DESC_SNIPPET_ID},
             },
         ),
         # Release tools (5)
@@ -1820,7 +1834,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "tag_name": {
                     "type": "string",
-                    "description": "Git tag name associated with release",
+                    "description": DESC_TAG_RELEASE,
                 },
             },
         ),
@@ -1832,7 +1846,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "tag_name": {"type": "string", "description": "Git tag name"},
+                "tag_name": {"type": "string", "description": DESC_TAG_NAME},
                 "name": {"type": "string", "description": "Release name"},
                 "description": {"type": "string", "description": "Release description (optional)"},
                 "ref": {
@@ -1849,7 +1863,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "tag_name": {"type": "string", "description": "Git tag name"},
+                "tag_name": {"type": "string", "description": DESC_TAG_NAME},
                 "name": {"type": "string", "description": "New release name (optional)"},
                 "description": {
                     "type": "string",
@@ -1865,7 +1879,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": DESC_PROJECT_ID,
                 },
-                "tag_name": {"type": "string", "description": "Git tag name"},
+                "tag_name": {"type": "string", "description": DESC_TAG_NAME},
             },
         ),
         # User tools (3)
@@ -1880,7 +1894,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "search_users",
             "Search for users by username or email",
             {
-                "search": {"type": "string", "description": "Search query string"},
+                "search": {"type": "string", "description": DESC_SEARCH_QUERY},
             },
         ),
         (

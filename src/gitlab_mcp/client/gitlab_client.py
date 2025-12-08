@@ -31,6 +31,13 @@ from gitlab_mcp.config.settings import GitLabConfig
 # Error message constants (SonarQube S1192 compliance)
 ERR_AUTH_REQUIRED = "Authentication required"
 ERR_NOT_AUTHENTICATED = "Not authenticated"
+ERR_AUTH_FAILED = "Authentication failed"
+ERR_AUTH_FAILED_401 = "Authentication failed (401)"
+
+# Validation error message constants (SonarQube S1192 compliance)
+ERR_FILE_PATH_REQUIRED = "file_path is required and cannot be empty"
+ERR_BRANCH_REQUIRED = "branch is required and cannot be empty"
+ERR_COMMIT_MSG_REQUIRED = "commit_message is required and cannot be empty"
 
 
 class GitLabClient:
@@ -2827,11 +2834,11 @@ class GitLabClient:
 
         # Validate required parameters
         if not file_path or not file_path.strip():
-            raise ValueError("file_path is required and cannot be empty")
+            raise ValueError(ERR_FILE_PATH_REQUIRED)
         if not branch or not branch.strip():
-            raise ValueError("branch is required and cannot be empty")
+            raise ValueError(ERR_BRANCH_REQUIRED)
         if not commit_message or not commit_message.strip():
-            raise ValueError("commit_message is required and cannot be empty")
+            raise ValueError(ERR_COMMIT_MSG_REQUIRED)
 
         try:
             # Get the project
@@ -2903,11 +2910,11 @@ class GitLabClient:
 
         # Validate required parameters
         if not file_path or not file_path.strip():
-            raise ValueError("file_path is required and cannot be empty")
+            raise ValueError(ERR_FILE_PATH_REQUIRED)
         if not branch or not branch.strip():
-            raise ValueError("branch is required and cannot be empty")
+            raise ValueError(ERR_BRANCH_REQUIRED)
         if not commit_message or not commit_message.strip():
-            raise ValueError("commit_message is required and cannot be empty")
+            raise ValueError(ERR_COMMIT_MSG_REQUIRED)
 
         try:
             # Get the project
@@ -2976,11 +2983,11 @@ class GitLabClient:
 
         # Validate required parameters
         if not file_path or not file_path.strip():
-            raise ValueError("file_path is required and cannot be empty")
+            raise ValueError(ERR_FILE_PATH_REQUIRED)
         if not branch or not branch.strip():
-            raise ValueError("branch is required and cannot be empty")
+            raise ValueError(ERR_BRANCH_REQUIRED)
         if not commit_message or not commit_message.strip():
-            raise ValueError("commit_message is required and cannot be empty")
+            raise ValueError(ERR_COMMIT_MSG_REQUIRED)
 
         try:
             # Get the project
@@ -3069,7 +3076,7 @@ class GitLabClient:
                 raise NotFoundError(f"Project with ID {project_id} not found") from e
             raise self._convert_exception(e) from e
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication failed") from e
+            raise AuthenticationError(ERR_AUTH_FAILED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -3122,7 +3129,7 @@ class GitLabClient:
                     raise NotFoundError(f"Project with ID {project_id} not found") from e
             raise self._convert_exception(e) from e
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication failed") from e
+            raise AuthenticationError(ERR_AUTH_FAILED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -3203,7 +3210,7 @@ class GitLabClient:
                 raise NotFoundError(f"Project with ID {project_id} not found") from e
             raise self._convert_exception(e) from e
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication failed") from e
+            raise AuthenticationError(ERR_AUTH_FAILED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -4601,7 +4608,7 @@ class GitLabClient:
             status_code = getattr(exc, "response_code", None)
 
             if status_code == 401:
-                return AuthenticationError("Authentication failed (401)")
+                return AuthenticationError(ERR_AUTH_FAILED_401)
             elif status_code == 403:
                 return PermissionError("Permission denied (403)")
             elif status_code == 404:
@@ -4613,7 +4620,7 @@ class GitLabClient:
 
         # Handle specific GitLab exceptions
         if isinstance(exc, GitlabAuthenticationError):
-            return AuthenticationError("Authentication failed")
+            return AuthenticationError(ERR_AUTH_FAILED)
         elif isinstance(exc, GitlabGetError):
             status_code = getattr(exc, "response_code", None)
             if status_code == 404:
