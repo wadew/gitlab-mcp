@@ -6,6 +6,8 @@ It provides tools for interacting with GitLab repositories, issues, merge reques
 """
 
 import asyncio
+import logging
+import sys
 from collections.abc import Callable
 from typing import Any
 
@@ -34,6 +36,9 @@ DESC_SEARCH_QUERY = "Search query string"
 DESC_AUTHOR_EMAIL = "Email of commit author (optional)"
 DESC_AUTHOR_NAME = "Name of commit author (optional)"
 DESC_SOURCE_REF = "Source branch, tag, or commit SHA"
+
+# Module logger for security-safe error logging
+logger = logging.getLogger(__name__)
 
 
 class GitLabMCPServer:
@@ -1983,9 +1988,10 @@ async def async_main() -> None:
     try:
         client.authenticate()
     except Exception as e:
-        import sys
-
-        print(f"Failed to authenticate with GitLab: {e}", file=sys.stderr)
+        # Log detailed error for debugging (not exposed to users)
+        logger.error("GitLab authentication failed: %s", e, exc_info=True)
+        # Print generic message to stderr (no sensitive details)
+        print("Failed to authenticate with GitLab. Check your credentials and URL.", file=sys.stderr)
         sys.exit(1)
 
     # Get tool definitions
@@ -2026,8 +2032,10 @@ async def async_main() -> None:
 
             return [TextContent(type="text", text=json.dumps(result, indent=2))]
         except Exception as e:
-            # Return error as text content
-            return [TextContent(type="text", text=f"Error executing {name}: {str(e)}")]
+            # Log detailed error for debugging (not exposed to clients)
+            logger.error("Tool '%s' execution failed: %s", name, e, exc_info=True)
+            # Return generic error message (no sensitive details)
+            return [TextContent(type="text", text=f"Error executing {name}: operation failed")]
 
     # Run the server with stdio transport
     async with stdio_server() as (read_stream, write_stream):
