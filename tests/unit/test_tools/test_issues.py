@@ -588,6 +588,7 @@ class TestUpdateIssue:
             labels=["bug", "high-priority"],
             assignee_ids=[10],
             milestone_id=5,
+            state_event=None,
         )
 
         assert result["iid"] == 42
