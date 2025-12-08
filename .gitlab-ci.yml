@@ -1,5 +1,5 @@
 # GitLab CI/CD Pipeline for GitLab MCP Server
-# Production-ready pipeline with testing, linting, security scanning, and release automation
+# Production-ready pipeline with testing, linting, security scanning, SonarQube, and package publishing
 
 # ============================================================================
 # WORKFLOW RULES - Prevent duplicate pipelines
@@ -13,6 +13,8 @@ workflow:
     - if: $CI_COMMIT_TAG
     # Run for main branch
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # Run for develop branch
+    - if: $CI_COMMIT_BRANCH == "develop"
     # Run for feature branches (but not if MR is open to prevent duplicates)
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
       when: never
@@ -39,6 +41,13 @@ variables:
   # Cache configuration
   CACHE_FALLBACK_KEY: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
 
+  # SonarQube settings
+  SONAR_PROJECT_KEY: "gitlab-mcp-server"
+  SONAR_HOST_URL: "https://sonarqube.prod.thezephyrco.com"
+
+  # Package settings
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi"
+
 # ============================================================================
 # STAGES - Ordered pipeline execution
 # ============================================================================
@@ -46,6 +55,9 @@ stages:
   - lint      # Code quality and formatting checks
   - test      # Run tests with coverage
   - security  # Security scanning (SAST, dependency scanning)
+  - quality   # SonarQube analysis (develop + MRs)
+  - build     # Package build (main only)
+  - publish   # Publish to GitLab Package Registry (main only)
 
 # ============================================================================
 # REUSABLE TEMPLATES
@@ -273,12 +285,116 @@ security:pip-audit:
   allow_failure: true  # Don't block pipeline on vulnerabilities
 
 # ============================================================================
+# QUALITY STAGE - SonarQube Analysis
+# ============================================================================
+
+# SonarQube analysis - runs on develop branch and merge requests
+quality:sonarqube:
+  stage: quality
+  image: sonarsource/sonar-scanner-cli:latest
+  needs:
+    - job: test:unit:py311
+      artifacts: true
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    GIT_DEPTH: "0"  # Full git history for accurate blame information
+  script:
+    - echo "Running SonarQube analysis..."
+    - |
+      sonar-scanner \
+        -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+        -Dsonar.host.url=${SONAR_HOST_URL} \
+        -Dsonar.token=${SONAR_TOKEN} \
+        -Dsonar.sources=src/gitlab_mcp \
+        -Dsonar.tests=tests \
+        -Dsonar.python.version=3.10,3.11,3.12 \
+        -Dsonar.python.coverage.reportPaths=coverage.xml \
+        -Dsonar.python.xunit.reportPath=junit-unit.xml \
+        -Dsonar.exclusions=**/__pycache__/**,**/htmlcov/**,.venv/** \
+        -Dsonar.test.exclusions=tests/** \
+        -Dsonar.qualitygate.wait=true
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  rules:
+    # Run on develop branch
+    - if: $CI_COMMIT_BRANCH == "develop"
+    # Run on merge requests
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # Skip for other branches
+    - when: never
+  allow_failure: false
+
+# ============================================================================
+# BUILD STAGE - Package Build (main branch only)
+# ============================================================================
+
+build:package:
+  extends: .uv-install
+  stage: build
+  needs:
+    - job: test:unit:py311
+      artifacts: false
+    - job: lint:ruff
+      artifacts: false
+    - job: lint:mypy
+      artifacts: false
+  script:
+    - echo "Building Python package..."
+    - uv pip install build twine
+    - python -m build
+    - echo "Verifying package..."
+    - twine check dist/*
+    - ls -la dist/
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+  rules:
+    # Only build on main branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # Skip for other branches
+    - when: never
+
+# ============================================================================
+# PUBLISH STAGE - GitLab Package Registry (main branch only)
+# ============================================================================
+
+publish:pypi:
+  extends: .uv-install
+  stage: publish
+  needs:
+    - job: build:package
+      artifacts: true
+  script:
+    - echo "Publishing package to GitLab Package Registry..."
+    - uv pip install twine
+    - |
+      TWINE_PASSWORD=${CI_JOB_TOKEN} \
+      TWINE_USERNAME=gitlab-ci-token \
+      python -m twine upload \
+        --repository-url ${PACKAGE_REGISTRY_URL} \
+        dist/*
+    - echo "Package published successfully!"
+  rules:
+    # Only publish on main branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # Skip for other branches
+    - when: never
+
+# ============================================================================
 # PIPELINE OPTIMIZATION NOTES
 # ============================================================================
 #
+# Branch Strategy:
+# - develop: Runs all quality checks including SonarQube analysis
+# - main: Builds and publishes packages to GitLab Package Registry
+# - MRs: Run full test suite and SonarQube analysis
+#
 # Performance Optimizations Implemented:
 # 1. DAG Pipeline: Jobs use 'needs: []' to start immediately without waiting for previous stages
-# 2. Parallel Testing: Matrix builds run unit tests across Python 3.9-3.12 simultaneously
+# 2. Parallel Testing: Matrix builds run unit tests across Python 3.10-3.12 simultaneously
 # 3. Smart Caching: Dependencies cached with file-based keys (pyproject.toml hash)
 # 4. Artifact Optimization: Only necessary artifacts stored, with appropriate expiration
 # 5. Fast Package Manager: uv used instead of pip for 10-100x faster installs
@@ -289,11 +405,18 @@ security:pip-audit:
 # 2. Dependency Scanning: Checks for vulnerable dependencies
 # 3. Secret Detection: Prevents committing secrets
 # 4. pip-audit: Python-specific security scanning
+# 5. SonarQube: Comprehensive code quality and security analysis
 #
 # Quality Gates:
 # 1. Coverage Threshold: Pipeline fails if coverage < 80%
 # 2. Type Safety: mypy must pass with no errors
 # 3. Code Style: black and ruff must pass
 # 4. All Tests: Must pass on all Python versions
+# 5. SonarQube: Quality gate must pass (develop/MRs)
+#
+# Package Publishing:
+# 1. Build stage creates sdist and wheel packages
+# 2. Twine verifies package integrity
+# 3. Publish stage uploads to GitLab Package Registry
 #
 # ============================================================================
