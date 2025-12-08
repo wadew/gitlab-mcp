@@ -420,6 +420,7 @@ async def update_issue(
         labels=labels,
         assignee_ids=assignee_ids,
         milestone_id=milestone_id,
+        state_event=state_event,
     )
 
     # Extract author info

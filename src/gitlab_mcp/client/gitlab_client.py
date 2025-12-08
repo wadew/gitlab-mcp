@@ -28,6 +28,10 @@ from gitlab_mcp.client.exceptions import (
 )
 from gitlab_mcp.config.settings import GitLabConfig
 
+# Error message constants (SonarQube S1192 compliance)
+ERR_AUTH_REQUIRED = "Authentication required"
+ERR_NOT_AUTHENTICATED = "Not authenticated"
+
 
 class GitLabClient:
     """
@@ -131,7 +135,7 @@ class GitLabClient:
         try:
             return self._gitlab.version()  # type: ignore
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -178,7 +182,7 @@ class GitLabClient:
                 "version": version,
             }
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -204,7 +208,7 @@ class GitLabClient:
             project = self._gitlab.projects.get(project_id)  # type: ignore
             return project.asdict()
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -261,7 +265,7 @@ class GitLabClient:
             return project.asdict()
 
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -297,7 +301,7 @@ class GitLabClient:
             branches = project.branches.list(search=search, page=page, per_page=per_page)
             return branches
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -325,7 +329,7 @@ class GitLabClient:
             branch = project.branches.get(branch_name)
             return branch
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -359,7 +363,7 @@ class GitLabClient:
             file = project.files.get(file_path=file_path, ref=ref)
             return file
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -403,7 +407,7 @@ class GitLabClient:
             )
             return tree  # type: ignore
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -430,7 +434,7 @@ class GitLabClient:
             commit = project.commits.get(commit_sha)
             return commit
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -488,7 +492,7 @@ class GitLabClient:
             commits = project.commits.list(**kwargs)
             return list(commits)
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -522,7 +526,7 @@ class GitLabClient:
             comparison = project.repository_compare(from_ref, to_ref, straight=straight)
             return comparison
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -555,7 +559,7 @@ class GitLabClient:
             branch = project.branches.create({"branch": branch_name, "ref": ref})
             return branch
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -582,7 +586,7 @@ class GitLabClient:
             project = self._gitlab.projects.get(project_id)  # type: ignore
             project.branches.delete(branch_name)
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -619,7 +623,7 @@ class GitLabClient:
             tags = project.tags.list(**kwargs)
             return tags  # type: ignore
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -649,7 +653,7 @@ class GitLabClient:
             tag = project.tags.get(tag_name)
             return tag
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -687,7 +691,7 @@ class GitLabClient:
             tag = project.tags.create(data)
             return tag
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -747,7 +751,7 @@ class GitLabClient:
                 "per_page": per_page,
             }
         except GitlabAuthenticationError as e:
-            raise AuthenticationError("Authentication required") from e
+            raise AuthenticationError(ERR_AUTH_REQUIRED) from e
         except Exception as e:
             raise self._convert_exception(e) from e
 
@@ -933,7 +937,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             # Get the project
@@ -1003,7 +1007,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             # Get project with statistics=True to include stats
@@ -1085,7 +1089,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             # Get the project
@@ -1160,7 +1164,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             # Get the project
@@ -1241,7 +1245,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         # Validate title
         if not title or not title.strip():
@@ -1337,7 +1341,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             # Get the project
@@ -1420,7 +1424,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             # Get the project
@@ -1505,7 +1509,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         # Validate required fields
         if not name or not name.strip():
@@ -1594,7 +1598,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             # Get the project
@@ -1666,7 +1670,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             # Get the project
@@ -1718,7 +1722,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -1773,7 +1777,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -1838,7 +1842,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         # Validate required fields
         if not title or not title.strip():
@@ -1911,7 +1915,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -1971,7 +1975,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -2024,7 +2028,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -2081,7 +2085,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -2140,7 +2144,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         # Validate required fields
         if not title or not title.strip():
@@ -2215,7 +2219,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -2272,7 +2276,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -2490,6 +2494,7 @@ class GitLabClient:
         labels: list[str] | None = None,
         assignee_ids: list[int] | None = None,
         milestone_id: int | None = None,
+        state_event: str | None = None,
     ) -> Any:
         """
         Update an existing issue.
@@ -2502,6 +2507,7 @@ class GitLabClient:
             labels: New list of label names (optional)
             assignee_ids: New list of user IDs to assign (optional)
             milestone_id: New milestone ID (optional)
+            state_event: State event: 'close' or 'reopen' (optional)
 
         Returns:
             Updated issue object from python-gitlab
@@ -2545,6 +2551,9 @@ class GitLabClient:
 
             if milestone_id is not None:
                 issue.milestone_id = milestone_id
+
+            if state_event is not None:
+                issue.state_event = state_event
 
             # Save changes
             issue.save()
@@ -4365,7 +4374,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -4411,7 +4420,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -4457,7 +4466,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -4503,7 +4512,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -4554,7 +4563,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -4653,7 +4662,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -4713,7 +4722,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -4778,7 +4787,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         # Validate required parameters
         if not tag_name or not tag_name.strip():
@@ -4841,7 +4850,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -4893,7 +4902,7 @@ class GitLabClient:
         self._ensure_authenticated()
 
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             project = self._gitlab.projects.get(project_id)
@@ -4933,7 +4942,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             user = self._gitlab.users.get(user_id)
@@ -4985,7 +4994,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         if not search or not search.strip():
             raise ValueError("Search query cannot be empty")
@@ -5035,7 +5044,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             user = self._gitlab.users.get(user_id)
@@ -5085,7 +5094,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             groups = self._gitlab.groups.list(page=page, per_page=per_page)
@@ -5125,7 +5134,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             group = self._gitlab.groups.get(group_id)
@@ -5175,7 +5184,7 @@ class GitLabClient:
         """
         self._ensure_authenticated()
         if not self._gitlab:
-            raise AuthenticationError("Not authenticated")
+            raise AuthenticationError(ERR_NOT_AUTHENTICATED)
 
         try:
             group = self._gitlab.groups.get(group_id)
