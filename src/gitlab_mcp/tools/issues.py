@@ -16,6 +16,43 @@ from typing import Any
 from gitlab_mcp.client.gitlab_client import GitLabClient
 
 
+def _extract_author(issue: Any) -> dict[str, str] | None:
+    """Extract author info from an issue object."""
+    if not hasattr(issue, "author") or not issue.author:
+        return None
+    return {
+        "username": getattr(issue.author, "username", ""),
+        "name": getattr(issue.author, "name", ""),
+    }
+
+
+def _extract_assignees(issue: Any) -> list[dict[str, str]]:
+    """Extract assignees list from an issue object."""
+    if not hasattr(issue, "assignees") or not issue.assignees:
+        return []
+    try:
+        return [
+            {
+                "username": getattr(assignee, "username", ""),
+                "name": getattr(assignee, "name", ""),
+            }
+            for assignee in issue.assignees
+        ]
+    except TypeError:
+        # assignees is not iterable
+        return []
+
+
+def _extract_milestone(issue: Any) -> dict[str, str] | None:
+    """Extract milestone info from an issue object."""
+    if not hasattr(issue, "milestone") or not issue.milestone:
+        return None
+    return {
+        "title": getattr(issue.milestone, "title", ""),
+        "web_url": getattr(issue.milestone, "web_url", ""),
+    }
+
+
 async def list_issues(
     client: GitLabClient,
     project_id: str | int,
@@ -88,57 +125,24 @@ async def list_issues(
         per_page=per_page,
     )
 
-    # Format issues
-    formatted_issues = []
-    for issue in issues:
-        # Extract author info
-        author = None
-        if hasattr(issue, "author") and issue.author:
-            author = {
-                "username": getattr(issue.author, "username", ""),
-                "name": getattr(issue.author, "name", ""),
-            }
-
-        # Extract assignees
-        assignees = []
-        if hasattr(issue, "assignees") and issue.assignees:
-            # Handle both list and non-iterable assignees
-            try:
-                for assignee in issue.assignees:
-                    assignees.append(
-                        {
-                            "username": getattr(assignee, "username", ""),
-                            "name": getattr(assignee, "name", ""),
-                        }
-                    )
-            except TypeError:
-                # assignees is not iterable
-                pass
-
-        # Extract milestone info
-        milestone_info = None
-        if hasattr(issue, "milestone") and issue.milestone:
-            milestone_info = {
-                "title": getattr(issue.milestone, "title", ""),
-                "web_url": getattr(issue.milestone, "web_url", ""),
-            }
-
-        formatted_issues.append(
-            {
-                "iid": issue.iid,
-                "title": issue.title,
-                "description": getattr(issue, "description", ""),
-                "state": issue.state,
-                "labels": getattr(issue, "labels", []),
-                "web_url": issue.web_url,
-                "created_at": getattr(issue, "created_at", ""),
-                "updated_at": getattr(issue, "updated_at", ""),
-                "closed_at": getattr(issue, "closed_at", None),
-                "author": author,
-                "assignees": assignees,
-                "milestone": milestone_info,
-            }
-        )
+    # Format issues using helper functions to reduce cognitive complexity
+    formatted_issues = [
+        {
+            "iid": issue.iid,
+            "title": issue.title,
+            "description": getattr(issue, "description", ""),
+            "state": issue.state,
+            "labels": getattr(issue, "labels", []),
+            "web_url": issue.web_url,
+            "created_at": getattr(issue, "created_at", ""),
+            "updated_at": getattr(issue, "updated_at", ""),
+            "closed_at": getattr(issue, "closed_at", None),
+            "author": _extract_author(issue),
+            "assignees": _extract_assignees(issue),
+            "milestone": _extract_milestone(issue),
+        }
+        for issue in issues
+    ]
 
     return {
         "issues": formatted_issues,

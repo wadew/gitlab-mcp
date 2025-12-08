@@ -1933,6 +1933,36 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
     ]
 
 
+def _build_tool_schema(params_schema: dict[str, Any]) -> dict[str, Any]:
+    """
+    Build JSON schema for a tool from its parameter definitions.
+
+    Args:
+        params_schema: Dictionary of parameter definitions
+
+    Returns:
+        JSON schema dictionary with properties and required fields
+    """
+    properties = {}
+    required = []
+
+    for param_name, param_def in params_schema.items():
+        properties[param_name] = param_def.copy()
+        # Mark parameters as required if they don't have "optional" in description
+        if "optional" not in param_def.get("description", "").lower():
+            required.append(param_name)
+
+    input_schema: dict[str, Any] = {
+        "type": "object",
+        "properties": properties,
+    }
+
+    if required:
+        input_schema["required"] = required
+
+    return input_schema
+
+
 async def async_main() -> None:
     """
     Async main entry point for the GitLab MCP Server.
@@ -1967,35 +1997,14 @@ async def async_main() -> None:
         """List all available GitLab tools."""
         from mcp.types import Tool
 
-        result = []
-        for name, description, params_schema in tool_defs:
-            # Build JSON schema for tool
-            properties = {}
-            required = []
-
-            for param_name, param_def in params_schema.items():
-                properties[param_name] = param_def.copy()
-                # Mark parameters as required if they don't have "optional" in description
-                if "optional" not in param_def.get("description", "").lower():
-                    required.append(param_name)
-
-            input_schema = {
-                "type": "object",
-                "properties": properties,
-            }
-
-            if required:
-                input_schema["required"] = required
-
-            result.append(
-                Tool(
-                    name=name,
-                    description=description,
-                    inputSchema=input_schema,
-                )
+        return [
+            Tool(
+                name=name,
+                description=description,
+                inputSchema=_build_tool_schema(params_schema),
             )
-
-        return result
+            for name, description, params_schema in tool_defs
+        ]
 
     # Register call_tool handler
     @server.call_tool()
