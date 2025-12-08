@@ -184,6 +184,7 @@ test:unit:py311:
     paths:
       - htmlcov/
       - coverage.xml
+      - junit-unit.xml
     expire_in: 1 week
     when: always
 
@@ -309,7 +310,7 @@ quality:sonarqube:
         -Dsonar.tests=tests \
         -Dsonar.python.version=3.10,3.11,3.12 \
         -Dsonar.python.coverage.reportPaths=coverage.xml \
-        -Dsonar.python.xunit.reportPath=junit-unit.xml \
+        -Dsonar.python.xunit.reportPaths=junit-unit.xml \
         -Dsonar.exclusions=**/__pycache__/**,**/htmlcov/**,.venv/** \
         -Dsonar.test.exclusions=tests/** \
         -Dsonar.qualitygate.wait=true
