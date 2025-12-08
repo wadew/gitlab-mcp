@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from gitlab_mcp.server import _get_tool_definitions, main
+from gitlab_mcp.server import _build_tool_schema, _get_tool_definitions, main
 
 
 class TestToolDefinitions:
@@ -367,3 +367,114 @@ class TestAsyncMainEntryPoint:
 
         # Verify sys.exit was called with error code 1
         assert exc_info.value.code == 1
+
+
+class TestBuildToolSchema:
+    """Test _build_tool_schema helper function."""
+
+    def test_empty_params_schema(self) -> None:
+        """Test that empty params schema returns basic object schema."""
+        result = _build_tool_schema({})
+
+        assert result == {"type": "object", "properties": {}}
+        assert "required" not in result
+
+    def test_single_required_param(self) -> None:
+        """Test that parameter without 'optional' is marked as required."""
+        params_schema = {
+            "project_id": {
+                "type": "string",
+                "description": "Project ID or path",
+            }
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        assert result["type"] == "object"
+        assert "project_id" in result["properties"]
+        assert result["properties"]["project_id"]["type"] == "string"
+        assert result["required"] == ["project_id"]
+
+    def test_single_optional_param(self) -> None:
+        """Test that parameter with 'optional' in description is not required."""
+        params_schema = {
+            "page": {
+                "type": "integer",
+                "description": "Page number (optional, default: 1)",
+            }
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        assert result["type"] == "object"
+        assert "page" in result["properties"]
+        assert "required" not in result
+
+    def test_mixed_required_and_optional_params(self) -> None:
+        """Test schema with both required and optional parameters."""
+        params_schema = {
+            "project_id": {
+                "type": "string",
+                "description": "Project ID or path",
+            },
+            "page": {
+                "type": "integer",
+                "description": "Page number (optional, default: 1)",
+            },
+            "branch": {
+                "type": "string",
+                "description": "Branch name",
+            },
+            "per_page": {
+                "type": "integer",
+                "description": "Results per page (optional, default: 20)",
+            },
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        assert result["type"] == "object"
+        assert len(result["properties"]) == 4
+        # Only project_id and branch should be required
+        assert set(result["required"]) == {"project_id", "branch"}
+
+    def test_optional_case_insensitive(self) -> None:
+        """Test that 'Optional' (capital O) in description marks param as optional."""
+        params_schema = {
+            "filter": {
+                "type": "string",
+                "description": "Filter string (Optional)",
+            }
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        assert "required" not in result
+
+    def test_param_definitions_are_copied(self) -> None:
+        """Test that original param definitions are copied, not referenced."""
+        params_schema = {
+            "test_param": {
+                "type": "string",
+                "description": "Test parameter",
+            }
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        # Modify the result and verify original is unchanged
+        result["properties"]["test_param"]["modified"] = True
+        assert "modified" not in params_schema["test_param"]
+
+    def test_param_without_description(self) -> None:
+        """Test parameter without description is treated as required."""
+        params_schema = {
+            "id": {
+                "type": "integer",
+            }
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        # Param without description defaults to required (no "optional" found)
+        assert result["required"] == ["id"]
