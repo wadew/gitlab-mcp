@@ -9,6 +9,7 @@ This module provides MCP tools for GitLab user operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
@@ -28,6 +29,7 @@ async def get_user(
     Returns:
         Dictionary with user details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_user(user_id=user_id)
 
 
@@ -49,6 +51,7 @@ async def search_users(
     Returns:
         List of user dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.search_users(
         search=search,
         page=page,
@@ -74,6 +77,7 @@ async def list_user_projects(
     Returns:
         List of project dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_user_projects(
         user_id=user_id,
         page=page,

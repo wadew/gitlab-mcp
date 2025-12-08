@@ -11,6 +11,7 @@ This module provides MCP tools for GitLab release operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
@@ -30,6 +31,7 @@ async def list_releases(
     Returns:
         List of release dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_releases(project_id=project_id)
 
 
@@ -49,6 +51,7 @@ async def get_release(
     Returns:
         Dictionary with release details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_release(project_id=project_id, tag_name=tag_name)
 
 
@@ -74,6 +77,7 @@ async def create_release(
     Returns:
         None
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     client.create_release(
         project_id=project_id,
         tag_name=tag_name,
@@ -103,6 +107,7 @@ async def update_release(
     Returns:
         None
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     client.update_release(
         project_id=project_id,
         tag_name=tag_name,
@@ -127,4 +132,5 @@ async def delete_release(
     Returns:
         None
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     client.delete_release(project_id=project_id, tag_name=tag_name)

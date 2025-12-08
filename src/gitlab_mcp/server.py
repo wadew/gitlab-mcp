@@ -558,6 +558,7 @@ class GitLabMCPServer:
             NetworkError: If connection to GitLab fails
             AuthenticationError: If authentication fails
         """
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
         # Authenticate with GitLab
         self.gitlab_client.authenticate()
 
@@ -567,8 +568,8 @@ class GitLabMCPServer:
 
         Performs cleanup operations before server shutdown.
         """
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
         # Currently no cleanup needed, but method exists for future use
-        pass
 
     async def list_tools(self) -> list[dict[str, Any]]:
         """
@@ -577,6 +578,7 @@ class GitLabMCPServer:
         Returns:
             List of tool dictionaries with name and description
         """
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
         return [
             {"name": name, "description": tool["description"]} for name, tool in self._tools.items()
         ]
@@ -2003,6 +2005,7 @@ async def async_main() -> None:
     @server.list_tools()
     async def list_tools() -> list[Any]:
         """List all available GitLab tools."""
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
         from mcp.types import Tool
 
         return [

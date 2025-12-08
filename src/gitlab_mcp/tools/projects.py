@@ -12,6 +12,7 @@ This module provides MCP tools for GitLab project management operations includin
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
@@ -35,6 +36,7 @@ async def list_projects(
     Returns:
         Dictionary with projects list and pagination info
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_projects(
         visibility=visibility,
         page=page,
@@ -56,6 +58,7 @@ async def get_project(
     Returns:
         Project object from python-gitlab
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_project(project_id=project_id)
 
 
@@ -85,6 +88,7 @@ async def create_project(
     Returns:
         Dictionary with created project details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.create_project(
         name=name,
         path=path,
@@ -113,6 +117,7 @@ async def search_projects(
     Returns:
         List of project dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.search_projects(
         search_term=search_term,
         page=page,
@@ -138,6 +143,7 @@ async def list_project_members(
     Returns:
         List of member dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_project_members(
         project_id=project_id,
         page=page,
@@ -159,6 +165,7 @@ async def get_project_statistics(
     Returns:
         Dictionary with project statistics
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_project_statistics(project_id=project_id)
 
 
@@ -182,6 +189,7 @@ async def list_milestones(
     Returns:
         List of milestone dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_milestones(
         project_id=project_id,
         state=state,
@@ -206,6 +214,7 @@ async def get_milestone(
     Returns:
         Dictionary with milestone details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_milestone(project_id=project_id, milestone_id=milestone_id)
 
 
@@ -231,6 +240,7 @@ async def create_milestone(
     Returns:
         Dictionary with created milestone details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.create_milestone(
         project_id=project_id,
         title=title,
@@ -266,6 +276,7 @@ async def update_milestone(
     Returns:
         Dictionary with updated milestone details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.update_milestone(
         project_id=project_id,
         milestone_id=milestone_id,
