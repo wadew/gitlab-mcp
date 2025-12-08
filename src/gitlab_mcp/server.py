@@ -1991,7 +1991,9 @@ async def async_main() -> None:
         # Log detailed error for debugging (not exposed to users)
         logger.error("GitLab authentication failed: %s", e, exc_info=True)
         # Print generic message to stderr (no sensitive details)
-        print("Failed to authenticate with GitLab. Check your credentials and URL.", file=sys.stderr)
+        print(
+            "Failed to authenticate with GitLab. Check your credentials and URL.", file=sys.stderr
+        )
         sys.exit(1)
 
     # Get tool definitions
