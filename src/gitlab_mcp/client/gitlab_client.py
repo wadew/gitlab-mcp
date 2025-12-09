@@ -92,7 +92,7 @@ class GitLabClient:
 
         except GitlabAuthenticationError as e:
             raise AuthenticationError("GitLab authentication failed") from e
-        except (ConnectionError, OSError) as e:
+        except OSError as e:
             raise GitLabAPIError(f"Network error: {str(e).lower()}") from e
         except Exception as e:
             raise GitLabAPIError(f"Unexpected error during authentication: {str(e)}") from e
