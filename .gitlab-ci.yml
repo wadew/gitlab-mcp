@@ -261,51 +261,17 @@ test:integration:
   allow_failure: true
 
 # ============================================================================
-# SECURITY STAGE - Security scanning (develop/MRs only)
+# SECURITY STAGE - Security scanning
 # ============================================================================
 
 # Include GitLab's built-in security scanning templates
+# Note: These templates have complex rules that shouldn't be overridden.
+# They run on all branches by default, which is fine - security scanning on main
+# is lightweight and provides an extra safety check before publishing.
 include:
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
-
-# Customize SAST job
-sast:
-  stage: security
-  needs:
-    - job: test:unit:py311
-      artifacts: false
-      optional: true
-  variables:
-    SAST_EXCLUDED_PATHS: "tests,docs,.venv,htmlcov"
-  rules:
-    - if: $CI_COMMIT_BRANCH == "develop"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - when: never
-
-# Customize dependency scanning
-dependency_scanning:
-  stage: security
-  needs:
-    - job: test:unit:py311
-      artifacts: false
-      optional: true
-  rules:
-    - if: $CI_COMMIT_BRANCH == "develop"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - when: never
-
-# Customize secret detection
-secret_detection:
-  stage: security
-  needs: []  # Can run in parallel
-  variables:
-    SECRET_DETECTION_EXCLUDED_FILES: "*.lock,*.xml,htmlcov/*"
-  rules:
-    - if: $CI_COMMIT_BRANCH == "develop"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - when: never
 
 # Additional: pip-audit for Python-specific security scanning
 security:pip-audit:
