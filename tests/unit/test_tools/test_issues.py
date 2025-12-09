@@ -12,6 +12,9 @@ import pytest
 
 from gitlab_mcp.client.exceptions import AuthenticationError, NotFoundError
 from gitlab_mcp.tools.issues import (
+    _extract_assignees,
+    _extract_author,
+    _extract_milestone,
     add_issue_comment,
     close_issue,
     get_issue,
@@ -20,6 +23,117 @@ from gitlab_mcp.tools.issues import (
     reopen_issue,
     update_issue,
 )
+
+
+class TestHelperFunctions:
+    """Test helper functions for issue data extraction."""
+
+    def test_extract_author_with_valid_author(self):
+        """Test extracting author info from issue with author."""
+        mock_issue = Mock()
+        mock_author = Mock()
+        mock_author.username = "testuser"
+        mock_author.name = "Test User"
+        mock_issue.author = mock_author
+
+        result = _extract_author(mock_issue)
+
+        assert result == {"username": "testuser", "name": "Test User"}
+
+    def test_extract_author_without_author_attribute(self):
+        """Test extracting author when issue has no author attribute."""
+        mock_issue = Mock(spec=[])  # No author attribute
+
+        result = _extract_author(mock_issue)
+
+        assert result is None
+
+    def test_extract_author_with_none_author(self):
+        """Test extracting author when author is None."""
+        mock_issue = Mock()
+        mock_issue.author = None
+
+        result = _extract_author(mock_issue)
+
+        assert result is None
+
+    def test_extract_assignees_with_valid_assignees(self):
+        """Test extracting assignees from issue with assignees list."""
+        mock_issue = Mock()
+        mock_assignee1 = Mock()
+        mock_assignee1.username = "user1"
+        mock_assignee1.name = "User One"
+        mock_assignee2 = Mock()
+        mock_assignee2.username = "user2"
+        mock_assignee2.name = "User Two"
+        mock_issue.assignees = [mock_assignee1, mock_assignee2]
+
+        result = _extract_assignees(mock_issue)
+
+        assert len(result) == 2
+        assert result[0] == {"username": "user1", "name": "User One"}
+        assert result[1] == {"username": "user2", "name": "User Two"}
+
+    def test_extract_assignees_without_assignees_attribute(self):
+        """Test extracting assignees when issue has no assignees attribute."""
+        mock_issue = Mock(spec=[])  # No assignees attribute
+
+        result = _extract_assignees(mock_issue)
+
+        assert result == []
+
+    def test_extract_assignees_with_none_assignees(self):
+        """Test extracting assignees when assignees is None."""
+        mock_issue = Mock()
+        mock_issue.assignees = None
+
+        result = _extract_assignees(mock_issue)
+
+        assert result == []
+
+    def test_extract_assignees_with_empty_list(self):
+        """Test extracting assignees from empty assignees list."""
+        mock_issue = Mock()
+        mock_issue.assignees = []
+
+        result = _extract_assignees(mock_issue)
+
+        assert result == []
+
+    def test_extract_assignees_with_non_iterable(self):
+        """Test extracting assignees when assignees is not iterable."""
+        mock_issue = Mock()
+        mock_issue.assignees = 123  # Non-iterable
+
+        result = _extract_assignees(mock_issue)
+
+        assert result == []
+
+    def test_extract_milestone_with_valid_milestone(self):
+        """Test extracting milestone info from issue with milestone."""
+        mock_issue = Mock()
+        mock_issue.milestone = Mock(title="v1.0", web_url="https://example.com/milestone")
+
+        result = _extract_milestone(mock_issue)
+
+        assert result == {"title": "v1.0", "web_url": "https://example.com/milestone"}
+
+    def test_extract_milestone_without_milestone_attribute(self):
+        """Test extracting milestone when issue has no milestone attribute."""
+        mock_issue = Mock(spec=[])  # No milestone attribute
+
+        result = _extract_milestone(mock_issue)
+
+        assert result is None
+
+    def test_extract_milestone_with_none_milestone(self):
+        """Test extracting milestone when milestone is None."""
+        mock_issue = Mock()
+        mock_issue.milestone = None
+
+        result = _extract_milestone(mock_issue)
+
+        assert result is None
 
 
 class TestListIssues:
@@ -588,6 +702,7 @@ class TestUpdateIssue:
             labels=["bug", "high-priority"],
             assignee_ids=[10],
             milestone_id=5,
+            state_event=None,
         )
 
         assert result["iid"] == 42

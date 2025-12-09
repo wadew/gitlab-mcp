@@ -10,6 +10,7 @@ This module provides MCP tools for GitLab label operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
@@ -31,6 +32,7 @@ async def list_labels(
     Returns:
         List of label dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_labels(project_id=project_id, search=search)
 
 
@@ -56,6 +58,7 @@ async def create_label(
     Returns:
         Dictionary with created label details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.create_label(
         project_id=project_id,
         name=name,
@@ -89,6 +92,7 @@ async def update_label(
     Returns:
         Dictionary with updated label details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.update_label(
         project_id=project_id,
         label_id=label_id,
@@ -115,4 +119,5 @@ async def delete_label(
     Returns:
         None
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     client.delete_label(project_id=project_id, label_id=label_id)

@@ -6,6 +6,8 @@ It provides tools for interacting with GitLab repositories, issues, merge reques
 """
 
 import asyncio
+import logging
+import sys
 from collections.abc import Callable
 from typing import Any
 
@@ -15,6 +17,28 @@ from mcp.server.stdio import stdio_server
 from gitlab_mcp import tools
 from gitlab_mcp.client.gitlab_client import GitLabClient
 from gitlab_mcp.config.settings import GitLabConfig, load_config
+
+# Schema description constants (SonarQube S1192 compliance)
+DESC_PROJECT_ID = "Project ID or path (e.g., 'group/project')"
+DESC_PAGE = "Page number (optional, default: 1)"
+DESC_PER_PAGE = "Results per page (optional, default: 20)"
+DESC_MR_IID = "Merge request IID (internal ID)"
+DESC_ISSUE_IID = "Issue IID (internal ID)"
+DESC_PIPELINE_ID = "Pipeline ID"
+DESC_JOB_ID = "Job ID"
+DESC_NEW_TITLE = "New title (optional)"
+DESC_NEW_DESC = "New description (optional)"
+DESC_WIKI_SLUG = "Wiki page slug (URL-friendly identifier)"
+DESC_SNIPPET_ID = "Snippet ID"
+DESC_TAG_NAME = "Git tag name"
+DESC_TAG_RELEASE = "Git tag name associated with release"
+DESC_SEARCH_QUERY = "Search query string"
+DESC_AUTHOR_EMAIL = "Email of commit author (optional)"
+DESC_AUTHOR_NAME = "Name of commit author (optional)"
+DESC_SOURCE_REF = "Source branch, tag, or commit SHA"
+
+# Module logger for security-safe error logging
+logger = logging.getLogger(__name__)
 
 
 class GitLabMCPServer:
@@ -534,6 +558,7 @@ class GitLabMCPServer:
             NetworkError: If connection to GitLab fails
             AuthenticationError: If authentication fails
         """
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
         # Authenticate with GitLab
         self.gitlab_client.authenticate()
 
@@ -543,8 +568,8 @@ class GitLabMCPServer:
 
         Performs cleanup operations before server shutdown.
         """
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
         # Currently no cleanup needed, but method exists for future use
-        pass
 
     async def list_tools(self) -> list[dict[str, Any]]:
         """
@@ -553,6 +578,7 @@ class GitLabMCPServer:
         Returns:
             List of tool dictionaries with name and description
         """
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
         return [
             {"name": name, "description": tool["description"]} for name, tool in self._tools.items()
         ]
@@ -623,7 +649,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "path": {"type": "string", "description": "Path in repository (optional)"},
                 "ref": {
@@ -642,7 +668,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "file_path": {"type": "string", "description": "Path to file in repository"},
                 "ref": {
@@ -655,7 +681,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "search_code",
             "Search for code in project repositories",
             {
-                "search_term": {"type": "string", "description": "Search query string"},
+                "search_term": {"type": "string", "description": DESC_SEARCH_QUERY},
                 "project_id": {
                     "type": "string",
                     "description": "Project ID or path (optional, search all accessible projects if not specified)",
@@ -668,7 +694,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "file_path": {
                     "type": "string",
@@ -688,11 +714,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "author_email": {
                     "type": "string",
-                    "description": "Email of commit author (optional)",
+                    "description": DESC_AUTHOR_EMAIL,
                 },
                 "author_name": {
                     "type": "string",
-                    "description": "Name of commit author (optional)",
+                    "description": DESC_AUTHOR_NAME,
                 },
                 "encoding": {
                     "type": "string",
@@ -706,7 +732,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "file_path": {"type": "string", "description": "Full path to the file to update"},
                 "branch": {
@@ -723,11 +749,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "author_email": {
                     "type": "string",
-                    "description": "Email of commit author (optional)",
+                    "description": DESC_AUTHOR_EMAIL,
                 },
                 "author_name": {
                     "type": "string",
-                    "description": "Name of commit author (optional)",
+                    "description": DESC_AUTHOR_NAME,
                 },
                 "encoding": {
                     "type": "string",
@@ -741,7 +767,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "file_path": {"type": "string", "description": "Full path to the file to delete"},
                 "branch": {
@@ -754,11 +780,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "author_email": {
                     "type": "string",
-                    "description": "Email of commit author (optional)",
+                    "description": DESC_AUTHOR_EMAIL,
                 },
                 "author_name": {
                     "type": "string",
-                    "description": "Name of commit author (optional)",
+                    "description": DESC_AUTHOR_NAME,
                 },
             },
         ),
@@ -768,16 +794,16 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "search": {
                     "type": "string",
                     "description": "Search term to filter branches (optional)",
                 },
-                "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
+                "page": {"type": "integer", "description": DESC_PAGE},
                 "per_page": {
                     "type": "integer",
-                    "description": "Results per page (optional, default: 20)",
+                    "description": DESC_PER_PAGE,
                 },
             },
         ),
@@ -787,7 +813,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "branch_name": {"type": "string", "description": "Name of the branch"},
             },
@@ -798,10 +824,10 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "branch_name": {"type": "string", "description": "Name for the new branch"},
-                "ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
+                "ref": {"type": "string", "description": DESC_SOURCE_REF},
             },
         ),
         (
@@ -810,7 +836,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "branch_name": {"type": "string", "description": "Name of branch to delete"},
             },
@@ -821,7 +847,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "commit_sha": {"type": "string", "description": "Commit SHA"},
             },
@@ -832,7 +858,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "ref": {"type": "string", "description": "Branch/tag name (optional)"},
                 "since": {
@@ -847,10 +873,10 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                     "type": "string",
                     "description": "Only commits affecting this file path (optional)",
                 },
-                "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
+                "page": {"type": "integer", "description": DESC_PAGE},
                 "per_page": {
                     "type": "integer",
-                    "description": "Results per page (optional, default: 20)",
+                    "description": DESC_PER_PAGE,
                 },
             },
         ),
@@ -860,9 +886,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "from_ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
+                "from_ref": {"type": "string", "description": DESC_SOURCE_REF},
                 "to_ref": {"type": "string", "description": "Target branch, tag, or commit SHA"},
                 "straight": {
                     "type": "boolean",
@@ -876,16 +902,16 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "search": {
                     "type": "string",
                     "description": "Search pattern to filter tags (optional)",
                 },
-                "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
+                "page": {"type": "integer", "description": DESC_PAGE},
                 "per_page": {
                     "type": "integer",
-                    "description": "Results per page (optional, default: 20)",
+                    "description": DESC_PER_PAGE,
                 },
             },
         ),
@@ -895,7 +921,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "tag_name": {"type": "string", "description": "Name of the tag"},
             },
@@ -906,10 +932,10 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "tag_name": {"type": "string", "description": "Name for the new tag"},
-                "ref": {"type": "string", "description": "Source branch, tag, or commit SHA"},
+                "ref": {"type": "string", "description": DESC_SOURCE_REF},
                 "message": {
                     "type": "string",
                     "description": "Optional tag message (creates annotated tag)",
@@ -923,7 +949,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "state": {
                     "type": "string",
@@ -945,7 +971,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "per_page": {
                     "type": "integer",
-                    "description": "Results per page (optional, default: 20)",
+                    "description": DESC_PER_PAGE,
                 },
             },
         ),
@@ -955,9 +981,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
             },
         ),
         (
@@ -966,7 +992,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "title": {"type": "string", "description": "Issue title"},
                 "description": {"type": "string", "description": "Issue description (optional)"},
@@ -989,11 +1015,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
-                "title": {"type": "string", "description": "New title (optional)"},
-                "description": {"type": "string", "description": "New description (optional)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
+                "title": {"type": "string", "description": DESC_NEW_TITLE},
+                "description": {"type": "string", "description": DESC_NEW_DESC},
                 "labels": {
                     "type": "array",
                     "items": {"type": "string"},
@@ -1017,9 +1043,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
             },
         ),
         (
@@ -1028,9 +1054,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
             },
         ),
         (
@@ -1039,9 +1065,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
                 "body": {"type": "string", "description": "Comment text (supports Markdown)"},
             },
         ),
@@ -1051,13 +1077,13 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "issue_iid": {"type": "integer", "description": "Issue IID (internal ID)"},
-                "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
+                "issue_iid": {"type": "integer", "description": DESC_ISSUE_IID},
+                "page": {"type": "integer", "description": DESC_PAGE},
                 "per_page": {
                     "type": "integer",
-                    "description": "Results per page (optional, default: 20)",
+                    "description": DESC_PER_PAGE,
                 },
             },
         ),
@@ -1068,7 +1094,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "state": {
                     "type": "string",
@@ -1090,7 +1116,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "per_page": {
                     "type": "integer",
-                    "description": "Results per page (optional, default: 20)",
+                    "description": DESC_PER_PAGE,
                 },
             },
         ),
@@ -1100,9 +1126,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1111,7 +1137,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "source_branch": {"type": "string", "description": "Source branch name"},
                 "target_branch": {"type": "string", "description": "Target branch name"},
@@ -1136,11 +1162,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-                "title": {"type": "string", "description": "New title (optional)"},
-                "description": {"type": "string", "description": "New description (optional)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
+                "title": {"type": "string", "description": DESC_NEW_TITLE},
+                "description": {"type": "string", "description": DESC_NEW_DESC},
                 "labels": {
                     "type": "array",
                     "items": {"type": "string"},
@@ -1160,9 +1186,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
                 "merge_commit_message": {
                     "type": "string",
                     "description": "Merge commit message (optional)",
@@ -1179,9 +1205,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1190,9 +1216,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1201,9 +1227,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1212,9 +1238,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1223,9 +1249,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1234,9 +1260,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1245,9 +1271,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
             },
         ),
         (
@@ -1256,9 +1282,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
                 "body": {"type": "string", "description": "Comment text (supports Markdown)"},
             },
         ),
@@ -1268,13 +1294,13 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "mr_iid": {"type": "integer", "description": "Merge request IID (internal ID)"},
-                "page": {"type": "integer", "description": "Page number (optional, default: 1)"},
+                "mr_iid": {"type": "integer", "description": DESC_MR_IID},
+                "page": {"type": "integer", "description": DESC_PAGE},
                 "per_page": {
                     "type": "integer",
-                    "description": "Results per page (optional, default: 20)",
+                    "description": DESC_PER_PAGE,
                 },
             },
         ),
@@ -1285,7 +1311,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "ref": {"type": "string", "description": "Filter by branch/tag (optional)"},
                 "status": {
@@ -1294,7 +1320,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "per_page": {
                     "type": "integer",
-                    "description": "Results per page (optional, default: 20)",
+                    "description": DESC_PER_PAGE,
                 },
             },
         ),
@@ -1304,9 +1330,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         (
@@ -1315,7 +1341,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "ref": {"type": "string", "description": "Branch or tag name"},
                 "variables": {"type": "object", "description": "Pipeline variables (optional)"},
@@ -1327,9 +1353,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         (
@@ -1338,9 +1364,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         (
@@ -1349,9 +1375,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         (
@@ -1360,9 +1386,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         (
@@ -1371,9 +1397,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
             },
         ),
         (
@@ -1382,9 +1408,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
                 "tail_lines": {
                     "type": "integer",
                     "description": "Optional: Number of lines to return from end of log (e.g., 500-1000 for error analysis). Prevents exceeding token limits on large logs.",
@@ -1397,9 +1423,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
             },
         ),
         (
@@ -1408,9 +1434,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
             },
         ),
         (
@@ -1419,9 +1445,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
             },
         ),
         (
@@ -1430,9 +1456,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "job_id": {"type": "integer", "description": "Job ID"},
+                "job_id": {"type": "integer", "description": DESC_JOB_ID},
                 "artifact_path": {
                     "type": "string",
                     "description": "Path to specific artifact (optional, download all if not specified)",
@@ -1445,9 +1471,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "pipeline_id": {"type": "integer", "description": "Pipeline ID"},
+                "pipeline_id": {"type": "integer", "description": DESC_PIPELINE_ID},
             },
         ),
         # Project tools (9)
@@ -1466,7 +1492,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 },
                 "per_page": {
                     "type": "integer",
-                    "description": "Results per page (optional, default: 20)",
+                    "description": DESC_PER_PAGE,
                 },
             },
         ),
@@ -1476,7 +1502,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
             },
         ),
@@ -1514,7 +1540,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "search_projects",
             "Search for projects by name or description",
             {
-                "search_term": {"type": "string", "description": "Search query string"},
+                "search_term": {"type": "string", "description": DESC_SEARCH_QUERY},
             },
         ),
         (
@@ -1523,7 +1549,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
             },
         ),
@@ -1533,7 +1559,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
             },
         ),
@@ -1543,7 +1569,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "state": {
                     "type": "string",
@@ -1557,7 +1583,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "milestone_id": {"type": "integer", "description": "Milestone ID"},
             },
@@ -1568,7 +1594,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "title": {"type": "string", "description": "Milestone title"},
                 "description": {
@@ -1591,11 +1617,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "milestone_id": {"type": "integer", "description": "Milestone ID"},
-                "title": {"type": "string", "description": "New title (optional)"},
-                "description": {"type": "string", "description": "New description (optional)"},
+                "title": {"type": "string", "description": DESC_NEW_TITLE},
+                "description": {"type": "string", "description": DESC_NEW_DESC},
                 "due_date": {
                     "type": "string",
                     "description": "New due date (YYYY-MM-DD format, optional)",
@@ -1617,7 +1643,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
             },
         ),
@@ -1627,7 +1653,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "name": {"type": "string", "description": "Label name"},
                 "color": {
@@ -1643,12 +1669,12 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "name": {"type": "string", "description": "Current label name"},
                 "new_name": {"type": "string", "description": "New label name (optional)"},
                 "color": {"type": "string", "description": "New color (hex format, optional)"},
-                "description": {"type": "string", "description": "New description (optional)"},
+                "description": {"type": "string", "description": DESC_NEW_DESC},
             },
         ),
         (
@@ -1657,7 +1683,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "name": {"type": "string", "description": "Label name"},
             },
@@ -1669,7 +1695,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
             },
         ),
@@ -1679,11 +1705,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "slug": {
                     "type": "string",
-                    "description": "Wiki page slug (URL-friendly identifier)",
+                    "description": DESC_WIKI_SLUG,
                 },
             },
         ),
@@ -1693,7 +1719,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "title": {"type": "string", "description": "Page title"},
                 "content": {"type": "string", "description": "Page content (Markdown format)"},
@@ -1705,11 +1731,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "slug": {
                     "type": "string",
-                    "description": "Wiki page slug (URL-friendly identifier)",
+                    "description": DESC_WIKI_SLUG,
                 },
                 "title": {"type": "string", "description": "New page title (optional)"},
                 "content": {"type": "string", "description": "New page content (optional)"},
@@ -1721,11 +1747,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "slug": {
                     "type": "string",
-                    "description": "Wiki page slug (URL-friendly identifier)",
+                    "description": DESC_WIKI_SLUG,
                 },
             },
         ),
@@ -1736,7 +1762,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
             },
         ),
@@ -1746,9 +1772,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "snippet_id": {"type": "integer", "description": "Snippet ID"},
+                "snippet_id": {"type": "integer", "description": DESC_SNIPPET_ID},
             },
         ),
         (
@@ -1757,7 +1783,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "title": {"type": "string", "description": "Snippet title"},
                 "file_name": {"type": "string", "description": "File name"},
@@ -1774,10 +1800,10 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "snippet_id": {"type": "integer", "description": "Snippet ID"},
-                "title": {"type": "string", "description": "New title (optional)"},
+                "snippet_id": {"type": "integer", "description": DESC_SNIPPET_ID},
+                "title": {"type": "string", "description": DESC_NEW_TITLE},
                 "file_name": {"type": "string", "description": "New file name (optional)"},
                 "content": {"type": "string", "description": "New content (optional)"},
                 "visibility": {"type": "string", "description": "New visibility (optional)"},
@@ -1789,9 +1815,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "snippet_id": {"type": "integer", "description": "Snippet ID"},
+                "snippet_id": {"type": "integer", "description": DESC_SNIPPET_ID},
             },
         ),
         # Release tools (5)
@@ -1801,7 +1827,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
             },
         ),
@@ -1811,11 +1837,11 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
                 "tag_name": {
                     "type": "string",
-                    "description": "Git tag name associated with release",
+                    "description": DESC_TAG_RELEASE,
                 },
             },
         ),
@@ -1825,9 +1851,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "tag_name": {"type": "string", "description": "Git tag name"},
+                "tag_name": {"type": "string", "description": DESC_TAG_NAME},
                 "name": {"type": "string", "description": "Release name"},
                 "description": {"type": "string", "description": "Release description (optional)"},
                 "ref": {
@@ -1842,9 +1868,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "tag_name": {"type": "string", "description": "Git tag name"},
+                "tag_name": {"type": "string", "description": DESC_TAG_NAME},
                 "name": {"type": "string", "description": "New release name (optional)"},
                 "description": {
                     "type": "string",
@@ -1858,9 +1884,9 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             {
                 "project_id": {
                     "type": "string",
-                    "description": "Project ID or path (e.g., 'group/project')",
+                    "description": DESC_PROJECT_ID,
                 },
-                "tag_name": {"type": "string", "description": "Git tag name"},
+                "tag_name": {"type": "string", "description": DESC_TAG_NAME},
             },
         ),
         # User tools (3)
@@ -1875,7 +1901,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             "search_users",
             "Search for users by username or email",
             {
-                "search": {"type": "string", "description": "Search query string"},
+                "search": {"type": "string", "description": DESC_SEARCH_QUERY},
             },
         ),
         (
@@ -1893,7 +1919,7 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
                 "owned": {"type": "boolean", "description": "Limit to owned groups (optional)"},
                 "per_page": {
                     "type": "integer",
-                    "description": "Results per page (optional, default: 20)",
+                    "description": DESC_PER_PAGE,
                 },
             },
         ),
@@ -1912,6 +1938,36 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
             },
         ),
     ]
+
+
+def _build_tool_schema(params_schema: dict[str, Any]) -> dict[str, Any]:
+    """
+    Build JSON schema for a tool from its parameter definitions.
+
+    Args:
+        params_schema: Dictionary of parameter definitions
+
+    Returns:
+        JSON schema dictionary with properties and required fields
+    """
+    properties = {}
+    required = []
+
+    for param_name, param_def in params_schema.items():
+        properties[param_name] = param_def.copy()
+        # Mark parameters as required if they don't have "optional" in description
+        if "optional" not in param_def.get("description", "").lower():
+            required.append(param_name)
+
+    input_schema: dict[str, Any] = {
+        "type": "object",
+        "properties": properties,
+    }
+
+    if required:
+        input_schema["required"] = required
+
+    return input_schema
 
 
 async def async_main() -> None:
@@ -1934,9 +1990,12 @@ async def async_main() -> None:
     try:
         client.authenticate()
     except Exception as e:
-        import sys
-
-        print(f"Failed to authenticate with GitLab: {e}", file=sys.stderr)
+        # Log detailed error for debugging (not exposed to users)
+        logger.error("GitLab authentication failed: %s", e, exc_info=True)
+        # Print generic message to stderr (no sensitive details)
+        print(
+            "Failed to authenticate with GitLab. Check your credentials and URL.", file=sys.stderr
+        )
         sys.exit(1)
 
     # Get tool definitions
@@ -1946,37 +2005,17 @@ async def async_main() -> None:
     @server.list_tools()
     async def list_tools() -> list[Any]:
         """List all available GitLab tools."""
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
         from mcp.types import Tool
 
-        result = []
-        for name, description, params_schema in tool_defs:
-            # Build JSON schema for tool
-            properties = {}
-            required = []
-
-            for param_name, param_def in params_schema.items():
-                properties[param_name] = param_def.copy()
-                # Mark parameters as required if they don't have "optional" in description
-                if "optional" not in param_def.get("description", "").lower():
-                    required.append(param_name)
-
-            input_schema = {
-                "type": "object",
-                "properties": properties,
-            }
-
-            if required:
-                input_schema["required"] = required
-
-            result.append(
-                Tool(
-                    name=name,
-                    description=description,
-                    inputSchema=input_schema,
-                )
+        return [
+            Tool(
+                name=name,
+                description=description,
+                inputSchema=_build_tool_schema(params_schema),
             )
-
-        return result
+            for name, description, params_schema in tool_defs
+        ]
 
     # Register call_tool handler
     @server.call_tool()
@@ -1998,8 +2037,10 @@ async def async_main() -> None:
 
             return [TextContent(type="text", text=json.dumps(result, indent=2))]
         except Exception as e:
-            # Return error as text content
-            return [TextContent(type="text", text=f"Error executing {name}: {str(e)}")]
+            # Log detailed error for debugging (not exposed to clients)
+            logger.error("Tool '%s' execution failed: %s", name, e, exc_info=True)
+            # Return generic error message (no sensitive details)
+            return [TextContent(type="text", text=f"Error executing {name}: operation failed")]
 
     # Run the server with stdio transport
     async with stdio_server() as (read_stream, write_stream):

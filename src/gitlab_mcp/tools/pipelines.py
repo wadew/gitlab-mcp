@@ -14,6 +14,7 @@ This module provides MCP tools for GitLab CI/CD pipeline and job operations incl
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
@@ -41,6 +42,7 @@ async def list_pipelines(
     Returns:
         Dictionary with pipelines list and pagination info
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     result = client.list_pipelines(
         project_id=project_id,
         ref=ref,
@@ -92,6 +94,7 @@ async def get_pipeline(
     Returns:
         Dictionary with pipeline details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     pipeline = client.get_pipeline(project_id=project_id, pipeline_id=pipeline_id)
 
     return {
@@ -126,6 +129,7 @@ async def create_pipeline(
     Returns:
         Dictionary with created pipeline details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     pipeline = client.create_pipeline(
         project_id=project_id,
         ref=ref,
@@ -158,6 +162,7 @@ async def retry_pipeline(
     Returns:
         Dictionary with retried pipeline details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     result = client.retry_pipeline(project_id=project_id, pipeline_id=pipeline_id)
 
     return {
@@ -183,6 +188,7 @@ async def cancel_pipeline(
     Returns:
         Dictionary with canceled pipeline details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     result = client.cancel_pipeline(project_id=project_id, pipeline_id=pipeline_id)
 
     return {
@@ -208,6 +214,7 @@ async def delete_pipeline(
     Returns:
         Dictionary with deletion confirmation
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     result = client.delete_pipeline(project_id=project_id, pipeline_id=pipeline_id)
 
     return {
@@ -236,6 +243,7 @@ async def list_pipeline_jobs(
     Returns:
         List of job dictionaries with essential fields only
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     jobs = client.list_pipeline_jobs(
         project_id=project_id,
         pipeline_id=pipeline_id,
@@ -282,6 +290,7 @@ async def get_job(
     Returns:
         Dictionary with job details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     job = client.get_job(project_id=project_id, job_id=job_id)
 
     return {
@@ -333,6 +342,7 @@ async def get_job_trace(
         # Get full log (may be very large)
         trace = await get_job_trace(client, "my-project", 12345)
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     trace = client.get_job_trace(project_id=project_id, job_id=job_id, tail_lines=tail_lines)
 
     return {
@@ -360,6 +370,7 @@ async def retry_job(
     Returns:
         Dictionary with retried job details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     result = client.retry_job(project_id=project_id, job_id=job_id)
 
     return {
@@ -385,6 +396,7 @@ async def cancel_job(
     Returns:
         Dictionary with canceled job details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     result = client.cancel_job(project_id=project_id, job_id=job_id)
 
     return {
@@ -410,6 +422,7 @@ async def play_job(
     Returns:
         Dictionary with job details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     result = client.play_job(project_id=project_id, job_id=job_id)
 
     return {
@@ -435,6 +448,7 @@ async def download_job_artifacts(
     Returns:
         Dictionary with artifacts info
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     result = client.download_job_artifacts(project_id=project_id, job_id=job_id)
 
     size_bytes = int(result["size_bytes"])  # Ensure it's an int for mypy
@@ -461,4 +475,5 @@ async def list_pipeline_variables(
     Returns:
         List of variable dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_pipeline_variables(project_id=project_id, pipeline_id=pipeline_id)

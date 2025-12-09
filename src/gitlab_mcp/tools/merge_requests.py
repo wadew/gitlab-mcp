@@ -14,6 +14,7 @@ This module provides MCP tools for GitLab merge request operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
@@ -39,6 +40,7 @@ async def list_merge_requests(
     Returns:
         List of merge request objects
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_merge_requests(
         project_id=project_id,
         state=state,
@@ -63,6 +65,7 @@ async def get_merge_request(
     Returns:
         Merge request object
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_merge_request(project_id=project_id, mr_iid=mr_iid)
 
 
@@ -90,6 +93,7 @@ async def create_merge_request(
     Returns:
         Created merge request object
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.create_merge_request(
         project_id=project_id,
         source_branch=source_branch,
@@ -124,6 +128,7 @@ async def update_merge_request(
     Returns:
         Updated merge request object
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.update_merge_request(
         project_id=project_id,
         mr_iid=mr_iid,
@@ -152,6 +157,7 @@ async def merge_merge_request(
     Returns:
         Merged merge request object
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.merge_merge_request(
         project_id=project_id,
         mr_iid=mr_iid,
@@ -175,6 +181,7 @@ async def close_merge_request(
     Returns:
         Closed merge request object
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.close_merge_request(project_id=project_id, mr_iid=mr_iid)
 
 
@@ -194,6 +201,7 @@ async def reopen_merge_request(
     Returns:
         None
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     client.reopen_merge_request(project_id=project_id, mr_iid=mr_iid)
 
 
@@ -213,6 +221,7 @@ async def approve_merge_request(
     Returns:
         Approval object
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.approve_merge_request(project_id=project_id, mr_iid=mr_iid)
 
 
@@ -232,6 +241,7 @@ async def unapprove_merge_request(
     Returns:
         None
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     client.unapprove_merge_request(project_id=project_id, mr_iid=mr_iid)
 
 
@@ -251,6 +261,7 @@ async def get_merge_request_changes(
     Returns:
         Dictionary with merge request changes
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_merge_request_changes(
         project_id=project_id, merge_request_iid=merge_request_iid
     )
@@ -272,6 +283,7 @@ async def get_merge_request_commits(
     Returns:
         List of commit dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_merge_request_commits(
         project_id=project_id, merge_request_iid=merge_request_iid
     )
@@ -293,6 +305,7 @@ async def get_merge_request_pipelines(
     Returns:
         List of pipeline dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_merge_request_pipelines(
         project_id=project_id, merge_request_iid=merge_request_iid
     )
@@ -334,6 +347,7 @@ async def add_mr_comment(
         ... )
         >>> print(f"Added comment by {comment['author']['username']}")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     note = client.add_mr_comment(
         project_id=project_id,
         mr_iid=mr_iid,
@@ -391,6 +405,7 @@ async def list_mr_comments(
         >>> for comment in result["comments"]:
         ...     print(f"{comment['author']['username']}: {comment['body'][:50]}...")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     notes = client.list_mr_comments(
         project_id=project_id,
         mr_iid=mr_iid,

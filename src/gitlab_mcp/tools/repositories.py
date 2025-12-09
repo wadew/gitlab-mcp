@@ -13,6 +13,7 @@ This module provides MCP tools for GitLab repository operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 import base64
 from typing import Any
 
@@ -60,6 +61,7 @@ async def get_repository(client: GitLabClient, project_id: str | int) -> dict[st
         >>> print(repo["name"])
         "My Project"
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Get project from GitLab (returns dict after Bug #1 fix)
     project = client.get_project(project_id)
 
@@ -132,6 +134,7 @@ async def list_branches(
         >>> for branch in result["branches"]:
         ...     print(f"{branch['name']} - Protected: {branch['protected']}")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Get branches from GitLab
     branches = client.list_branches(project_id, search, page, per_page)
 
@@ -204,6 +207,7 @@ async def get_branch(
         >>> print(f"{branch['name']} - Protected: {branch['protected']}")
         >>> print(f"Latest commit: {branch['commit']['title']}")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Get branch from GitLab
     branch = client.get_branch(project_id, branch_name)
 
@@ -273,6 +277,7 @@ async def get_file_contents(
         >>> print(file["content"])
         "# My Project..."
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Get file from GitLab
     file = client.get_file_content(project_id, file_path, ref=ref)
 
@@ -333,6 +338,7 @@ async def list_repository_tree(
         NotFoundError: If project or path not found
         GitLabAPIError: If API request fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     tree = client.get_repository_tree(
         project_id, path=path, ref=ref, recursive=recursive, page=page, per_page=per_page
     )
@@ -392,6 +398,7 @@ async def get_commit(
         NotFoundError: If commit not found
         GitLabAPIError: If API request fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     commit = client.get_commit(project_id, commit_sha)
 
     return {
@@ -441,6 +448,7 @@ async def list_commits(
         AuthenticationError: If not authenticated
         GitLabAPIError: If API request fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     commits = client.list_commits(
         project_id,
         ref=ref,
@@ -501,6 +509,7 @@ async def compare_branches(
         AuthenticationError: If not authenticated
         GitLabAPIError: If API request fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     comparison = client.compare_branches(project_id, from_ref, to_ref, straight=straight)
 
     return {
@@ -558,6 +567,7 @@ async def create_branch(
         AuthenticationError: If not authenticated
         GitLabAPIError: If API request fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     branch = client.create_branch(project_id, branch_name, ref)
 
     return {
@@ -602,6 +612,7 @@ async def delete_branch(
         AuthenticationError: If not authenticated
         GitLabAPIError: If API request fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     client.delete_branch(project_id, branch_name)
 
     return {
@@ -635,6 +646,7 @@ async def list_tags(
         AuthenticationError: If not authenticated
         GitLabAPIError: If API request fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     tags = client.list_tags(project_id, search, page, per_page)
 
     return {
@@ -681,6 +693,7 @@ async def get_tag(
         AuthenticationError: If not authenticated
         GitLabAPIError: If API request fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     tag = client.get_tag(project_id, tag_name)
 
     return {
@@ -725,6 +738,7 @@ async def create_tag(
         AuthenticationError: If not authenticated
         GitLabAPIError: If API request fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     tag = client.create_tag(project_id, tag_name, ref, message)
 
     return {
@@ -801,6 +815,7 @@ async def search_code(
         # Search with filters
         results = await search_code(client, "import flask filename:*.py")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     results = client.search_code(
         search_term,
         project_id,
@@ -879,6 +894,7 @@ async def create_file(
         >>> print(result["file_path"])
         "README.md"
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Call client method to create the file
     file_obj = client.create_file(
         project_id,
@@ -952,6 +968,7 @@ async def update_file(
         >>> print(result["commit"]["message"])
         "Update README with new description"
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Call client method to update the file
     file_obj = client.update_file(
         project_id,
@@ -1020,6 +1037,7 @@ async def delete_file(
         >>> print(result["file_path"])
         "deprecated.py"
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Call client method to delete the file
     client.delete_file(
         project_id,

@@ -12634,3 +12634,82 @@ class TestGitLabClientListGroupMembers:
             client.list_group_members(group_id=999)
 
         assert "Group not found" in str(exc_info.value)
+
+
+class TestErrorMessageConstants:
+    """Test error message constants for SonarQube S1192 compliance."""
+
+    def test_err_auth_required_constant(self) -> None:
+        """Test ERR_AUTH_REQUIRED constant has expected value."""
+        from gitlab_mcp.client.gitlab_client import ERR_AUTH_REQUIRED
+
+        assert ERR_AUTH_REQUIRED == "Authentication required"
+        assert isinstance(ERR_AUTH_REQUIRED, str)
+
+    def test_err_not_authenticated_constant(self) -> None:
+        """Test ERR_NOT_AUTHENTICATED constant has expected value."""
+        from gitlab_mcp.client.gitlab_client import ERR_NOT_AUTHENTICATED
+
+        assert ERR_NOT_AUTHENTICATED == "Not authenticated"
+        assert isinstance(ERR_NOT_AUTHENTICATED, str)
+
+    def test_err_auth_failed_constant(self) -> None:
+        """Test ERR_AUTH_FAILED constant has expected value."""
+        from gitlab_mcp.client.gitlab_client import ERR_AUTH_FAILED
+
+        assert ERR_AUTH_FAILED == "Authentication failed"
+        assert isinstance(ERR_AUTH_FAILED, str)
+
+    def test_err_auth_failed_401_constant(self) -> None:
+        """Test ERR_AUTH_FAILED_401 constant has expected value."""
+        from gitlab_mcp.client.gitlab_client import ERR_AUTH_FAILED_401
+
+        assert ERR_AUTH_FAILED_401 == "Authentication failed (401)"
+        assert "401" in ERR_AUTH_FAILED_401
+
+    def test_err_file_path_required_constant(self) -> None:
+        """Test ERR_FILE_PATH_REQUIRED constant has expected value."""
+        from gitlab_mcp.client.gitlab_client import ERR_FILE_PATH_REQUIRED
+
+        assert ERR_FILE_PATH_REQUIRED == "file_path is required and cannot be empty"
+        assert "file_path" in ERR_FILE_PATH_REQUIRED
+
+    def test_err_branch_required_constant(self) -> None:
+        """Test ERR_BRANCH_REQUIRED constant has expected value."""
+        from gitlab_mcp.client.gitlab_client import ERR_BRANCH_REQUIRED
+
+        assert ERR_BRANCH_REQUIRED == "branch is required and cannot be empty"
+        assert "branch" in ERR_BRANCH_REQUIRED
+
+    def test_err_commit_msg_required_constant(self) -> None:
+        """Test ERR_COMMIT_MSG_REQUIRED constant has expected value."""
+        from gitlab_mcp.client.gitlab_client import ERR_COMMIT_MSG_REQUIRED
+
+        assert ERR_COMMIT_MSG_REQUIRED == "commit_message is required and cannot be empty"
+        assert "commit_message" in ERR_COMMIT_MSG_REQUIRED
+
+    def test_all_error_constants_are_strings(self) -> None:
+        """Test that all error message constants are strings."""
+        from gitlab_mcp.client.gitlab_client import (
+            ERR_AUTH_FAILED,
+            ERR_AUTH_FAILED_401,
+            ERR_AUTH_REQUIRED,
+            ERR_BRANCH_REQUIRED,
+            ERR_COMMIT_MSG_REQUIRED,
+            ERR_FILE_PATH_REQUIRED,
+            ERR_NOT_AUTHENTICATED,
+        )
+
+        constants = [
+            ERR_AUTH_REQUIRED,
+            ERR_NOT_AUTHENTICATED,
+            ERR_AUTH_FAILED,
+            ERR_AUTH_FAILED_401,
+            ERR_FILE_PATH_REQUIRED,
+            ERR_BRANCH_REQUIRED,
+            ERR_COMMIT_MSG_REQUIRED,
+        ]
+
+        for const in constants:
+            assert isinstance(const, str)
+            assert len(const) > 0

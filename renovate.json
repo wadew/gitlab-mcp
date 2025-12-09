@@ -26,6 +26,7 @@
     "@wadew"
   ],
   "platform": "gitlab",
+  "baseBranches": ["develop"],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
   "branchConcurrentLimit": 10,

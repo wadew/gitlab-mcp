@@ -9,6 +9,7 @@ This module provides MCP tools for GitLab group operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
@@ -30,6 +31,7 @@ async def list_groups(
     Returns:
         List of group dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_groups(
         page=page,
         per_page=per_page,
@@ -50,6 +52,7 @@ async def get_group(
     Returns:
         Dictionary with group details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_group(group_id=group_id)
 
 
@@ -71,6 +74,7 @@ async def list_group_members(
     Returns:
         List of member dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_group_members(
         group_id=group_id,
         page=page,
