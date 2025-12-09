@@ -261,7 +261,7 @@ test:integration:
   allow_failure: true
 
 # ============================================================================
-# SECURITY STAGE - Security scanning
+# SECURITY STAGE - Security scanning (develop/MRs only)
 # ============================================================================
 
 # Include GitLab's built-in security scanning templates
