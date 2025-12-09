@@ -10,21 +10,25 @@ This module provides:
 import logging
 import re
 
+# Redaction constant (SonarQube S1192 compliance)
+REDACTED = "[REDACTED]"
+REDACTED_SUB = rf"\1{REDACTED}"
+
 # Patterns to identify and redact sensitive data
 SENSITIVE_PATTERNS = [
     # GitLab Personal Access Tokens
-    (re.compile(r"glpat-[a-zA-Z0-9_-]+"), "[REDACTED]"),
+    (re.compile(r"glpat-[a-zA-Z0-9_-]+"), REDACTED),
     # Generic tokens in key-value pairs
-    (re.compile(r'(?i)(token["\']?\s*[:=]\s*["\']?)([^"\'\s]+)'), r"\1[REDACTED]"),
+    (re.compile(r'(?i)(token["\']?\s*[:=]\s*["\']?)([^"\'\s]+)'), REDACTED_SUB),
     # Passwords in key-value pairs
-    (re.compile(r'(?i)(password["\']?\s*[:=]\s*["\']?)([^"\'\s]+)'), r"\1[REDACTED]"),
+    (re.compile(r'(?i)(password["\']?\s*[:=]\s*["\']?)([^"\'\s]+)'), REDACTED_SUB),
     # Authorization headers
     (
         re.compile(r'(?i)(Authorization["\']?\s*[:=]\s*["\']?(?:Bearer\s+)?)([^"\'\s]+)'),
-        r"\1[REDACTED]",
+        REDACTED_SUB,
     ),
     # PRIVATE-TOKEN headers
-    (re.compile(r'(?i)(PRIVATE-TOKEN["\']?\s*[:=]\s*["\']?)([^"\'\s]+)'), r"\1[REDACTED]"),
+    (re.compile(r'(?i)(PRIVATE-TOKEN["\']?\s*[:=]\s*["\']?)([^"\'\s]+)'), REDACTED_SUB),
 ]
 
 

@@ -5,6 +5,7 @@ This module provides tools for getting current context information:
 - list_projects: List accessible GitLab projects
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
@@ -32,6 +33,7 @@ async def get_current_context(client: GitLabClient) -> dict[str, Any]:
         AuthenticationError: If authentication fails
         NetworkError: If connection to GitLab fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Get user information
     user = client.get_current_user()
 
@@ -93,6 +95,7 @@ async def list_projects(
         AuthenticationError: If authentication fails
         NetworkError: If connection to GitLab fails
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Get projects from client
     result = client.list_projects(
         visibility=visibility,

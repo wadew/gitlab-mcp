@@ -11,6 +11,7 @@ This module provides MCP tools for GitLab snippet operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
@@ -30,6 +31,7 @@ async def list_snippets(
     Returns:
         List of snippet dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_snippets(project_id=project_id)
 
 
@@ -49,6 +51,7 @@ async def get_snippet(
     Returns:
         Dictionary with snippet details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_snippet(project_id=project_id, snippet_id=snippet_id)
 
 
@@ -76,6 +79,7 @@ async def create_snippet(
     Returns:
         Dictionary with created snippet details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.create_snippet(
         project_id=project_id,
         title=title,
@@ -112,6 +116,7 @@ async def update_snippet(
     Returns:
         Dictionary with updated snippet details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.update_snippet(
         project_id=project_id,
         snippet_id=snippet_id,
@@ -139,4 +144,5 @@ async def delete_snippet(
     Returns:
         None
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     client.delete_snippet(project_id=project_id, snippet_id=snippet_id)

@@ -11,9 +11,47 @@ This module provides MCP tools for GitLab issues operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
+
+
+def _extract_author(issue: Any) -> dict[str, str] | None:
+    """Extract author info from an issue object."""
+    if not hasattr(issue, "author") or not issue.author:
+        return None
+    return {
+        "username": getattr(issue.author, "username", ""),
+        "name": getattr(issue.author, "name", ""),
+    }
+
+
+def _extract_assignees(issue: Any) -> list[dict[str, str]]:
+    """Extract assignees list from an issue object."""
+    if not hasattr(issue, "assignees") or not issue.assignees:
+        return []
+    try:
+        return [
+            {
+                "username": getattr(assignee, "username", ""),
+                "name": getattr(assignee, "name", ""),
+            }
+            for assignee in issue.assignees
+        ]
+    except TypeError:
+        # assignees is not iterable
+        return []
+
+
+def _extract_milestone(issue: Any) -> dict[str, str] | None:
+    """Extract milestone info from an issue object."""
+    if not hasattr(issue, "milestone") or not issue.milestone:
+        return None
+    return {
+        "title": getattr(issue.milestone, "title", ""),
+        "web_url": getattr(issue.milestone, "web_url", ""),
+    }
 
 
 async def list_issues(
@@ -78,6 +116,7 @@ async def list_issues(
         >>> for issue in result["issues"]:
         ...     print(f"#{issue['iid']}: {issue['title']}")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Get issues from GitLab
     issues = client.list_issues(
         project_id=project_id,
@@ -88,57 +127,24 @@ async def list_issues(
         per_page=per_page,
     )
 
-    # Format issues
-    formatted_issues = []
-    for issue in issues:
-        # Extract author info
-        author = None
-        if hasattr(issue, "author") and issue.author:
-            author = {
-                "username": getattr(issue.author, "username", ""),
-                "name": getattr(issue.author, "name", ""),
-            }
-
-        # Extract assignees
-        assignees = []
-        if hasattr(issue, "assignees") and issue.assignees:
-            # Handle both list and non-iterable assignees
-            try:
-                for assignee in issue.assignees:
-                    assignees.append(
-                        {
-                            "username": getattr(assignee, "username", ""),
-                            "name": getattr(assignee, "name", ""),
-                        }
-                    )
-            except TypeError:
-                # assignees is not iterable
-                pass
-
-        # Extract milestone info
-        milestone_info = None
-        if hasattr(issue, "milestone") and issue.milestone:
-            milestone_info = {
-                "title": getattr(issue.milestone, "title", ""),
-                "web_url": getattr(issue.milestone, "web_url", ""),
-            }
-
-        formatted_issues.append(
-            {
-                "iid": issue.iid,
-                "title": issue.title,
-                "description": getattr(issue, "description", ""),
-                "state": issue.state,
-                "labels": getattr(issue, "labels", []),
-                "web_url": issue.web_url,
-                "created_at": getattr(issue, "created_at", ""),
-                "updated_at": getattr(issue, "updated_at", ""),
-                "closed_at": getattr(issue, "closed_at", None),
-                "author": author,
-                "assignees": assignees,
-                "milestone": milestone_info,
-            }
-        )
+    # Format issues using helper functions to reduce cognitive complexity
+    formatted_issues = [
+        {
+            "iid": issue.iid,
+            "title": issue.title,
+            "description": getattr(issue, "description", ""),
+            "state": issue.state,
+            "labels": getattr(issue, "labels", []),
+            "web_url": issue.web_url,
+            "created_at": getattr(issue, "created_at", ""),
+            "updated_at": getattr(issue, "updated_at", ""),
+            "closed_at": getattr(issue, "closed_at", None),
+            "author": _extract_author(issue),
+            "assignees": _extract_assignees(issue),
+            "milestone": _extract_milestone(issue),
+        }
+        for issue in issues
+    ]
 
     return {
         "issues": formatted_issues,
@@ -196,40 +202,14 @@ async def get_issue(
         >>> print(f"State: {issue['state']}")
         >>> print(f"Labels: {', '.join(issue['labels'])}")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Get issue from GitLab
     issue = client.get_issue(project_id=project_id, issue_iid=issue_iid)
 
-    # Extract author info
-    author = None
-    if hasattr(issue, "author") and issue.author:
-        author = {
-            "username": getattr(issue.author, "username", ""),
-            "name": getattr(issue.author, "name", ""),
-        }
-
-    # Extract assignees
-    assignees = []
-    if hasattr(issue, "assignees") and issue.assignees:
-        # Handle both list and non-iterable assignees
-        try:
-            for assignee in issue.assignees:
-                assignees.append(
-                    {
-                        "username": getattr(assignee, "username", ""),
-                        "name": getattr(assignee, "name", ""),
-                    }
-                )
-        except TypeError:
-            # assignees is not iterable
-            pass
-
-    # Extract milestone info
-    milestone_info = None
-    if hasattr(issue, "milestone") and issue.milestone:
-        milestone_info = {
-            "title": getattr(issue.milestone, "title", ""),
-            "web_url": getattr(issue.milestone, "web_url", ""),
-        }
+    # Extract author, assignees, and milestone using helper functions
+    author = _extract_author(issue)
+    assignees = _extract_assignees(issue)
+    milestone_info = _extract_milestone(issue)
 
     return {
         "iid": issue.iid,
@@ -305,6 +285,7 @@ async def create_issue(
         ... )
         >>> print(f"Created issue #{issue['iid']}: {issue['title']}")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Create issue via GitLab client
     issue = client.create_issue(
         project_id=project_id,
@@ -411,6 +392,7 @@ async def update_issue(
         ... )
         >>> print(f"Updated issue #{issue['iid']}: {issue['title']}")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     # Update issue via GitLab client
     issue = client.update_issue(
         project_id=project_id,
@@ -420,6 +402,7 @@ async def update_issue(
         labels=labels,
         assignee_ids=assignee_ids,
         milestone_id=milestone_id,
+        state_event=state_event,
     )
 
     # Extract author info
@@ -497,6 +480,7 @@ async def close_issue(
         >>> issue = await close_issue(client, "mygroup/myproject", 42)
         >>> print(f"Closed issue #{issue['iid']}: {issue['state']}")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     issue = client.close_issue(project_id=project_id, issue_iid=issue_iid)
 
     # Extract author info
@@ -561,6 +545,7 @@ async def reopen_issue(
         >>> issue = await reopen_issue(client, "mygroup/myproject", 42)
         >>> print(f"Reopened issue #{issue['iid']}: {issue['state']}")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     issue = client.reopen_issue(project_id=project_id, issue_iid=issue_iid)
 
     # Extract author info
@@ -631,6 +616,7 @@ async def add_issue_comment(
         ... )
         >>> print(f"Added comment by {comment['author']['username']}")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     note = client.add_issue_comment(
         project_id=project_id,
         issue_iid=issue_iid,
@@ -688,6 +674,7 @@ async def list_issue_comments(
         >>> for comment in result["comments"]:
         ...     print(f"{comment['author']['username']}: {comment['body'][:50]}...")
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     notes = client.list_issue_comments(
         project_id=project_id,
         issue_iid=issue_iid,

@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from gitlab_mcp.server import _get_tool_definitions, main
+from gitlab_mcp.server import _build_tool_schema, _get_tool_definitions, main
 
 
 class TestToolDefinitions:
@@ -367,3 +367,275 @@ class TestAsyncMainEntryPoint:
 
         # Verify sys.exit was called with error code 1
         assert exc_info.value.code == 1
+
+
+class TestBuildToolSchema:
+    """Test _build_tool_schema helper function."""
+
+    def test_empty_params_schema(self) -> None:
+        """Test that empty params schema returns basic object schema."""
+        result = _build_tool_schema({})
+
+        assert result == {"type": "object", "properties": {}}
+        assert "required" not in result
+
+    def test_single_required_param(self) -> None:
+        """Test that parameter without 'optional' is marked as required."""
+        params_schema = {
+            "project_id": {
+                "type": "string",
+                "description": "Project ID or path",
+            }
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        assert result["type"] == "object"
+        assert "project_id" in result["properties"]
+        assert result["properties"]["project_id"]["type"] == "string"
+        assert result["required"] == ["project_id"]
+
+    def test_single_optional_param(self) -> None:
+        """Test that parameter with 'optional' in description is not required."""
+        params_schema = {
+            "page": {
+                "type": "integer",
+                "description": "Page number (optional, default: 1)",
+            }
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        assert result["type"] == "object"
+        assert "page" in result["properties"]
+        assert "required" not in result
+
+    def test_mixed_required_and_optional_params(self) -> None:
+        """Test schema with both required and optional parameters."""
+        params_schema = {
+            "project_id": {
+                "type": "string",
+                "description": "Project ID or path",
+            },
+            "page": {
+                "type": "integer",
+                "description": "Page number (optional, default: 1)",
+            },
+            "branch": {
+                "type": "string",
+                "description": "Branch name",
+            },
+            "per_page": {
+                "type": "integer",
+                "description": "Results per page (optional, default: 20)",
+            },
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        assert result["type"] == "object"
+        assert len(result["properties"]) == 4
+        # Only project_id and branch should be required
+        assert set(result["required"]) == {"project_id", "branch"}
+
+    def test_optional_case_insensitive(self) -> None:
+        """Test that 'Optional' (capital O) in description marks param as optional."""
+        params_schema = {
+            "filter": {
+                "type": "string",
+                "description": "Filter string (Optional)",
+            }
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        assert "required" not in result
+
+    def test_param_definitions_are_copied(self) -> None:
+        """Test that original param definitions are copied, not referenced."""
+        params_schema = {
+            "test_param": {
+                "type": "string",
+                "description": "Test parameter",
+            }
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        # Modify the result and verify original is unchanged
+        result["properties"]["test_param"]["modified"] = True
+        assert "modified" not in params_schema["test_param"]
+
+    def test_param_without_description(self) -> None:
+        """Test parameter without description is treated as required."""
+        params_schema = {
+            "id": {
+                "type": "integer",
+            }
+        }
+
+        result = _build_tool_schema(params_schema)
+
+        # Param without description defaults to required (no "optional" found)
+        assert result["required"] == ["id"]
+
+
+class TestSchemaDescriptionConstants:
+    """Test schema description constants for SonarQube S1192 compliance."""
+
+    def test_desc_project_id_constant(self) -> None:
+        """Test DESC_PROJECT_ID constant has expected value."""
+        from gitlab_mcp.server import DESC_PROJECT_ID
+
+        assert DESC_PROJECT_ID == "Project ID or path (e.g., 'group/project')"
+        assert isinstance(DESC_PROJECT_ID, str)
+
+    def test_desc_page_constant(self) -> None:
+        """Test DESC_PAGE constant has expected value."""
+        from gitlab_mcp.server import DESC_PAGE
+
+        assert DESC_PAGE == "Page number (optional, default: 1)"
+        assert "optional" in DESC_PAGE.lower()
+
+    def test_desc_per_page_constant(self) -> None:
+        """Test DESC_PER_PAGE constant has expected value."""
+        from gitlab_mcp.server import DESC_PER_PAGE
+
+        assert DESC_PER_PAGE == "Results per page (optional, default: 20)"
+        assert "optional" in DESC_PER_PAGE.lower()
+
+    def test_desc_mr_iid_constant(self) -> None:
+        """Test DESC_MR_IID constant has expected value."""
+        from gitlab_mcp.server import DESC_MR_IID
+
+        assert DESC_MR_IID == "Merge request IID (internal ID)"
+        assert "IID" in DESC_MR_IID
+
+    def test_desc_issue_iid_constant(self) -> None:
+        """Test DESC_ISSUE_IID constant has expected value."""
+        from gitlab_mcp.server import DESC_ISSUE_IID
+
+        assert DESC_ISSUE_IID == "Issue IID (internal ID)"
+        assert "IID" in DESC_ISSUE_IID
+
+    def test_desc_pipeline_id_constant(self) -> None:
+        """Test DESC_PIPELINE_ID constant has expected value."""
+        from gitlab_mcp.server import DESC_PIPELINE_ID
+
+        assert DESC_PIPELINE_ID == "Pipeline ID"
+
+    def test_desc_job_id_constant(self) -> None:
+        """Test DESC_JOB_ID constant has expected value."""
+        from gitlab_mcp.server import DESC_JOB_ID
+
+        assert DESC_JOB_ID == "Job ID"
+
+    def test_desc_new_title_constant(self) -> None:
+        """Test DESC_NEW_TITLE constant has expected value."""
+        from gitlab_mcp.server import DESC_NEW_TITLE
+
+        assert DESC_NEW_TITLE == "New title (optional)"
+        assert "optional" in DESC_NEW_TITLE.lower()
+
+    def test_desc_new_desc_constant(self) -> None:
+        """Test DESC_NEW_DESC constant has expected value."""
+        from gitlab_mcp.server import DESC_NEW_DESC
+
+        assert DESC_NEW_DESC == "New description (optional)"
+        assert "optional" in DESC_NEW_DESC.lower()
+
+    def test_desc_wiki_slug_constant(self) -> None:
+        """Test DESC_WIKI_SLUG constant has expected value."""
+        from gitlab_mcp.server import DESC_WIKI_SLUG
+
+        assert DESC_WIKI_SLUG == "Wiki page slug (URL-friendly identifier)"
+
+    def test_desc_snippet_id_constant(self) -> None:
+        """Test DESC_SNIPPET_ID constant has expected value."""
+        from gitlab_mcp.server import DESC_SNIPPET_ID
+
+        assert DESC_SNIPPET_ID == "Snippet ID"
+
+    def test_desc_tag_name_constant(self) -> None:
+        """Test DESC_TAG_NAME constant has expected value."""
+        from gitlab_mcp.server import DESC_TAG_NAME
+
+        assert DESC_TAG_NAME == "Git tag name"
+
+    def test_desc_tag_release_constant(self) -> None:
+        """Test DESC_TAG_RELEASE constant has expected value."""
+        from gitlab_mcp.server import DESC_TAG_RELEASE
+
+        assert DESC_TAG_RELEASE == "Git tag name associated with release"
+
+    def test_desc_search_query_constant(self) -> None:
+        """Test DESC_SEARCH_QUERY constant has expected value."""
+        from gitlab_mcp.server import DESC_SEARCH_QUERY
+
+        assert DESC_SEARCH_QUERY == "Search query string"
+
+    def test_desc_author_email_constant(self) -> None:
+        """Test DESC_AUTHOR_EMAIL constant has expected value."""
+        from gitlab_mcp.server import DESC_AUTHOR_EMAIL
+
+        assert DESC_AUTHOR_EMAIL == "Email of commit author (optional)"
+        assert "optional" in DESC_AUTHOR_EMAIL.lower()
+
+    def test_desc_author_name_constant(self) -> None:
+        """Test DESC_AUTHOR_NAME constant has expected value."""
+        from gitlab_mcp.server import DESC_AUTHOR_NAME
+
+        assert DESC_AUTHOR_NAME == "Name of commit author (optional)"
+        assert "optional" in DESC_AUTHOR_NAME.lower()
+
+    def test_desc_source_ref_constant(self) -> None:
+        """Test DESC_SOURCE_REF constant has expected value."""
+        from gitlab_mcp.server import DESC_SOURCE_REF
+
+        assert DESC_SOURCE_REF == "Source branch, tag, or commit SHA"
+
+    def test_all_constants_are_strings(self) -> None:
+        """Test that all schema description constants are strings."""
+        from gitlab_mcp.server import (
+            DESC_AUTHOR_EMAIL,
+            DESC_AUTHOR_NAME,
+            DESC_ISSUE_IID,
+            DESC_JOB_ID,
+            DESC_MR_IID,
+            DESC_NEW_DESC,
+            DESC_NEW_TITLE,
+            DESC_PAGE,
+            DESC_PER_PAGE,
+            DESC_PIPELINE_ID,
+            DESC_PROJECT_ID,
+            DESC_SEARCH_QUERY,
+            DESC_SNIPPET_ID,
+            DESC_SOURCE_REF,
+            DESC_TAG_NAME,
+            DESC_TAG_RELEASE,
+            DESC_WIKI_SLUG,
+        )
+
+        constants = [
+            DESC_PROJECT_ID,
+            DESC_PAGE,
+            DESC_PER_PAGE,
+            DESC_MR_IID,
+            DESC_ISSUE_IID,
+            DESC_PIPELINE_ID,
+            DESC_JOB_ID,
+            DESC_NEW_TITLE,
+            DESC_NEW_DESC,
+            DESC_WIKI_SLUG,
+            DESC_SNIPPET_ID,
+            DESC_TAG_NAME,
+            DESC_TAG_RELEASE,
+            DESC_SEARCH_QUERY,
+            DESC_AUTHOR_EMAIL,
+            DESC_AUTHOR_NAME,
+            DESC_SOURCE_REF,
+        ]
+
+        for const in constants:
+            assert isinstance(const, str)
+            assert len(const) > 0

@@ -148,9 +148,7 @@ class RateLimitError(GitLabMCPError):
     def __repr__(self) -> str:
         """Return detailed string representation for debugging."""
         if self.retry_after:
-            return (
-                f"{self.__class__.__name__}('{self.message}', " f"retry_after={self.retry_after})"
-            )
+            return f"{self.__class__.__name__}('{self.message}', retry_after={self.retry_after})"
         return f"{self.__class__.__name__}('{self.message}')"
 
 

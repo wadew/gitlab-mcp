@@ -11,6 +11,7 @@ This module provides MCP tools for GitLab wiki operations including:
 All tools are async functions that accept a GitLabClient and return formatted data.
 """
 
+import asyncio
 from typing import Any
 
 from gitlab_mcp.client.gitlab_client import GitLabClient
@@ -34,6 +35,7 @@ async def list_wiki_pages(
     Returns:
         List of wiki page dictionaries
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.list_wiki_pages(project_id=project_id, page=page, per_page=per_page)
 
 
@@ -53,6 +55,7 @@ async def get_wiki_page(
     Returns:
         Dictionary with wiki page content
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.get_wiki_page(project_id=project_id, slug=slug)
 
 
@@ -76,6 +79,7 @@ async def create_wiki_page(
     Returns:
         Dictionary with created wiki page details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.create_wiki_page(
         project_id=project_id,
         title=title,
@@ -106,6 +110,7 @@ async def update_wiki_page(
     Returns:
         Dictionary with updated wiki page details
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     return client.update_wiki_page(
         project_id=project_id,
         slug=slug,
@@ -131,4 +136,5 @@ async def delete_wiki_page(
     Returns:
         None
     """
+    await asyncio.sleep(0)  # Allow event loop to process other tasks
     client.delete_wiki_page(project_id=project_id, slug=slug)
