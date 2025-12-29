@@ -136,8 +136,7 @@ ELICITATION_CONFIGS: dict[str, ElicitationConfig] = {
     "cancel_job": ElicitationConfig(
         tool_name="cancel_job",
         message_template=(
-            "Are you sure you want to cancel job {job_id} "
-            "in project '{project_id}'?"
+            "Are you sure you want to cancel job {job_id} " "in project '{project_id}'?"
         ),
         severity="info",
     ),

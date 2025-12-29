@@ -8,11 +8,11 @@ Tests verify:
 """
 
 import json
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
-from gitlab_mcp.server import _get_tool_definitions, GitLabMCPServer
+from gitlab_mcp.server import GitLabMCPServer, _get_tool_definitions
 
 
 class TestServerCallToolResponseFormat:
@@ -32,6 +32,7 @@ class TestServerCallToolResponseFormat:
     @pytest.mark.asyncio
     async def test_call_tool_returns_result_from_function(self, server):
         """call_tool should return the result from the tool function."""
+
         # Register a simple async tool
         async def mock_tool(**kwargs):
             return {"id": 123, "name": "test"}
@@ -44,6 +45,7 @@ class TestServerCallToolResponseFormat:
     @pytest.mark.asyncio
     async def test_call_tool_returns_list_result(self, server):
         """call_tool should handle list results."""
+
         async def mock_list_tool(**kwargs):
             return [{"id": 1}, {"id": 2}]
 
@@ -71,7 +73,7 @@ class TestCallToolResponseFormat:
     def test_tool_definitions_structure(self):
         """Each tool definition should have name, description, and params."""
         tool_defs = _get_tool_definitions()
-        for name, description, params_schema in tool_defs:
+        for name, description, _params_schema in tool_defs:
             assert isinstance(name, str), f"Tool name should be string: {name}"
             assert isinstance(description, str), f"Description should be string for {name}"
             assert len(description) > 0, f"Description should not be empty for {name}"
@@ -293,4 +295,3 @@ class TestErrorResponseStructure:
         json_str = json.dumps(error_response)
         parsed = json.loads(json_str)
         assert parsed["error"] == "Authentication failed"
-

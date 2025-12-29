@@ -250,4 +250,3 @@ class TestResourceCounts:
         # project/pipelines/recent, project/pipelines/{id}, project/branches,
         # project/file/{path}
         assert len(templates) >= 10
-

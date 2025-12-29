@@ -5,7 +5,6 @@ Provides registration and retrieval of GitLab workflow prompts.
 
 from typing import Any
 
-
 # Prompt definitions organized by category
 PROMPT_DEFINITIONS: list[dict[str, Any]] = [
     # Core Workflows (4)
@@ -415,9 +414,7 @@ class PromptRegistry:
         """
         return self._prompts.get(name)
 
-    def get_prompt_messages(
-        self, name: str, arguments: dict[str, str]
-    ) -> list[dict[str, Any]]:
+    def get_prompt_messages(self, name: str, arguments: dict[str, str]) -> list[dict[str, Any]]:
         """Generate prompt messages with provided arguments.
 
         Args:
@@ -437,9 +434,7 @@ class PromptRegistry:
         # Validate required arguments
         for arg in prompt["arguments"]:
             if arg["required"] and arg["name"] not in arguments:
-                raise ValueError(
-                    f"Missing required argument '{arg['name']}' for prompt '{name}'"
-                )
+                raise ValueError(f"Missing required argument '{arg['name']}' for prompt '{name}'")
 
         # Get message template
         template = PROMPT_MESSAGES.get(name)

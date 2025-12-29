@@ -271,8 +271,7 @@ class TestPromptMessageGeneration:
     def test_get_prompt_messages_returns_list(self, registry):
         """get_prompt_messages should return a list of messages."""
         messages = registry.get_prompt_messages(
-            "create-mr-from-issue",
-            {"project_id": "group/project", "issue_iid": "5"}
+            "create-mr-from-issue", {"project_id": "group/project", "issue_iid": "5"}
         )
         assert isinstance(messages, list)
         assert len(messages) > 0
@@ -280,8 +279,7 @@ class TestPromptMessageGeneration:
     def test_prompt_message_has_role(self, registry):
         """Prompt messages should have a role."""
         messages = registry.get_prompt_messages(
-            "create-mr-from-issue",
-            {"project_id": "group/project", "issue_iid": "5"}
+            "create-mr-from-issue", {"project_id": "group/project", "issue_iid": "5"}
         )
         for message in messages:
             assert "role" in message
@@ -290,8 +288,7 @@ class TestPromptMessageGeneration:
     def test_prompt_message_has_content(self, registry):
         """Prompt messages should have content."""
         messages = registry.get_prompt_messages(
-            "create-mr-from-issue",
-            {"project_id": "group/project", "issue_iid": "5"}
+            "create-mr-from-issue", {"project_id": "group/project", "issue_iid": "5"}
         )
         for message in messages:
             assert "content" in message
@@ -300,8 +297,7 @@ class TestPromptMessageGeneration:
     def test_prompt_message_includes_arguments(self, registry):
         """Prompt messages should include provided arguments."""
         messages = registry.get_prompt_messages(
-            "create-mr-from-issue",
-            {"project_id": "my-project", "issue_iid": "42"}
+            "create-mr-from-issue", {"project_id": "my-project", "issue_iid": "42"}
         )
         # The generated message should reference the issue
         content = messages[0]["content"]
@@ -348,4 +344,3 @@ class TestArgumentMetadata:
         for arg in prompt["arguments"]:
             assert "required" in arg
             assert isinstance(arg["required"], bool)
-

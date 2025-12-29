@@ -22,50 +22,82 @@ class TestResourceHandlers:
         """Create a mock GitLab client."""
         client = MagicMock()
         # Configure async methods
-        client.get_current_user = AsyncMock(return_value={
-            "id": 1,
-            "username": "testuser",
-            "name": "Test User",
-            "email": "test@example.com",
-        })
-        client.list_projects = AsyncMock(return_value=[
-            {"id": 1, "name": "project-1", "path_with_namespace": "group/project-1"},
-            {"id": 2, "name": "project-2", "path_with_namespace": "group/project-2"},
-        ])
-        client.list_groups = AsyncMock(return_value=[
-            {"id": 10, "name": "group-1", "path": "group-1"},
-        ])
-        client.get_project = AsyncMock(return_value={
-            "id": 123,
-            "name": "test-project",
-            "path_with_namespace": "group/test-project",
-        })
-        client.get_file_contents = AsyncMock(return_value={
-            "content": "# README\nThis is a test project.",
-            "file_name": "README.md",
-        })
-        client.list_issues = AsyncMock(return_value=[
-            {"id": 1, "iid": 1, "title": "Issue 1", "state": "opened"},
-        ])
-        client.get_issue = AsyncMock(return_value={
-            "id": 1, "iid": 1, "title": "Issue 1", "state": "opened",
-        })
-        client.list_merge_requests = AsyncMock(return_value=[
-            {"id": 100, "iid": 1, "title": "MR 1", "state": "opened"},
-        ])
-        client.get_merge_request = AsyncMock(return_value={
-            "id": 100, "iid": 1, "title": "MR 1", "state": "opened",
-        })
-        client.list_pipelines = AsyncMock(return_value=[
-            {"id": 500, "status": "success", "ref": "main"},
-        ])
-        client.get_pipeline = AsyncMock(return_value={
-            "id": 500, "status": "success", "ref": "main",
-        })
-        client.list_branches = AsyncMock(return_value=[
-            {"name": "main", "default": True},
-            {"name": "develop", "default": False},
-        ])
+        client.get_current_user = AsyncMock(
+            return_value={
+                "id": 1,
+                "username": "testuser",
+                "name": "Test User",
+                "email": "test@example.com",
+            }
+        )
+        client.list_projects = AsyncMock(
+            return_value=[
+                {"id": 1, "name": "project-1", "path_with_namespace": "group/project-1"},
+                {"id": 2, "name": "project-2", "path_with_namespace": "group/project-2"},
+            ]
+        )
+        client.list_groups = AsyncMock(
+            return_value=[
+                {"id": 10, "name": "group-1", "path": "group-1"},
+            ]
+        )
+        client.get_project = AsyncMock(
+            return_value={
+                "id": 123,
+                "name": "test-project",
+                "path_with_namespace": "group/test-project",
+            }
+        )
+        client.get_file_contents = AsyncMock(
+            return_value={
+                "content": "# README\nThis is a test project.",
+                "file_name": "README.md",
+            }
+        )
+        client.list_issues = AsyncMock(
+            return_value=[
+                {"id": 1, "iid": 1, "title": "Issue 1", "state": "opened"},
+            ]
+        )
+        client.get_issue = AsyncMock(
+            return_value={
+                "id": 1,
+                "iid": 1,
+                "title": "Issue 1",
+                "state": "opened",
+            }
+        )
+        client.list_merge_requests = AsyncMock(
+            return_value=[
+                {"id": 100, "iid": 1, "title": "MR 1", "state": "opened"},
+            ]
+        )
+        client.get_merge_request = AsyncMock(
+            return_value={
+                "id": 100,
+                "iid": 1,
+                "title": "MR 1",
+                "state": "opened",
+            }
+        )
+        client.list_pipelines = AsyncMock(
+            return_value=[
+                {"id": 500, "status": "success", "ref": "main"},
+            ]
+        )
+        client.get_pipeline = AsyncMock(
+            return_value={
+                "id": 500,
+                "status": "success",
+                "ref": "main",
+            }
+        )
+        client.list_branches = AsyncMock(
+            return_value=[
+                {"name": "main", "default": True},
+                {"name": "develop", "default": False},
+            ]
+        )
         return client
 
     @pytest.fixture
@@ -81,15 +113,22 @@ class TestReadStaticResources:
     def mock_client(self):
         """Create a mock GitLab client."""
         client = MagicMock()
-        client.get_current_user = AsyncMock(return_value={
-            "id": 1, "username": "testuser",
-        })
-        client.list_projects = AsyncMock(return_value=[
-            {"id": 1, "name": "project-1"},
-        ])
-        client.list_groups = AsyncMock(return_value=[
-            {"id": 10, "name": "group-1"},
-        ])
+        client.get_current_user = AsyncMock(
+            return_value={
+                "id": 1,
+                "username": "testuser",
+            }
+        )
+        client.list_projects = AsyncMock(
+            return_value=[
+                {"id": 1, "name": "project-1"},
+            ]
+        )
+        client.list_groups = AsyncMock(
+            return_value=[
+                {"id": 10, "name": "group-1"},
+            ]
+        )
         return client
 
     @pytest.mark.asyncio
@@ -130,34 +169,56 @@ class TestReadTemplatedResources:
     def mock_client(self):
         """Create a mock GitLab client."""
         client = MagicMock()
-        client.get_project = AsyncMock(return_value={
-            "id": 123, "name": "test-project",
-        })
-        client.get_file_contents = AsyncMock(return_value={
-            "content": "# README",
-            "file_name": "README.md",
-        })
-        client.list_issues = AsyncMock(return_value=[
-            {"iid": 1, "title": "Issue 1"},
-        ])
-        client.get_issue = AsyncMock(return_value={
-            "iid": 5, "title": "Issue 5",
-        })
-        client.list_merge_requests = AsyncMock(return_value=[
-            {"iid": 1, "title": "MR 1"},
-        ])
-        client.get_merge_request = AsyncMock(return_value={
-            "iid": 1, "title": "MR 1",
-        })
-        client.list_pipelines = AsyncMock(return_value=[
-            {"id": 500, "status": "success"},
-        ])
-        client.get_pipeline = AsyncMock(return_value={
-            "id": 500, "status": "success",
-        })
-        client.list_branches = AsyncMock(return_value=[
-            {"name": "main"},
-        ])
+        client.get_project = AsyncMock(
+            return_value={
+                "id": 123,
+                "name": "test-project",
+            }
+        )
+        client.get_file_contents = AsyncMock(
+            return_value={
+                "content": "# README",
+                "file_name": "README.md",
+            }
+        )
+        client.list_issues = AsyncMock(
+            return_value=[
+                {"iid": 1, "title": "Issue 1"},
+            ]
+        )
+        client.get_issue = AsyncMock(
+            return_value={
+                "iid": 5,
+                "title": "Issue 5",
+            }
+        )
+        client.list_merge_requests = AsyncMock(
+            return_value=[
+                {"iid": 1, "title": "MR 1"},
+            ]
+        )
+        client.get_merge_request = AsyncMock(
+            return_value={
+                "iid": 1,
+                "title": "MR 1",
+            }
+        )
+        client.list_pipelines = AsyncMock(
+            return_value=[
+                {"id": 500, "status": "success"},
+            ]
+        )
+        client.get_pipeline = AsyncMock(
+            return_value={
+                "id": 500,
+                "status": "success",
+            }
+        )
+        client.list_branches = AsyncMock(
+            return_value=[
+                {"name": "main"},
+            ]
+        )
         return client
 
     @pytest.mark.asyncio
@@ -279,4 +340,3 @@ class TestResourceErrorHandling:
 
         with pytest.raises(ValueError, match="Invalid resource URI"):
             await read_resource("", mock_client)
-

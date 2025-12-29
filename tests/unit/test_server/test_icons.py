@@ -24,7 +24,7 @@ class TestToolIconsConstant:
 
     def test_all_icon_values_are_strings(self):
         """All icon values should be strings (emoji)."""
-        for category, icon in TOOL_ICONS.items():
+        for _category, icon in TOOL_ICONS.items():
             assert isinstance(icon, str)
             assert len(icon) > 0
 

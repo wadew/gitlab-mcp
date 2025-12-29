@@ -5,7 +5,7 @@ GitLab MCP resources.
 """
 
 import re
-from typing import Any
+from typing import Any, cast
 
 
 def parse_resource_uri(uri: str) -> dict[str, Any] | None:
@@ -203,7 +203,7 @@ class ResourceRegistry:
         )
 
         for template in sorted_templates:
-            pattern = template["pattern"]
+            pattern = cast(str, template["pattern"])
             match = re.match(pattern, uri)
             if match:
                 # Extract parameters

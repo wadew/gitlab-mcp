@@ -5,7 +5,7 @@ polling, and bulk operations.
 """
 
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import Any
@@ -226,9 +226,7 @@ class TaskManager:
             Number of tasks removed
         """
         completed_ids = [
-            task_id
-            for task_id, task in self._tasks.items()
-            if task.state == TaskState.COMPLETED
+            task_id for task_id, task in self._tasks.items() if task.state == TaskState.COMPLETED
         ]
         for task_id in completed_ids:
             del self._tasks[task_id]

@@ -8,8 +8,9 @@ Tests verify:
 - Task metadata handling
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
 
 
 class TestTaskState:
@@ -342,7 +343,7 @@ class TestTaskFiltering:
         # Create tasks in different states
         task1 = mgr.create_task(task_type="pipeline_create")
         task2 = mgr.create_task(task_type="pipeline_retry")
-        task3 = mgr.create_task(task_type="pipeline_create")
+        _task3 = mgr.create_task(task_type="pipeline_create")  # Remains pending
 
         # Transition some tasks
         mgr.start_task(task1.id)
@@ -450,13 +451,12 @@ class TestTaskDeletion:
         """clear_completed_tasks should remove all completed tasks."""
         task1 = manager.create_task(task_type="task1")
         task2 = manager.create_task(task_type="task2")
-        task3 = manager.create_task(task_type="task3")
+        _task3 = manager.create_task(task_type="task3")  # Remains pending
 
         manager.start_task(task1.id)
         manager.complete_task(task1.id, result={})
         manager.start_task(task2.id)
         manager.complete_task(task2.id, result={})
-        # task3 remains pending
 
         count = manager.clear_completed_tasks()
         assert count == 2
