@@ -2299,7 +2299,9 @@ async def async_main() -> None:
 
         try:
             result = await read_resource_handler(uri, client)
-            content = json.dumps(result, indent=2) if isinstance(result, (dict, list)) else str(result)
+            content = (
+                json.dumps(result, indent=2) if isinstance(result, (dict, list)) else str(result)
+            )
             return TextResourceContents(
                 uri=AnyUrl(uri),
                 mimeType="application/json",
