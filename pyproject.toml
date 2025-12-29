@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gitlab-mcp-server"
-version = "2025.12.1"
+version = "2025.12.2"
 description = "Production-ready Model Context Protocol server for GitLab - 67 tools, 700+ tests, 79% coverage"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -47,23 +47,23 @@ classifiers = [
 ]
 
 dependencies = [
-    "mcp>=1.21.0",           # Official MCP SDK (latest: 1.18.0, Oct 2025)
-    "python-gitlab>=6.5.0",  # GitLab API client (latest: 6.5.0, Oct 2025)
-    "pydantic>=2.12.4",      # Data validation (latest: 2.12.3, Oct 2025)
-    "python-dotenv>=1.1.1",  # Environment variables (latest: 1.1.1, Jun 2025)
+    "mcp>=1.25.0",           # Official MCP SDK (latest: 1.25.0, Dec 2025)
+    "python-gitlab>=7.1.0",  # GitLab API client (latest: 7.1.0, Dec 2025)
+    "pydantic>=2.12.5",      # Data validation (latest: 2.12.5, Nov 2025)
+    "python-dotenv>=1.2.1",  # Environment variables (latest: 1.2.1, Oct 2025)
     "httpx>=0.28.1",         # HTTP client for async (latest: 0.28.1, 2025)
-    "starlette>=0.49.1",     # ASGI framework (fixes GHSA-7f5h-v6xp-fcq8 DoS vulnerability)
+    "starlette>=0.50.0",     # ASGI framework (latest: 0.50.0, Nov 2025)
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.4.2",         # Testing framework (latest: 8.4.2, Sep 2025)
-    "pytest-cov>=6.3.0",     # Code coverage (latest: 6.0.0, 2025)
-    "pytest-asyncio>=0.26.0", # Async testing (latest: 0.25.0, 2025)
-    "pytest-mock>=3.15.1",   # Mocking (latest: 3.14.0, 2025)
-    "black>=25.9.0",         # Code formatter (latest: 25.1.0, Jan 2025)
-    "ruff>=0.14.3",          # Linter (latest: 0.14.1, Oct 2025)
-    "mypy>=1.18.2",          # Type checker (latest: 1.18.2, Sep 2025)
+    "pytest>=9.0.2",         # Testing framework (latest: 9.0.2, Dec 2025)
+    "pytest-cov>=7.0.0",     # Code coverage (latest: 7.0.0, Sep 2025)
+    "pytest-asyncio>=1.3.0", # Async testing (latest: 1.3.0, Nov 2025)
+    "pytest-mock>=3.15.1",   # Mocking (latest: 3.15.1, Sep 2025)
+    "black>=25.12.0",        # Code formatter (latest: 25.12.0, Dec 2025)
+    "ruff>=0.14.10",         # Linter (latest: 0.14.10, Dec 2025)
+    "mypy>=1.19.1",          # Type checker (latest: 1.19.1, Dec 2025)
     "types-requests",        # Type stubs for requests
 ]
 
