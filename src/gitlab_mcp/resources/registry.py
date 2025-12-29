@@ -7,6 +7,12 @@ GitLab MCP resources.
 import re
 from typing import Any, cast
 
+# Constants for commonly used MIME types
+MIME_JSON = "application/json"
+MIME_MARKDOWN = "text/markdown"
+MIME_YAML = "text/yaml"
+MIME_TEXT = "text/plain"
+
 
 def parse_resource_uri(uri: str) -> dict[str, Any] | None:
     """Parse a gitlab:// URI into components.
@@ -43,19 +49,19 @@ STATIC_RESOURCES = [
         "uri": "gitlab://projects",
         "name": "All Projects",
         "description": "List of accessible GitLab projects",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
     },
     {
         "uri": "gitlab://user/current",
         "name": "Current User",
         "description": "Currently authenticated GitLab user",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
     },
     {
         "uri": "gitlab://groups",
         "name": "All Groups",
         "description": "List of accessible GitLab groups",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
     },
 ]
 
@@ -65,7 +71,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}",
         "name": "Project Details",
         "description": "Get details for a specific project",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
         "pattern": r"^gitlab://project/(.+)$",
         "params": ["project_id"],
     },
@@ -73,7 +79,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}/readme",
         "name": "Project README",
         "description": "Get project README content",
-        "mime_type": "text/markdown",
+        "mime_type": MIME_MARKDOWN,
         "pattern": r"^gitlab://project/([^/]+)/readme$",
         "params": ["project_id"],
     },
@@ -81,7 +87,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}/.gitlab-ci.yml",
         "name": "CI Configuration",
         "description": "Get project CI/CD configuration file",
-        "mime_type": "text/yaml",
+        "mime_type": MIME_YAML,
         "pattern": r"^gitlab://project/([^/]+)/.gitlab-ci.yml$",
         "params": ["project_id"],
     },
@@ -89,7 +95,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}/issues/open",
         "name": "Open Issues",
         "description": "List open issues for a project",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
         "pattern": r"^gitlab://project/([^/]+)/issues/open$",
         "params": ["project_id"],
     },
@@ -97,7 +103,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}/issues/{iid}",
         "name": "Issue Details",
         "description": "Get details for a specific issue",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
         "pattern": r"^gitlab://project/([^/]+)/issues/(\d+)$",
         "params": ["project_id", "iid"],
     },
@@ -105,7 +111,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}/mrs/open",
         "name": "Open Merge Requests",
         "description": "List open merge requests for a project",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
         "pattern": r"^gitlab://project/([^/]+)/mrs/open$",
         "params": ["project_id"],
     },
@@ -113,7 +119,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}/mrs/{iid}",
         "name": "Merge Request Details",
         "description": "Get details for a specific merge request",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
         "pattern": r"^gitlab://project/([^/]+)/mrs/(\d+)$",
         "params": ["project_id", "iid"],
     },
@@ -121,7 +127,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}/pipelines/recent",
         "name": "Recent Pipelines",
         "description": "List recent pipelines (last 10)",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
         "pattern": r"^gitlab://project/([^/]+)/pipelines/recent$",
         "params": ["project_id"],
     },
@@ -129,7 +135,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}/pipelines/{id}",
         "name": "Pipeline Details",
         "description": "Get details for a specific pipeline",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
         "pattern": r"^gitlab://project/([^/]+)/pipelines/(\d+)$",
         "params": ["project_id", "id"],
     },
@@ -137,7 +143,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}/branches",
         "name": "All Branches",
         "description": "List all branches for a project",
-        "mime_type": "application/json",
+        "mime_type": MIME_JSON,
         "pattern": r"^gitlab://project/([^/]+)/branches$",
         "params": ["project_id"],
     },
@@ -145,7 +151,7 @@ RESOURCE_TEMPLATES = [
         "uri_template": "gitlab://project/{project_id}/file/{path}",
         "name": "File Contents",
         "description": "Get contents of a file in the repository",
-        "mime_type": "text/plain",
+        "mime_type": MIME_TEXT,
         "pattern": r"^gitlab://project/([^/]+)/file/(.+)$",
         "params": ["project_id", "path"],
     },

@@ -5,6 +5,9 @@ Provides registration and retrieval of GitLab workflow prompts.
 
 from typing import Any
 
+# Constants for commonly used descriptions
+DESC_PROJECT_ID = "Project ID or path (e.g., 'group/project')"
+
 # Prompt definitions organized by category
 PROMPT_DEFINITIONS: list[dict[str, Any]] = [
     # Core Workflows (4)
@@ -14,7 +17,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
             {
@@ -30,7 +33,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
             {
@@ -46,7 +49,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
         ],
@@ -57,7 +60,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
             {
@@ -74,7 +77,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
             {
@@ -90,7 +93,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
             {
@@ -107,7 +110,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
             {
@@ -123,7 +126,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
         ],
@@ -134,7 +137,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
             {
@@ -151,7 +154,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
             {
@@ -168,7 +171,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
             {
@@ -184,7 +187,7 @@ PROMPT_DEFINITIONS: list[dict[str, Any]] = [
         "arguments": [
             {
                 "name": "project_id",
-                "description": "Project ID or path (e.g., 'group/project')",
+                "description": DESC_PROJECT_ID,
                 "required": True,
             },
             {
