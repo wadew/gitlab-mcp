@@ -40,6 +40,207 @@ DESC_SOURCE_REF = "Source branch, tag, or commit SHA"
 # Module logger for security-safe error logging
 logger = logging.getLogger(__name__)
 
+# Tool annotations for MCP SDK v1.25.0 (SEP-986)
+# Maps tool names to behavior hints for client safety prompts
+TOOL_ANNOTATIONS: dict[str, dict[str, bool]] = {
+    # Context tools - read-only
+    "get_current_context": {"destructive": False, "readOnly": True},
+    # Repository tools - read-only
+    "list_repository_tree": {"destructive": False, "readOnly": True},
+    "get_file_contents": {"destructive": False, "readOnly": True},
+    "search_code": {"destructive": False, "readOnly": True},
+    "list_branches": {"destructive": False, "readOnly": True},
+    "get_branch": {"destructive": False, "readOnly": True},
+    "list_commits": {"destructive": False, "readOnly": True},
+    "get_commit": {"destructive": False, "readOnly": True},
+    "compare_branches": {"destructive": False, "readOnly": True},
+    "list_tags": {"destructive": False, "readOnly": True},
+    "get_tag": {"destructive": False, "readOnly": True},
+    # Repository tools - mutating
+    "create_file": {"destructive": False, "readOnly": False},
+    "update_file": {"destructive": False, "readOnly": False},
+    "delete_file": {"destructive": True, "readOnly": False},
+    "create_branch": {"destructive": False, "readOnly": False},
+    "delete_branch": {"destructive": True, "readOnly": False},
+    "create_tag": {"destructive": False, "readOnly": False},
+    # Issue tools - read-only
+    "list_issues": {"destructive": False, "readOnly": True},
+    "get_issue": {"destructive": False, "readOnly": True},
+    "list_issue_comments": {"destructive": False, "readOnly": True},
+    # Issue tools - mutating
+    "create_issue": {"destructive": False, "readOnly": False},
+    "update_issue": {"destructive": False, "readOnly": False},
+    "close_issue": {"destructive": False, "readOnly": False},
+    "reopen_issue": {"destructive": False, "readOnly": False},
+    "add_issue_comment": {"destructive": False, "readOnly": False},
+    # Merge Request tools - read-only
+    "list_merge_requests": {"destructive": False, "readOnly": True},
+    "get_merge_request": {"destructive": False, "readOnly": True},
+    "get_merge_request_changes": {"destructive": False, "readOnly": True},
+    "get_merge_request_commits": {"destructive": False, "readOnly": True},
+    "get_merge_request_pipelines": {"destructive": False, "readOnly": True},
+    "list_mr_comments": {"destructive": False, "readOnly": True},
+    # Merge Request tools - mutating
+    "create_merge_request": {"destructive": False, "readOnly": False},
+    "update_merge_request": {"destructive": False, "readOnly": False},
+    "close_merge_request": {"destructive": False, "readOnly": False},
+    "reopen_merge_request": {"destructive": False, "readOnly": False},
+    "merge_merge_request": {"destructive": False, "readOnly": False},
+    "approve_merge_request": {"destructive": False, "readOnly": False},
+    "unapprove_merge_request": {"destructive": False, "readOnly": False},
+    "add_mr_comment": {"destructive": False, "readOnly": False},
+    # Pipeline tools - read-only
+    "list_pipelines": {"destructive": False, "readOnly": True},
+    "get_pipeline": {"destructive": False, "readOnly": True},
+    "list_pipeline_jobs": {"destructive": False, "readOnly": True},
+    "get_job": {"destructive": False, "readOnly": True},
+    "get_job_trace": {"destructive": False, "readOnly": True},
+    "list_pipeline_variables": {"destructive": False, "readOnly": True},
+    # Pipeline tools - mutating
+    "create_pipeline": {"destructive": False, "readOnly": False},
+    "retry_pipeline": {"destructive": False, "readOnly": False},
+    "cancel_pipeline": {"destructive": True, "readOnly": False},
+    "delete_pipeline": {"destructive": True, "readOnly": False},
+    "retry_job": {"destructive": False, "readOnly": False},
+    "cancel_job": {"destructive": True, "readOnly": False},
+    "play_job": {"destructive": False, "readOnly": False},
+    "download_job_artifacts": {"destructive": False, "readOnly": False},
+    # Project tools - read-only
+    "list_projects": {"destructive": False, "readOnly": True},
+    "get_project": {"destructive": False, "readOnly": True},
+    "search_projects": {"destructive": False, "readOnly": True},
+    "list_project_members": {"destructive": False, "readOnly": True},
+    "get_project_statistics": {"destructive": False, "readOnly": True},
+    "list_milestones": {"destructive": False, "readOnly": True},
+    "get_milestone": {"destructive": False, "readOnly": True},
+    # Project tools - mutating
+    "create_project": {"destructive": False, "readOnly": False},
+    "create_milestone": {"destructive": False, "readOnly": False},
+    "update_milestone": {"destructive": False, "readOnly": False},
+    # Label tools - read-only
+    "list_labels": {"destructive": False, "readOnly": True},
+    # Label tools - mutating
+    "create_label": {"destructive": False, "readOnly": False},
+    "update_label": {"destructive": False, "readOnly": False},
+    "delete_label": {"destructive": True, "readOnly": False},
+    # Wiki tools - read-only
+    "list_wiki_pages": {"destructive": False, "readOnly": True},
+    "get_wiki_page": {"destructive": False, "readOnly": True},
+    # Wiki tools - mutating
+    "create_wiki_page": {"destructive": False, "readOnly": False},
+    "update_wiki_page": {"destructive": False, "readOnly": False},
+    "delete_wiki_page": {"destructive": True, "readOnly": False},
+    # Snippet tools - read-only
+    "list_snippets": {"destructive": False, "readOnly": True},
+    "get_snippet": {"destructive": False, "readOnly": True},
+    # Snippet tools - mutating
+    "create_snippet": {"destructive": False, "readOnly": False},
+    "update_snippet": {"destructive": False, "readOnly": False},
+    "delete_snippet": {"destructive": True, "readOnly": False},
+    # Release tools - read-only
+    "list_releases": {"destructive": False, "readOnly": True},
+    "get_release": {"destructive": False, "readOnly": True},
+    # Release tools - mutating
+    "create_release": {"destructive": False, "readOnly": False},
+    "update_release": {"destructive": False, "readOnly": False},
+    "delete_release": {"destructive": True, "readOnly": False},
+    # User tools - read-only
+    "get_user": {"destructive": False, "readOnly": True},
+    "search_users": {"destructive": False, "readOnly": True},
+    "list_user_projects": {"destructive": False, "readOnly": True},
+    # Group tools - read-only
+    "list_groups": {"destructive": False, "readOnly": True},
+    "get_group": {"destructive": False, "readOnly": True},
+    "list_group_members": {"destructive": False, "readOnly": True},
+}
+
+# Tool icons for visual metadata in MCP SDK v1.25.0
+# Maps tool categories to emoji icons for better UI representation
+TOOL_ICONS: dict[str, str] = {
+    "pipeline": "🔄",
+    "merge_request": "🔀",
+    "mr": "🔀",
+    "issue": "📋",
+    "project": "📦",
+    "repository": "📁",
+    "repo": "📁",
+    "branch": "🌿",
+    "commit": "📝",
+    "tag": "🏷️",
+    "file": "📄",
+    "user": "👤",
+    "group": "👥",
+    "label": "🏷️",
+    "wiki": "📖",
+    "snippet": "📝",
+    "release": "🚀",
+    "job": "⚙️",
+    "milestone": "🎯",
+    "context": "🔍",
+}
+
+
+def get_tool_icon(tool_name: str) -> str | None:
+    """
+    Get the icon for a tool based on its category.
+
+    The icon is determined by matching keywords in the tool name
+    against known categories.
+
+    Args:
+        tool_name: Name of the tool (e.g., 'list_pipelines', 'get_issue')
+
+    Returns:
+        Emoji icon string or None if no category matches.
+    """
+    if not tool_name:
+        return None
+
+    # Check for exact category matches in tool name
+    # Order matters - more specific matches should come first
+    category_priority = [
+        "merge_request",
+        "pipeline",
+        "milestone",
+        "repository",
+        "release",
+        "snippet",
+        "project",
+        "branch",
+        "commit",
+        "context",
+        "issue",
+        "label",
+        "group",
+        "file",
+        "wiki",
+        "user",
+        "job",
+        "tag",
+        "mr",
+    ]
+
+    tool_lower = tool_name.lower()
+    for category in category_priority:
+        if category in tool_lower:
+            return TOOL_ICONS.get(category)
+
+    return None
+
+
+def get_tool_annotations(tool_name: str) -> dict[str, bool]:
+    """
+    Get annotations for a tool.
+
+    Args:
+        tool_name: Name of the tool
+
+    Returns:
+        Dictionary with 'destructive' and 'readOnly' boolean fields.
+        Returns default (non-destructive, non-readonly) for unknown tools.
+    """
+    return TOOL_ANNOTATIONS.get(tool_name, {"destructive": False, "readOnly": False})
+
 
 class GitLabMCPServer:
     """
