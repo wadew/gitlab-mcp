@@ -17,6 +17,9 @@ from mcp.server.stdio import stdio_server
 from gitlab_mcp import tools
 from gitlab_mcp.client.gitlab_client import GitLabClient
 from gitlab_mcp.config.settings import GitLabConfig, load_config
+from gitlab_mcp.prompts.registry import PromptRegistry
+from gitlab_mcp.resources.handlers import read_resource as read_resource_handler
+from gitlab_mcp.resources.registry import ResourceRegistry
 
 # Schema description constants (SonarQube S1192 compliance)
 DESC_PROJECT_ID = "Project ID or path (e.g., 'group/project')"
@@ -2242,6 +2245,117 @@ async def async_main() -> None:
             logger.error("Tool '%s' execution failed: %s", name, e, exc_info=True)
             # Return generic error message (no sensitive details)
             return [TextContent(type="text", text=f"Error executing {name}: operation failed")]
+
+    # Initialize registries for MCP protocol features
+    resource_registry = ResourceRegistry()
+    prompt_registry = PromptRegistry()
+
+    # Register list_resources handler (MCP Resources feature)
+    @server.list_resources()
+    async def list_resources() -> list[Any]:
+        """List all available GitLab resources."""
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
+        from mcp.types import Resource
+
+        resources = []
+        for res in resource_registry.get_static_resources():
+            resources.append(
+                Resource(
+                    uri=res["uri"],
+                    name=res["name"],
+                    description=res.get("description"),
+                    mimeType=res.get("mime_type"),
+                )
+            )
+        return resources
+
+    # Register list_resource_templates handler (MCP Resources feature)
+    @server.list_resource_templates()
+    async def list_resource_templates() -> list[Any]:
+        """List all available GitLab resource templates."""
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
+        from mcp.types import ResourceTemplate
+
+        templates = []
+        for tmpl in resource_registry.get_resource_templates():
+            templates.append(
+                ResourceTemplate(
+                    uriTemplate=tmpl["uri_template"],
+                    name=tmpl["name"],
+                    description=tmpl.get("description"),
+                    mimeType=tmpl.get("mime_type"),
+                )
+            )
+        return templates
+
+    # Register read_resource handler (MCP Resources feature)
+    @server.read_resource()
+    async def read_resource(uri: str) -> Any:
+        """Read a GitLab resource by URI."""
+        import json
+
+        from mcp.types import TextResourceContents
+        from pydantic import AnyUrl
+
+        try:
+            result = await read_resource_handler(uri, client)
+            content = json.dumps(result, indent=2) if isinstance(result, (dict, list)) else str(result)
+            return TextResourceContents(
+                uri=AnyUrl(uri),
+                mimeType="application/json",
+                text=content,
+            )
+        except Exception as e:
+            logger.error("Resource read failed for '%s': %s", uri, e, exc_info=True)
+            raise ValueError(f"Failed to read resource: {uri}") from e
+
+    # Register list_prompts handler (MCP Prompts feature)
+    @server.list_prompts()
+    async def list_prompts() -> list[Any]:
+        """List all available GitLab workflow prompts."""
+        await asyncio.sleep(0)  # Allow event loop to process other tasks
+        from mcp.types import Prompt, PromptArgument
+
+        prompts = []
+        for prompt_def in prompt_registry.list_prompts():
+            arguments = []
+            for arg in prompt_def.get("arguments", []):
+                arguments.append(
+                    PromptArgument(
+                        name=arg["name"],
+                        description=arg.get("description"),
+                        required=arg.get("required", False),
+                    )
+                )
+            prompts.append(
+                Prompt(
+                    name=prompt_def["name"],
+                    description=prompt_def.get("description"),
+                    arguments=arguments if arguments else None,
+                )
+            )
+        return prompts
+
+    # Register get_prompt handler (MCP Prompts feature)
+    @server.get_prompt()
+    async def get_prompt(name: str, arguments: dict[str, str] | None = None) -> Any:
+        """Get a GitLab workflow prompt with formatted messages."""
+        from mcp.types import GetPromptResult, PromptMessage, TextContent
+
+        try:
+            messages = prompt_registry.get_prompt_messages(name, arguments or {})
+            prompt_messages = []
+            for msg in messages:
+                prompt_messages.append(
+                    PromptMessage(
+                        role=msg["role"],
+                        content=TextContent(type="text", text=msg["content"]),
+                    )
+                )
+            return GetPromptResult(messages=prompt_messages)
+        except ValueError as e:
+            logger.error("Prompt get failed for '%s': %s", name, e, exc_info=True)
+            raise
 
     # Run the server with stdio transport
     async with stdio_server() as (read_stream, write_stream):
