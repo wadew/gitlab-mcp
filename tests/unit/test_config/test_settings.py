@@ -344,6 +344,8 @@ class TestConfigPrecedence:
         config_file.write_text(json.dumps(config_data))
 
         monkeypatch.chdir(tmp_path)
+        # Clear token env var to ensure file value is used
+        monkeypatch.delenv("GITLAB_TOKEN", raising=False)
         # Only override URL, not token
         monkeypatch.setenv("GITLAB_URL", "https://env.example.com")
 
