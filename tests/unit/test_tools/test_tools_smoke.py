@@ -294,5 +294,6 @@ class TestToolCounts:
         # Releases: 5 (list, get, create, update, delete)
         # Users: 3 (get, search, list_projects)
         # Groups: 3 (list, get, list_members)
-        # Total updated: 88 tools (added create_project tool)
-        assert len(tools.__all__) == 88
+        # Meta-tools (slim mode): 4 (discover_tools, get_tool_schema, execute_tool, TOOL_CATEGORIES)
+        # Total: 92 tools (88 regular + 4 meta-tools)
+        assert len(tools.__all__) == 92

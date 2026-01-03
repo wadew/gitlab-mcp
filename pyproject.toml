@@ -53,6 +53,7 @@ dependencies = [
     "python-dotenv>=1.2.1",  # Environment variables (latest: 1.2.1, Oct 2025)
     "httpx>=0.28.1",         # HTTP client for async (latest: 0.28.1, 2025)
     "starlette>=0.50.0",     # ASGI framework (latest: 0.50.0, Nov 2025)
+    "uvicorn>=0.34.0",       # ASGI server for HTTP transport (latest: 0.34.0, Dec 2025)
 ]
 
 [project.optional-dependencies]
