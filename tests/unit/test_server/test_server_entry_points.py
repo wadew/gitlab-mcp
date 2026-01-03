@@ -223,9 +223,21 @@ class TestMainEntryPoint:
     """Test main() CLI entry point."""
 
     @patch("gitlab_mcp.server.asyncio.run")
-    def test_main_calls_asyncio_run(self, mock_asyncio_run: Mock) -> None:
+    @patch("gitlab_mcp.server.parse_args")
+    def test_main_calls_asyncio_run(self, mock_parse_args: Mock, mock_asyncio_run: Mock) -> None:
         """Test that main() calls asyncio.run with async_main."""
+        # Mock parse_args to return default arguments
+        mock_args = Mock()
+        mock_args.transport = "stdio"
+        mock_args.host = "127.0.0.1"
+        mock_args.port = 8000
+        mock_args.mode = "full"
+        mock_parse_args.return_value = mock_args
+
         main()
+
+        # Verify parse_args was called
+        mock_parse_args.assert_called_once()
 
         # Verify asyncio.run was called with async_main coroutine
         mock_asyncio_run.assert_called_once()
@@ -234,6 +246,28 @@ class TestMainEntryPoint:
         assert len(call_args) == 1
         # Check it's a coroutine by checking if it has a cr_code attribute
         assert hasattr(call_args[0], "cr_code") or hasattr(call_args[0], "__await__")
+
+    @patch("gitlab_mcp.server.asyncio.run")
+    @patch("gitlab_mcp.server.parse_args")
+    def test_main_passes_transport_args(
+        self, mock_parse_args: Mock, mock_asyncio_run: Mock
+    ) -> None:
+        """Test that main() passes transport arguments to async_main."""
+        # Mock parse_args to return HTTP transport arguments
+        mock_args = Mock()
+        mock_args.transport = "http"
+        mock_args.host = "0.0.0.0"
+        mock_args.port = 9000
+        mock_args.mode = "slim"
+        mock_parse_args.return_value = mock_args
+
+        main()
+
+        # Verify asyncio.run was called
+        mock_asyncio_run.assert_called_once()
+        # The coroutine should be created with the specified arguments
+        call_args = mock_asyncio_run.call_args[0]
+        assert len(call_args) == 1
 
 
 class TestAsyncMainEntryPoint:

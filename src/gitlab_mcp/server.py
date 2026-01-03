@@ -3,13 +3,18 @@ GitLab MCP Server.
 
 This module implements the Model Context Protocol (MCP) server for GitLab integration.
 It provides tools for interacting with GitLab repositories, issues, merge requests, and more.
+
+Supports multiple transports:
+- stdio (default): For local CLI clients like Claude Code
+- http: Streamable HTTP for remote clients like IBM ContextForge
 """
 
+import argparse
 import asyncio
 import logging
 import sys
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Literal
 
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
@@ -90,6 +95,72 @@ def _build_prompt_messages(registry: PromptRegistry, name: str, arguments: dict[
         for msg in messages
     ]
     return GetPromptResult(messages=prompt_messages)
+
+
+async def _run_http_server(mcp_server: Server, host: str, port: int) -> None:
+    """
+    Run the MCP server with Streamable HTTP transport.
+
+    This enables remote clients like IBM ContextForge to connect via HTTP.
+
+    Args:
+        mcp_server: The configured MCP Server instance
+        host: Host to bind to (e.g., "0.0.0.0" for all interfaces)
+        port: Port to listen on
+    """
+    import contextlib
+    from collections.abc import AsyncIterator
+
+    import uvicorn
+    from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
+    from starlette.applications import Starlette
+    from starlette.routing import Route
+    from starlette.types import Receive, Scope, Send
+
+    # Create session manager for handling HTTP sessions
+    session_manager = StreamableHTTPSessionManager(
+        app=mcp_server,
+        json_response=False,  # Use SSE streaming for responses
+        stateless=False,  # Maintain session state
+    )
+
+    # Create ASGI handler that delegates to session manager
+    class StreamableHTTPASGIApp:
+        """ASGI application for Streamable HTTP server transport."""
+
+        def __init__(self, manager: StreamableHTTPSessionManager) -> None:
+            self.session_manager = manager
+
+        async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+            await self.session_manager.handle_request(scope, receive, send)
+
+    asgi_handler = StreamableHTTPASGIApp(session_manager)
+
+    # Create lifespan context manager for session manager
+    @contextlib.asynccontextmanager
+    async def lifespan(app: Starlette) -> AsyncIterator[None]:
+        async with session_manager.run():
+            logger.info("GitLab MCP Server started on http://%s:%d/mcp", host, port)
+            yield
+
+    # Create Starlette app with route to MCP endpoint
+    starlette_app = Starlette(
+        debug=False,
+        routes=[
+            Route("/mcp", endpoint=asgi_handler, methods=["GET", "POST", "DELETE"]),
+        ],
+        lifespan=lifespan,
+    )
+
+    # Run with uvicorn
+    config = uvicorn.Config(
+        starlette_app,
+        host=host,
+        port=port,
+        log_level="info",
+    )
+    server = uvicorn.Server(config)
+    await server.serve()
 
 
 # Schema description constants (SonarQube S1192 compliance)
@@ -2215,6 +2286,58 @@ def _get_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
     ]
 
 
+def _get_meta_tool_definitions() -> list[tuple[str, str, dict[str, Any]]]:
+    """
+    Get meta-tool definitions for slim mode (3 tools instead of 87).
+
+    These meta-tools enable lazy loading of the full tool set,
+    reducing context window usage by ~95%.
+
+    Returns:
+        List of tuples: (name, description, input_schema)
+    """
+    return [
+        (
+            "discover_tools",
+            "Discover available GitLab tools by category. Returns tool names and descriptions. "
+            "Categories: context, repositories, issues, merge_requests, pipelines, projects, "
+            "labels, wikis, snippets, releases, users, groups",
+            {
+                "category": {
+                    "type": "string",
+                    "description": "Category to filter (optional). If omitted, returns all categories.",
+                },
+            },
+        ),
+        (
+            "get_tool_schema",
+            "Get the full JSON schema for a specific GitLab tool. "
+            "Use after discover_tools to get parameter details before calling execute_tool.",
+            {
+                "tool_name": {
+                    "type": "string",
+                    "description": "Name of the tool to get schema for (e.g., 'list_merge_requests')",
+                },
+            },
+        ),
+        (
+            "execute_tool",
+            "Execute any GitLab tool by name with the provided arguments. "
+            "Use after getting the schema to understand required parameters.",
+            {
+                "tool_name": {
+                    "type": "string",
+                    "description": "Name of the tool to execute (e.g., 'list_merge_requests')",
+                },
+                "arguments": {
+                    "type": "object",
+                    "description": "Tool-specific arguments (optional). See get_tool_schema for details.",
+                },
+            },
+        ),
+    ]
+
+
 def _build_tool_schema(params_schema: dict[str, Any]) -> dict[str, Any]:
     """
     Build JSON schema for a tool from its parameter definitions.
@@ -2245,12 +2368,24 @@ def _build_tool_schema(params_schema: dict[str, Any]) -> dict[str, Any]:
     return input_schema
 
 
-async def async_main() -> None:
+async def async_main(
+    transport: Literal["stdio", "http"] = "stdio",
+    host: str = "127.0.0.1",
+    port: int = 8000,
+    mode: Literal["full", "slim"] = "full",
+) -> None:
     """
     Async main entry point for the GitLab MCP Server.
 
-    This function starts the MCP server with stdio transport, allowing
-    Claude Code and other MCP clients to communicate with GitLab.
+    Args:
+        transport: Transport protocol - "stdio" for local clients, "http" for remote
+        host: Host to bind HTTP server to (only used with http transport)
+        port: Port for HTTP server (only used with http transport)
+        mode: Tool mode - "full" for all 87 tools, "slim" for 3 meta-tools
+
+    Supports two transports:
+    - stdio: Standard I/O transport for local CLI clients (Claude Code)
+    - http: Streamable HTTP transport for remote clients (IBM ContextForge)
     """
     # Load configuration from environment
     config = load_config()
@@ -2273,8 +2408,13 @@ async def async_main() -> None:
         )
         sys.exit(1)
 
-    # Get tool definitions
-    tool_defs = _get_tool_definitions()
+    # Get tool definitions based on mode
+    if mode == "slim":
+        tool_defs = _get_meta_tool_definitions()
+        logger.info("Starting in SLIM mode with 3 meta-tools (lazy loading)")
+    else:
+        tool_defs = _get_tool_definitions()
+        logger.info("Starting in FULL mode with %d tools", len(tool_defs))
 
     # Register list_tools handler
     @server.list_tools()
@@ -2361,14 +2501,72 @@ async def async_main() -> None:
         """Get a GitLab workflow prompt with formatted messages."""
         return _build_prompt_messages(prompt_registry, name, arguments or {})
 
-    # Run the server with stdio transport
-    async with stdio_server() as (read_stream, write_stream):
-        await server.run(read_stream, write_stream, server.create_initialization_options())
+    # Run the server with the selected transport
+    if transport == "stdio":
+        # Standard I/O transport for local CLI clients
+        async with stdio_server() as (read_stream, write_stream):
+            await server.run(read_stream, write_stream, server.create_initialization_options())
+    elif transport == "http":
+        # Streamable HTTP transport for remote clients
+        await _run_http_server(server, host, port)
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments for the GitLab MCP Server."""
+    parser = argparse.ArgumentParser(
+        description="GitLab MCP Server - Model Context Protocol server for GitLab",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Run with stdio transport (default, for Claude Code)
+  gitlab-mcp-server
+
+  # Run with Streamable HTTP transport (for ContextForge)
+  gitlab-mcp-server --transport http --port 8000
+
+  # Run in slim mode with only 3 meta-tools
+  gitlab-mcp-server --transport http --port 8000 --mode slim
+        """,
+    )
+
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "http"],
+        default="stdio",
+        help="Transport protocol: stdio (default) for local clients, http for remote clients",
+    )
+    parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Host to bind HTTP server to (default: 127.0.0.1)",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port for HTTP server (default: 8000)",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["full", "slim"],
+        default="full",
+        help="Tool mode: full (87 tools) or slim (3 meta-tools for lazy loading)",
+    )
+
+    return parser.parse_args()
 
 
 def main() -> None:
     """CLI entry point for the GitLab MCP Server."""
-    asyncio.run(async_main())
+    args = parse_args()
+    asyncio.run(
+        async_main(
+            transport=args.transport,
+            host=args.host,
+            port=args.port,
+            mode=args.mode,
+        )
+    )
 
 
 if __name__ == "__main__":

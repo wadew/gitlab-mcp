@@ -14,6 +14,11 @@ Tools are organized by category:
 - releases: Release management
 - users: User operations
 - groups: Group operations
+
+Additionally, provides meta-tools for lazy loading (slim mode):
+- discover_tools: List tools by category
+- get_tool_schema: Get full schema for a tool
+- execute_tool: Execute any tool by name
 """
 
 # Context tools
@@ -62,6 +67,14 @@ from gitlab_mcp.tools.merge_requests import (
     reopen_merge_request,
     unapprove_merge_request,
     update_merge_request,
+)
+
+# Meta-tools for lazy loading (slim mode)
+from gitlab_mcp.tools.meta import (
+    TOOL_CATEGORIES,
+    discover_tools,
+    execute_tool,
+    get_tool_schema,
 )
 
 # Pipeline tools
@@ -251,4 +264,9 @@ __all__ = [
     "list_groups",
     "get_group",
     "list_group_members",
+    # Meta-tools (slim mode)
+    "discover_tools",
+    "get_tool_schema",
+    "execute_tool",
+    "TOOL_CATEGORIES",
 ]
