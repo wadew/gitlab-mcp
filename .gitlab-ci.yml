@@ -492,6 +492,61 @@ publish:version-commit:
   allow_failure: true  # Don't fail pipeline if commit fails
 
 # ============================================================================
+# PUBLIC PYPI PUBLISHING (Tag-based releases)
+# ============================================================================
+
+# Publish to PyPI on semantic version tags (v1.0.0, v1.2.3, etc.)
+publish:public-pypi:
+  stage: publish
+  image: python:3.12-slim
+  before_script:
+    - pip install build twine
+  script:
+    - echo "Publishing to PyPI..."
+    - python -m build
+    - twine check dist/*
+    - twine upload dist/* --username __token__ --password $PYPI_TOKEN
+    - echo "Published ${CI_COMMIT_TAG} to PyPI successfully!"
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/
+
+# Publish to TestPyPI on release candidate tags (v1.0.0-rc1, etc.)
+publish:testpypi:
+  stage: publish
+  image: python:3.12-slim
+  before_script:
+    - pip install build twine
+  script:
+    - echo "Publishing to TestPyPI..."
+    - python -m build
+    - twine check dist/*
+    - twine upload --repository testpypi dist/* --username __token__ --password $TESTPYPI_TOKEN
+    - echo "Published ${CI_COMMIT_TAG} to TestPyPI successfully!"
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+-rc/
+
+# Mirror to public GitHub repository on version tags
+publish:github-mirror:
+  stage: publish
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache git
+  script:
+    - echo "Mirroring to GitHub..."
+    - git remote add github https://${GITHUB_COM_TOKEN}@github.com/wadew/gitlab-mcp.git || true
+    - git push github HEAD:refs/heads/main --tags --force
+    - echo "Mirrored ${CI_COMMIT_TAG} to GitHub successfully!"
+  variables:
+    GIT_STRATEGY: clone
+    GIT_DEPTH: "0"
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v[0-9]+/
+
+# ============================================================================
 # PIPELINE DOCUMENTATION
 # ============================================================================
 #
@@ -509,18 +564,20 @@ publish:version-commit:
 #   - Publish: Upload to GitLab Package Registry
 #   - Commit: Push version bump back to main
 #
+# - Tags (vX.Y.Z): Public release pipeline
+#   - publish:public-pypi: Upload to pypi.org
+#   - publish:github-mirror: Mirror to github.com/wadew/gitlab-mcp
+#
+# - Tags (vX.Y.Z-rc*): Release candidate pipeline
+#   - publish:testpypi: Upload to test.pypi.org
+#
 # - MRs: Same as develop (quality checks before merge)
 #
-# CalVer Format:
-# ==============
-# YYYY.MM.MICRO
-# - YYYY: Current year (e.g., 2025)
-# - MM: Current month without leading zero (e.g., 12)
-# - MICRO: Auto-incremented within month, resets on new month
-#
-# Examples:
-# - First release Dec 2025: 2025.12.0
-# - Second release Dec 2025: 2025.12.1
-# - First release Jan 2026: 2026.1.0
+# Required CI/CD Variables:
+# =========================
+# - PYPI_TOKEN: API token from pypi.org
+# - TESTPYPI_TOKEN: API token from test.pypi.org
+# - GITHUB_COM_TOKEN: GitHub PAT for repository mirroring
+# - SONAR_TOKEN: SonarQube authentication token
 #
 # ============================================================================

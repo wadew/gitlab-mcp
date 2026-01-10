@@ -8,11 +8,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- PyPI package publication
-- Additional integration tests for merge requests and pipelines
+- Additional GitLab API coverage
 - Performance optimization for large repositories
 - Enhanced error messages and debugging tools
-- CLI tool improvements
+- WebSocket transport support
+
+## [1.0.0] - 2026-01-10
+
+### First Public Release
+
+This is the first public release of gitlab-mcp on PyPI and GitHub. The project has been in production use internally and is now available for the broader community.
+
+### Added
+
+#### Meta-Tools & Slim Mode
+- **3 meta-tools** for dynamic tool discovery and execution
+  - `discover_tools` - List available tools by category (95% context reduction)
+  - `get_tool_schema` - Get full JSON schema for any tool
+  - `execute_tool` - Execute any tool by name with arguments
+- **Slim mode** (`--mode slim`) reduces LLM context usage by loading only meta-tools
+
+#### Streamable HTTP Transport
+- **HTTP transport** (`--transport http`) for remote clients
+- SSE streaming support via Starlette and uvicorn
+- Configurable host and port (`--host`, `--port`)
+
+#### MCP Prompts (14 prompts)
+- Core workflows: create-mr-from-issue, review-pipeline-failure, project-health-check, release-checklist
+- Code review: code-review-prep, security-scan-review
+- Maintenance: stale-mr-cleanup, branch-cleanup, failed-jobs-summary
+- Deployment: deployment-readiness
+- Orchestration: parallel-pipeline-check, bulk-mr-review, multi-project-deploy
+
+#### MCP Resources (13 resources)
+- Static resources: gitlab://projects, gitlab://user/current, gitlab://groups
+- Template resources for projects, issues, MRs, pipelines, branches, files
+
+### Changed
+- Package name changed from `gitlab-mcp-server` to `gitlab-mcp`
+- Version scheme changed from CalVer to SemVer
+- Development status upgraded from Beta to Production/Stable
+
+### Metrics
+- **87 MCP tools** (full mode) or **3 meta-tools** (slim mode)
+- **14 MCP prompts** for GitLab workflows
+- **13 MCP resources** (static and template-based)
+- **1257 tests** passing (100% pass rate)
+- **84% code coverage**
+- **Zero mypy errors** (strict mode)
+- **Zero ruff errors**
 
 ## [0.1.0] - 2025-10-24
 
@@ -235,5 +279,6 @@ This project uses [Semantic Versioning](https://semver.org/):
 
 ---
 
-[Unreleased]: https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp/-/compare/v0.1.0...main
-[0.1.0]: https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp/-/tags/v0.1.0
+[Unreleased]: https://github.com/wadew/gitlab-mcp/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/wadew/gitlab-mcp/releases/tag/v1.0.0
+[0.1.0]: https://github.com/wadew/gitlab-mcp/releases/tag/v0.1.0

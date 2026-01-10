@@ -1,14 +1,14 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
+requires = ["setuptools>=80.9.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "gitlab-mcp-server"
-version = "2026.1.0"
-description = "Production-ready Model Context Protocol server for GitLab - 67 tools, 1240 tests, 84% coverage"
+name = "gitlab-mcp"
+version = "1.0.0"
+description = "Production-ready Model Context Protocol server for GitLab - 87 tools, 14 prompts, 13 resources"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Wade Woolwine", email = "wade.woolwine@gmail.com"}
 ]
@@ -31,9 +31,8 @@ keywords = [
     "type-safe"
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -53,7 +52,7 @@ dependencies = [
     "python-dotenv>=1.2.1",  # Environment variables (latest: 1.2.1, Oct 2025)
     "httpx>=0.28.1",         # HTTP client for async (latest: 0.28.1, 2025)
     "starlette>=0.50.0",     # ASGI framework (latest: 0.50.0, Nov 2025)
-    "uvicorn>=0.34.0",       # ASGI server for HTTP transport (latest: 0.34.0, Dec 2025)
+    "uvicorn>=0.40.0",       # ASGI server for HTTP transport (latest: 0.40.0, Jan 2026)
 ]
 
 [project.optional-dependencies]
@@ -66,17 +65,20 @@ dev = [
     "ruff>=0.14.10",         # Linter (latest: 0.14.10, Dec 2025)
     "mypy>=1.19.1",          # Type checker (latest: 1.19.1, Dec 2025)
     "types-requests",        # Type stubs for requests
+    "pre-commit>=4.0.0",     # Pre-commit hooks (latest: 4.0.0, Dec 2025)
+    "build>=1.2.0",          # PEP 517 build frontend
+    "twine>=6.0.0",          # PyPI upload tool
 ]
 
 [project.scripts]
 gitlab-mcp-server = "gitlab_mcp.server:main"
 
 [project.urls]
-Homepage = "https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp"
-Documentation = "https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp/-/tree/main/docs"
-Repository = "https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp"
-Issues = "https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp/-/issues"
-Source = "https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp/-/tree/main/src"
+Homepage = "https://github.com/wadew/gitlab-mcp"
+Documentation = "https://github.com/wadew/gitlab-mcp#documentation"
+Repository = "https://github.com/wadew/gitlab-mcp.git"
+Issues = "https://github.com/wadew/gitlab-mcp/issues"
+Changelog = "https://github.com/wadew/gitlab-mcp/blob/main/CHANGELOG.md"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
