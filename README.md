@@ -119,7 +119,7 @@ Built with **strict Test-Driven Development (TDD)** practices, featuring 1257 te
 
 ```bash
 # Install from PyPI
-pip install gitlab-mcp
+pip install gitlab-mcp-server
 
 # Or install from source
 git clone https://github.com/wadew/gitlab-mcp.git
