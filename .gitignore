@@ -83,3 +83,13 @@ site/
 tmp/
 temp/
 *.tmp
+
+# Claude Code internal development (exclude from public repo)
+.claude/
+
+# SonarQube
+.sonar/
+.scannerwork/
+
+# Ruff cache
+.ruff_cache/

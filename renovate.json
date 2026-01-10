@@ -92,6 +92,12 @@
   },
   "packageRules": [
     {
+      "description": "Disable Python version updates - keep 3.10-3.12 range",
+      "matchPackageNames": ["python"],
+      "matchManagers": ["dockerfile", "pep621", "pyenv"],
+      "enabled": false
+    },
+    {
       "description": "Critical security updates - high priority",
       "matchUpdateTypes": [
         "patch"
@@ -272,7 +278,7 @@
     ]
   },
   "constraints": {
-    "python": ">=3.9"
+    "python": ">=3.10 <3.13"
   },
   "ignoreDeps": [],
   "ignorePresets": [],

@@ -2,12 +2,13 @@
 
 A production-ready Model Context Protocol (MCP) server that enables AI assistants like Claude Code to interact seamlessly with self-hosted GitLab instances.
 
-[![Tests](https://img.shields.io/badge/tests-700%20passing-brightgreen)]()
-[![Coverage](https://img.shields.io/badge/coverage-79%25-yellowgreen)]()
-[![Python](https://img.shields.io/badge/python-3.9%2B-blue)]()
+[![PyPI version](https://img.shields.io/pypi/v/gitlab-mcp)](https://pypi.org/project/gitlab-mcp/)
+[![Tests](https://img.shields.io/badge/tests-1257%20passing-brightgreen)]()
+[![Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen)]()
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)]()
 [![Type Checked](https://img.shields.io/badge/type%20checked-mypy-blue)]()
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000)]()
-[![License](https://img.shields.io/badge/license-MIT-green)]()
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ## Overview
 
@@ -21,59 +22,65 @@ The GitLab MCP Server provides a complete, type-safe interface for AI assistants
 - **Security & Compliance**: Security scanning results, vulnerability tracking
 - **Advanced Features**: Wikis, snippets, releases, user/group management
 
-Built with **strict Test-Driven Development (TDD)** practices, featuring 700+ tests and 79% code coverage.
+Built with **strict Test-Driven Development (TDD)** practices, featuring 1257 tests and 84% code coverage.
+
+**Transport Modes**: stdio (default) and Streamable HTTP for remote clients
+**Slim Mode**: 3 meta-tools for 95% context reduction in LLM conversations
 
 ## Features
 
-### ✅ Complete Tool Suite (67 Tools)
+### Complete Tool Suite (87 Tools + 14 Prompts + 13 Resources)
 
-**Repository Tools (13)**
+**Repository Tools (16)**
 - Search repositories, code, and commits
 - Browse files and directory trees
+- Create, update, delete files
 - Manage branches and tags
 - View commit history and diffs
 - Compare branches
 
-**Issue Tools (10)**
+**Issue Tools (8)**
 - Create, read, update, close issues
-- Manage labels and milestones
-- Add comments and track time
+- Reopen closed issues
+- Add comments and list comments
 - Search and filter issues
-- Subscribe to notifications
 
-**Merge Request Tools (15)**
+**Merge Request Tools (14)**
 - Create and manage merge requests
 - Review code and add comments
 - Approve and merge MRs
 - Manage reviewers and assignees
 - Track MR pipelines and changes
 
-**CI/CD Pipeline Tools (11)**
+**CI/CD Pipeline Tools (14)**
 - List and monitor pipelines
-- Trigger pipeline runs
+- Create, retry, cancel, delete pipelines
 - View job logs and status
 - Download and manage artifacts
-- Retry failed jobs
+- Retry and cancel jobs
+- Play manual jobs
 
-**Project Management Tools (8)**
-- Create and manage projects
-- Configure project settings
-- Manage milestones and releases
+**Project Management Tools (10)**
+- Create, search, and manage projects
+- View project statistics
+- Manage milestones
 - Handle project members
-- Archive and transfer projects
 
-**Security Tools (4)**
-- View security scan results
-- Track vulnerabilities
-- Access SAST/DAST findings
-- Dependency scanning results
+**Labels, Wikis, Snippets, Releases (19)**
+- Label management (4 tools)
+- Wiki page operations (5 tools)
+- Code snippets (5 tools)
+- Release management (5 tools)
 
-**Additional Tools (6)**
-- Wiki management
-- Code snippets
-- User and group operations
-- Release notes
-- Project statistics
+**Users & Groups (6)**
+- User lookup and search
+- Group listing and details
+- Group member management
+
+**Meta Tools (3) - Slim Mode**
+- `discover_tools` - List available tools by category
+- `get_tool_schema` - Get JSON schema for any tool
+- `execute_tool` - Execute any tool dynamically
 
 ### 🔒 Security First
 
@@ -91,10 +98,10 @@ Built with **strict Test-Driven Development (TDD)** practices, featuring 700+ te
 - **Connection pooling** via httpx
 - **Smart rate limiting** awareness
 
-### 🧪 Thoroughly Tested
+### Thoroughly Tested
 
-- **700+ tests passing** (100% pass rate)
-- **79% code coverage** (exceeds 80% in core modules)
+- **1257 tests passing** (100% pass rate)
+- **84% code coverage** (exceeds 80% requirement)
 - **Unit tests** with mocked dependencies
 - **Integration tests** with real GitLab API
 - **E2E tests** validating full MCP protocol
@@ -104,19 +111,19 @@ Built with **strict Test-Driven Development (TDD)** practices, featuring 700+ te
 
 ### Prerequisites
 
-- **Python 3.9+**
-- **Self-hosted GitLab instance** (CE or EE, v15.0+)
+- **Python 3.10+**
+- **GitLab instance** (self-hosted CE/EE v15.0+ or GitLab.com)
 - **GitLab Personal Access Token** with appropriate scopes
 
 ### Installation
 
 ```bash
-# Install from PyPI (when published)
-pip install gitlab-mcp-server
+# Install from PyPI
+pip install gitlab-mcp
 
 # Or install from source
-git clone https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp.git
-cd gitlab_mcp
+git clone https://github.com/wadew/gitlab-mcp.git
+cd gitlab-mcp
 pip install -e ".[dev]"
 ```
 
@@ -277,8 +284,8 @@ See [docs/user/usage_examples.md](docs/user/usage_examples.md) for comprehensive
 
 ```bash
 # Clone repository
-git clone https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp.git
-cd gitlab_mcp
+git clone https://github.com/wadew/gitlab-mcp.git
+cd gitlab-mcp
 
 # Install uv (fast Python package manager)
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -342,10 +349,10 @@ gitlab_mcp/
 │   ├── server.py                # Main MCP server
 │   ├── config/                  # Configuration management
 │   ├── client/                  # GitLab API client wrapper
-│   ├── tools/                   # MCP tool implementations (67 tools)
+│   ├── tools/                   # MCP tool implementations (87 tools)
 │   ├── schemas/                 # Pydantic data models
 │   └── utils/                   # Shared utilities
-├── tests/                       # Test suite (700+ tests)
+├── tests/                       # Test suite (1257 tests)
 │   ├── unit/                    # Unit tests (mocked)
 │   ├── integration/             # Integration tests (real API)
 │   └── e2e/                     # End-to-end MCP tests
@@ -385,25 +392,20 @@ Tests: N passing
 
 ## Development Phases
 
-- ✅ **Phase 1**: Foundation (Server, Config, Client, Auth)
-- ✅ **Phase 2**: Repository & Issues Tools
-- ✅ **Phase 3**: Merge Requests & Pipelines Tools
-- ✅ **Phase 4**: Advanced Features (Security, Wikis, etc.)
-- 🔄 **Phase 5**: Release & Deployment (In Progress)
+- **Phase 1**: Foundation (Server, Config, Client, Auth)
+- **Phase 2**: Repository & Issues Tools
+- **Phase 3**: Merge Requests & Pipelines Tools
+- **Phase 4**: Advanced Features (Security, Wikis, etc.)
+- **Phase 5**: Meta-tools & Streamable HTTP Transport
+- **Phase 6**: Public Release (PyPI + GitHub)
 
 ## Roadmap
 
-### v0.2.0 (Next Release)
-- Additional integration tests (merge requests, pipelines)
-- Performance optimization
-- Enhanced error messages
-- CLI tool improvements
-
-### v1.0.0 (Stable Release)
-- Production deployment
-- PyPI publication
-- Complete documentation site
-- Video tutorials
+### v1.1.0 (Next Release)
+- Additional GitLab API coverage
+- Performance optimization for large repositories
+- Enhanced error messages and debugging tools
+- WebSocket transport support
 
 ## License
 
@@ -411,8 +413,8 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ## Support
 
-- **Issues**: https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp/-/issues
-- **Documentation**: https://gitlab.prod.thezephyrco.com/mcps/gitlab_mcp/-/tree/main/docs
+- **Issues**: https://github.com/wadew/gitlab-mcp/issues
+- **Documentation**: https://github.com/wadew/gitlab-mcp#documentation
 - **MCP Protocol**: https://modelcontextprotocol.io
 
 ## Acknowledgments
@@ -425,6 +427,6 @@ Built with:
 
 ---
 
-**Built with strict TDD practices. 700+ tests. 79% coverage. Production-ready.**
+**Built with strict TDD practices. 1257 tests. 84% coverage. Production-ready.**
 
-Made with ❤️ for the GitLab and AI communities.
+Made with care for the GitLab and AI communities.

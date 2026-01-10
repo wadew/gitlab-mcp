@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/wadew/gitlab-mcp#documentation
+    about: Check out the documentation for usage guides and examples
+  - name: MCP Protocol
+    url: https://modelcontextprotocol.io
+    about: Learn more about the Model Context Protocol
