@@ -499,6 +499,7 @@ publish:version-commit:
 publish:public-pypi:
   stage: publish
   image: python:3.12-slim
+  needs: []  # Run independently, don't wait for other stages
   before_script:
     - pip install build twine
   script:
@@ -518,6 +519,7 @@ publish:public-pypi:
 publish:testpypi:
   stage: publish
   image: python:3.12-slim
+  needs: []  # Run independently, don't wait for other stages
   before_script:
     - pip install build twine
   script:
@@ -533,6 +535,7 @@ publish:testpypi:
 publish:github-mirror:
   stage: publish
   image: alpine:latest
+  needs: []  # Run independently, don't wait for other stages
   before_script:
     - apk add --no-cache git
   script:
