@@ -76,7 +76,7 @@ Before installing the GitLab MCP Server, ensure you have:
 *Note: This option will be available once the package is published to PyPI.*
 
 ```bash
-pip install gitlab-mcp-server
+pip install python-gitlab-mcp
 ```
 
 ---

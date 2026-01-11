@@ -2,7 +2,7 @@
 
 A production-ready Model Context Protocol (MCP) server that enables AI assistants like Claude Code to interact seamlessly with self-hosted GitLab instances.
 
-[![PyPI version](https://img.shields.io/pypi/v/gitlab-mcp)](https://pypi.org/project/gitlab-mcp/)
+[![PyPI version](https://img.shields.io/pypi/v/python-gitlab-mcp)](https://pypi.org/project/python-gitlab-mcp/)
 [![Tests](https://img.shields.io/badge/tests-1257%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen)]()
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)]()
@@ -119,7 +119,7 @@ Built with **strict Test-Driven Development (TDD)** practices, featuring 1257 te
 
 ```bash
 # Install from PyPI
-pip install gitlab-mcp-server
+pip install python-gitlab-mcp
 
 # Or install from source
 git clone https://github.com/wadew/gitlab-mcp.git

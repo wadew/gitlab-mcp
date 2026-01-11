@@ -45,7 +45,7 @@ This is the first public release of gitlab-mcp on PyPI and GitHub. The project h
 - Template resources for projects, issues, MRs, pipelines, branches, files
 
 ### Changed
-- Package name changed from `gitlab-mcp-server` to `gitlab-mcp`
+- Package name: `python-gitlab-mcp` (PyPI)
 - Version scheme changed from CalVer to SemVer
 - Development status upgraded from Beta to Production/Stable
 

@@ -174,7 +174,7 @@ See [Configuration Guide](./configuration.md) for all options.
 ```dockerfile
 FROM python:3.11-slim
 
-RUN pip install gitlab-mcp-server
+RUN pip install python-gitlab-mcp
 
 ENV GITLAB_URL="https://gitlab.example.com"
 ENV GITLAB_TOKEN=""

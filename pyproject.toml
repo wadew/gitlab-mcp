@@ -3,7 +3,7 @@ requires = ["setuptools>=80.9.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "gitlab-mcp-server"
+name = "python-gitlab-mcp"
 version = "1.0.0"
 description = "Production-ready Model Context Protocol server for GitLab - 87 tools, 14 prompts, 13 resources"
 readme = "README.md"
